@@ -38,6 +38,9 @@ CRM/
 │   ├── Dockerfile
 │   ├── nginx.conf
 │   └── .dockerignore
+├── db/               # Scripts de base de datos
+│   ├── schema.sql    # Esquema completo de tablas
+│   └── init.sql      # Datos iniciales
 └── docker-compose.yml # Contenedores completos
 ```
 
@@ -95,11 +98,17 @@ docker-compose up -d --build
 ### 1. Base de Datos (PostgreSQL)
 
 ```bash
-# Usando Docker
+# Usando Docker (recomendado - incluye scripts SQL automáticos)
 docker-compose up postgres -d
+
+# Los scripts SQL en db/ se ejecutan automáticamente al iniciar:
+# - schema.sql: Crea todas las tablas del sistema
+# - init.sql: Inserta datos iniciales (usuario admin)
 
 # O instalar PostgreSQL localmente y crear la base de datos
 createdb crm_db
+psql crm_db < db/schema.sql
+psql crm_db < db/init.sql
 ```
 
 ### 2. Backend (Spring Boot)
