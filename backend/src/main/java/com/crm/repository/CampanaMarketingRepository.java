@@ -20,4 +20,5 @@ public interface CampanaMarketingRepository extends JpaRepository<CampanaMarketi
     List<CampanaMarketing> findByFechaInicioBetween(LocalDate inicio, LocalDate fin);
     Optional<CampanaMarketing> findByNombre(String nombre);
     List<CampanaMarketing> findBySegmento(String segmento);
+    List<CampanaMarketing> findByTenantId(Long tenantId);
 }

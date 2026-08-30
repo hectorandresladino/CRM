@@ -34,4 +34,5 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     boolean existsByIdentificacion(String identificacion);
 
     long countByTenantId(Long tenantId);
+    List<Cliente> findByTenantId(Long tenantId);
 }

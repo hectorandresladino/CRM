@@ -18,4 +18,5 @@ public interface EmailMarketingRepository extends JpaRepository<EmailMarketing, 
     List<EmailMarketing> findByTipo(String tipo);
     List<EmailMarketing> findByFechaEnvioBetween(LocalDateTime inicio, LocalDateTime fin);
     List<EmailMarketing> findByRemitente(String remitente);
+    List<EmailMarketing> findByTenantId(Long tenantId);
 }
