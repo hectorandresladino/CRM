@@ -5,7 +5,7 @@
 package com.crm.controller;
 
 import com.crm.entity.*;
-import com.crm.service.ServiceCloudAdvancedService;
+import com.crm.service.CustomerServiceOperationsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +16,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/service-advanced")
 @RequiredArgsConstructor
-public class ServiceCloudAdvancedController {
+public class CustomerServiceOperationsController {
 
-    private final ServiceCloudAdvancedService service;
+    private final CustomerServiceOperationsService service;
 
     // === Cases (Item 25) ===
     @GetMapping("/cases")

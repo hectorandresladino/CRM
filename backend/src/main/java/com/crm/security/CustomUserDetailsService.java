@@ -20,8 +20,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByUsername(username)
+        Usuario usuario = usuarioRepository.findByTenantIdAndUsername(TenantContext.requireCurrentTenant(), username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+        return new CustomUserDetails(usuario);
+    }
+
+    public UserDetails loadPlatformAdminByUsername(String username) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByUsernameAndTenantIdIsNull(username)
+                .filter(user -> user.getRol() == Usuario.Role.SUPER_ADMIN)
+                .orElseThrow(() -> new UsernameNotFoundException("Administrador de plataforma no encontrado"));
         return new CustomUserDetails(usuario);
     }
 }

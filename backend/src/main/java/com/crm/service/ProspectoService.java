@@ -6,6 +6,8 @@ package com.crm.service;
 
 import com.crm.entity.Prospecto;
 import com.crm.repository.ProspectoRepository;
+import com.crm.security.TenantAccessDeniedException;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,26 +24,29 @@ public class ProspectoService {
     private final ProspectoRepository prospectoRepository;
     
     public List<Prospecto> findAll() {
-        return prospectoRepository.findAll();
+        return prospectoRepository.findByTenantId(tenantId());
     }
     
     public Optional<Prospecto> findById(Long id) {
-        return prospectoRepository.findById(id);
+        return prospectoRepository.findByIdAndTenantId(id, tenantId());
     }
     
     public Prospecto save(Prospecto prospecto) {
-        if (prospectoRepository.existsByEmail(prospecto.getEmail())) {
+        Long tenantId = tenantId();
+        prospecto.setTenantId(tenantId);
+        if (prospectoRepository.existsByTenantIdAndEmail(tenantId, prospecto.getEmail())) {
             throw new RuntimeException("Ya existe un prospecto con ese email");
         }
         return prospectoRepository.save(prospecto);
     }
     
     public Prospecto update(Long id, Prospecto prospecto) {
-        Prospecto existingProspecto = prospectoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Prospecto no encontrado"));
+        Long tenantId = tenantId();
+        Prospecto existingProspecto = prospectoRepository.findByIdAndTenantId(id, tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Prospecto"));
         
         if (!existingProspecto.getEmail().equals(prospecto.getEmail()) && 
-            prospectoRepository.existsByEmail(prospecto.getEmail())) {
+            prospectoRepository.existsByTenantIdAndEmail(tenantId, prospecto.getEmail())) {
             throw new RuntimeException("Ya existe un prospecto con ese email");
         }
         
@@ -69,35 +74,40 @@ public class ProspectoService {
     }
     
     public void delete(Long id) {
-        if (!prospectoRepository.existsById(id)) {
-            throw new RuntimeException("Prospecto no encontrado");
-        }
-        prospectoRepository.deleteById(id);
+        Prospecto prospecto = prospectoRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Prospecto"));
+        prospectoRepository.delete(prospecto);
     }
     
     public List<Prospecto> findByEstado(Prospecto.EstadoProspecto estado) {
-        return prospectoRepository.findByEstado(estado);
+        return prospectoRepository.findByTenantIdAndEstado(tenantId(), estado);
     }
     
     public List<Prospecto> findByPrioridad(Prospecto.PrioridadProspecto prioridad) {
-        return prospectoRepository.findByPrioridad(prioridad);
+        return prospectoRepository.findByTenantIdAndPrioridad(tenantId(), prioridad);
     }
     
     public List<Prospecto> buscarPorNombre(String nombre, String apellido) {
-        return prospectoRepository.buscarPorNombre(nombre, apellido);
+        Long tenantId = tenantId();
+        return prospectoRepository.findByTenantIdAndNombreContainingIgnoreCaseOrTenantIdAndApellidoContainingIgnoreCase(
+                tenantId, nombre, tenantId, apellido);
     }
     
     public List<Prospecto> buscarPorEmpresa(String empresa) {
-        return prospectoRepository.buscarPorEmpresa(empresa);
+        return prospectoRepository.findByTenantIdAndEmpresaContainingIgnoreCase(tenantId(), empresa);
     }
     
     public Prospecto actualizarEstado(Long id, Prospecto.EstadoProspecto estado) {
-        Prospecto prospecto = prospectoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Prospecto no encontrado"));
+        Prospecto prospecto = prospectoRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Prospecto"));
         prospecto.setEstado(estado);
         if (estado == Prospecto.EstadoProspecto.CERRADO) {
             prospecto.setFechaConversion(LocalDateTime.now());
         }
         return prospectoRepository.save(prospecto);
+    }
+
+    private Long tenantId() {
+        return TenantContext.requireCurrentTenant();
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AIPredictionRepository extends JpaRepository<AIPrediction, Long> {
@@ -16,4 +17,5 @@ public interface AIPredictionRepository extends JpaRepository<AIPrediction, Long
     List<AIPrediction> findByTenantIdAndPredictionType(Long tenantId, String type);
     List<AIPrediction> findByTenantIdAndTargetEntityAndTargetId(Long tenantId, String entity, Long id);
     List<AIPrediction> findByTenantIdAndIsActioned(Long tenantId, Boolean actioned);
+    Optional<AIPrediction> findByIdAndTenantId(Long id, Long tenantId);
 }

@@ -12,11 +12,17 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VentaRepository extends JpaRepository<Venta, Long> {
     
     List<Venta> findByClienteId(Long clienteId);
+    List<Venta> findByTenantId(Long tenantId);
+    Optional<Venta> findByIdAndTenantId(Long id, Long tenantId);
+    List<Venta> findByTenantIdAndClienteId(Long tenantId, Long clienteId);
+    List<Venta> findByTenantIdAndEstado(Long tenantId, Venta.EstadoVenta estado);
+    List<Venta> findByTenantIdAndVendedor(Long tenantId, String vendedor);
     
     List<Venta> findByEstado(Venta.EstadoVenta estado);
     
@@ -32,6 +38,9 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     
     @Query("SELECT SUM(v.total) FROM Venta v WHERE v.estado = 'CERRADA'")
     Double sumTotalVentasCerradas();
+
+    @Query("SELECT COALESCE(SUM(v.total), 0) FROM Venta v WHERE v.tenantId = :tenantId AND v.estado = 'CERRADA'")
+    Double sumTotalVentasCerradasByTenantId(@Param("tenantId") Long tenantId);
     
     @Query("SELECT COUNT(v) FROM Venta v WHERE v.estado = :estado")
     Long countByEstado(@Param("estado") Venta.EstadoVenta estado);

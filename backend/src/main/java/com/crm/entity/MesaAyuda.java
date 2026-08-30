@@ -35,6 +35,7 @@ public class MesaAyuda {
     private Long clienteId;
     
     private String canal;
+    @Column(name = "asignado_a")
     private String asignadoA;
     
     private String solucion;

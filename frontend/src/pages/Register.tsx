@@ -133,8 +133,9 @@ export default function Register() {
               <select name="planName" value={formData.planName} onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
                 <option value="STARTER">Starter - $29/mes</option>
-                <option value="PROFESSIONAL">Professional - $79/mes</option>
+                <option value="BUSINESS">Business - $79/mes</option>
                 <option value="ENTERPRISE">Enterprise - $199/mes</option>
+                <option value="AGENCY">Agency - $399/mes</option>
               </select>
             </div>
           </div>

@@ -2,7 +2,7 @@
 
 -- Case comments
 CREATE TABLE IF NOT EXISTS case_comments (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     case_id BIGINT NOT NULL,
     author_id BIGINT,
@@ -17,7 +17,7 @@ CREATE INDEX IF NOT EXISTS idx_case_comments_case ON case_comments(case_id);
 
 -- Case attachments
 CREATE TABLE IF NOT EXISTS case_attachments (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     case_id BIGINT NOT NULL,
     file_name VARCHAR(255) NOT NULL,
@@ -33,7 +33,7 @@ CREATE INDEX IF NOT EXISTS idx_case_attachments_case ON case_attachments(case_id
 
 -- Live chat sessions
 CREATE TABLE IF NOT EXISTS live_chat_sessions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     client_id BIGINT,
     contact_id BIGINT,
@@ -60,7 +60,7 @@ CREATE INDEX IF NOT EXISTS idx_chat_sessions_agent ON live_chat_sessions(assigne
 
 -- Chat messages
 CREATE TABLE IF NOT EXISTS chat_messages (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     session_id BIGINT NOT NULL,
     sender_type VARCHAR(20) NOT NULL,

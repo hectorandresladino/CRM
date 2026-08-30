@@ -12,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface WebhookRepository extends JpaRepository<Webhook, Long> {
+    List<Webhook> findByTenantId(Long tenantId);
     List<Webhook> findByTenantIdAndEsActivo(Long tenantId, Boolean esActivo);
     List<Webhook> findByTenantIdAndEvento(Long tenantId, String evento);
 }

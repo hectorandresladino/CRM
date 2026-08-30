@@ -45,20 +45,16 @@ public class PortalConfig {
     @Column(name = "logo_url")
     private String logoUrl;
 
-    @Column(name = "header_html")
-    @Lob
+    @Column(name = "header_html", columnDefinition = "TEXT")
     private String headerHtml;
 
-    @Column(name = "footer_html")
-    @Lob
+    @Column(name = "footer_html", columnDefinition = "TEXT")
     private String footerHtml;
 
-    @Column(name = "visible_objects")
-    @Lob
+    @Column(name = "visible_objects", columnDefinition = "TEXT")
     private String visibleObjects;
 
-    @Column(name = "self_service_actions")
-    @Lob
+    @Column(name = "self_service_actions", columnDefinition = "TEXT")
     private String selfServiceActions;
 
     @Column(name = "require_login")

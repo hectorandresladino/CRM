@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     accessToken: localStorage.getItem('accessToken'),
     refreshToken: localStorage.getItem('refreshToken'),
     role: localStorage.getItem('role'),
-    tenantId: localStorage.getItem('tenantId') ? Number(localStorage.getItem('tenantId')) : null,
+    tenantId: parseTenantId(localStorage.getItem('tenantId')),
     username: localStorage.getItem('username'),
   });
 
@@ -34,7 +34,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
     localStorage.setItem('role', role);
-    localStorage.setItem('tenantId', String(tenantId));
+    if (tenantId == null) localStorage.removeItem('tenantId');
+    else localStorage.setItem('tenantId', String(tenantId));
     localStorage.setItem('username', username);
     setAuthState({ accessToken, refreshToken, role, tenantId, username });
   };
@@ -64,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         accessToken: token,
         refreshToken: localStorage.getItem('refreshToken'),
         role: localStorage.getItem('role'),
-        tenantId: localStorage.getItem('tenantId') ? Number(localStorage.getItem('tenantId')) : null,
+        tenantId: parseTenantId(localStorage.getItem('tenantId')),
         username: localStorage.getItem('username'),
       }));
     }
@@ -77,6 +78,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+function parseTenantId(value: string | null): number | null {
+  if (!value) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+// The hook intentionally shares the provider's context in this module.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

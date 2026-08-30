@@ -2,7 +2,7 @@
 
 -- Sales Cloud
 CREATE TABLE IF NOT EXISTS sales_forecasts (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     territory_id BIGINT,
@@ -24,7 +24,7 @@ CREATE INDEX IF NOT EXISTS idx_forecast_tenant ON sales_forecasts(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_forecast_period ON sales_forecasts(tenant_id, period_year);
 
 CREATE TABLE IF NOT EXISTS territories (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     parent_id BIGINT,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS territories (
 CREATE INDEX IF NOT EXISTS idx_territory_tenant ON territories(tenant_id);
 
 CREATE TABLE IF NOT EXISTS account_teams (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     account_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS account_teams (
 CREATE INDEX IF NOT EXISTS idx_account_team ON account_teams(tenant_id, account_id);
 
 CREATE TABLE IF NOT EXISTS opportunity_splits (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     opportunity_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS opportunity_splits (
 CREATE INDEX IF NOT EXISTS idx_opp_split ON opportunity_splits(tenant_id, opportunity_id);
 
 CREATE TABLE IF NOT EXISTS commissions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     sale_id BIGINT,
@@ -85,7 +85,7 @@ CREATE INDEX IF NOT EXISTS idx_commission_tenant ON commissions(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_commission_period ON commissions(tenant_id, period_year, period_month);
 
 CREATE TABLE IF NOT EXISTS sales_sequences (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     description TEXT,
@@ -94,15 +94,15 @@ CREATE TABLE IF NOT EXISTS sales_sequences (
     duration_days INT,
     is_active BOOLEAN DEFAULT true,
     enrolled_count INT DEFAULT 0,
-    reply_rate DOUBLE,
-    meeting_rate DOUBLE,
+    reply_rate DOUBLE PRECISION,
+    meeting_rate DOUBLE PRECISION,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_sequence_tenant ON sales_sequences(tenant_id);
 
 -- Service Cloud
 CREATE TABLE IF NOT EXISTS knowledge_articles (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     title VARCHAR(500) NOT NULL,
     content TEXT NOT NULL,
@@ -125,7 +125,7 @@ CREATE INDEX IF NOT EXISTS idx_knowledge_tenant ON knowledge_articles(tenant_id)
 CREATE INDEX IF NOT EXISTS idx_knowledge_status ON knowledge_articles(tenant_id, status);
 
 CREATE TABLE IF NOT EXISTS entitlements (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     client_id BIGINT NOT NULL,
     contract_id BIGINT,
@@ -143,7 +143,7 @@ CREATE INDEX IF NOT EXISTS idx_entitlement_tenant ON entitlements(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_entitlement_client ON entitlements(tenant_id, client_id);
 
 CREATE TABLE IF NOT EXISTS service_milestones (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     entitlement_id BIGINT NOT NULL,
     case_id BIGINT,
@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS service_milestones (
 CREATE INDEX IF NOT EXISTS idx_milestone_tenant ON service_milestones(tenant_id);
 
 CREATE TABLE IF NOT EXISTS field_service_orders (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     client_id BIGINT NOT NULL,
     case_id BIGINT,
@@ -190,7 +190,7 @@ CREATE INDEX IF NOT EXISTS idx_field_service_status ON field_service_orders(tena
 
 -- Revenue Cloud
 CREATE TABLE IF NOT EXISTS subscription_amendments (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     subscription_id BIGINT NOT NULL,
     amendment_type VARCHAR(50) NOT NULL,
@@ -211,7 +211,7 @@ CREATE INDEX IF NOT EXISTS idx_amendment_tenant ON subscription_amendments(tenan
 CREATE INDEX IF NOT EXISTS idx_amendment_sub ON subscription_amendments(tenant_id, subscription_id);
 
 CREATE TABLE IF NOT EXISTS usage_records (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     subscription_id BIGINT NOT NULL,
     metric_name VARCHAR(100) NOT NULL,
@@ -228,7 +228,7 @@ CREATE INDEX IF NOT EXISTS idx_usage_record_tenant ON usage_records(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_usage_record_sub ON usage_records(tenant_id, subscription_id);
 
 CREATE TABLE IF NOT EXISTS dunning_campaigns (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     invoice_id BIGINT NOT NULL,
     client_id BIGINT NOT NULL,
@@ -246,7 +246,7 @@ CREATE INDEX IF NOT EXISTS idx_dunning_invoice ON dunning_campaigns(tenant_id, i
 
 -- Data 360
 CREATE TABLE IF NOT EXISTS customer_events (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     client_id BIGINT,
     prospecto_id BIGINT,
@@ -271,7 +271,7 @@ CREATE INDEX IF NOT EXISTS idx_event_client ON customer_events(tenant_id, client
 CREATE INDEX IF NOT EXISTS idx_event_type ON customer_events(tenant_id, event_type);
 
 CREATE TABLE IF NOT EXISTS unified_profiles (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     profile_uuid VARCHAR(100) NOT NULL UNIQUE,
     client_id BIGINT,
@@ -281,7 +281,7 @@ CREATE TABLE IF NOT EXISTS unified_profiles (
     full_name VARCHAR(200),
     company VARCHAR(200),
     identity_sources VARCHAR(500),
-    match_confidence DOUBLE,
+    match_confidence DOUBLE PRECISION,
     total_events INT DEFAULT 0,
     last_event_at TIMESTAMP,
     lifecycle_stage VARCHAR(50) DEFAULT 'UNKNOWN',
@@ -295,7 +295,7 @@ CREATE INDEX IF NOT EXISTS idx_profile_email ON unified_profiles(tenant_id, prim
 CREATE INDEX IF NOT EXISTS idx_profile_uuid ON unified_profiles(tenant_id, profile_uuid);
 
 CREATE TABLE IF NOT EXISTS customer_segments (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     description TEXT,
@@ -311,7 +311,7 @@ CREATE INDEX IF NOT EXISTS idx_segment_tenant ON customer_segments(tenant_id);
 
 -- Platform
 CREATE TABLE IF NOT EXISTS custom_objects (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     api_name VARCHAR(200) NOT NULL,
@@ -330,7 +330,7 @@ CREATE TABLE IF NOT EXISTS custom_objects (
 CREATE INDEX IF NOT EXISTS idx_custom_obj_tenant ON custom_objects(tenant_id);
 
 CREATE TABLE IF NOT EXISTS validation_rules (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     object_name VARCHAR(200) NOT NULL,
@@ -347,7 +347,7 @@ CREATE INDEX IF NOT EXISTS idx_validation_tenant ON validation_rules(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_validation_obj ON validation_rules(tenant_id, object_name);
 
 CREATE TABLE IF NOT EXISTS approval_processes (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     object_name VARCHAR(200) NOT NULL,
@@ -364,7 +364,7 @@ CREATE INDEX IF NOT EXISTS idx_approval_tenant ON approval_processes(tenant_id);
 
 -- Flow
 CREATE TABLE IF NOT EXISTS flow_definitions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     description TEXT,
@@ -385,14 +385,14 @@ CREATE INDEX IF NOT EXISTS idx_flow_trigger ON flow_definitions(tenant_id, trigg
 
 -- Agentforce
 CREATE TABLE IF NOT EXISTS ai_predictions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     prediction_type VARCHAR(50) NOT NULL,
     target_entity VARCHAR(50),
     target_id BIGINT,
     predicted_value DECIMAL(15,2),
-    probability DOUBLE,
-    confidence_score DOUBLE,
+    probability DOUBLE PRECISION,
+    confidence_score DOUBLE PRECISION,
     model_name VARCHAR(100),
     model_version VARCHAR(50),
     features_used TEXT,
@@ -408,7 +408,7 @@ CREATE INDEX IF NOT EXISTS idx_prediction_type ON ai_predictions(tenant_id, pred
 
 -- Analytics
 CREATE TABLE IF NOT EXISTS analytics_dashboards (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     description TEXT,
@@ -429,7 +429,7 @@ CREATE INDEX IF NOT EXISTS idx_dashboard_tenant ON analytics_dashboards(tenant_i
 
 -- Experience Cloud
 CREATE TABLE IF NOT EXISTS portal_configs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     portal_type VARCHAR(50),
@@ -452,7 +452,7 @@ CREATE INDEX IF NOT EXISTS idx_portal_tenant ON portal_configs(tenant_id);
 
 -- Enterprise Security
 CREATE TABLE IF NOT EXISTS permission_sets (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     description TEXT,
@@ -466,7 +466,7 @@ CREATE TABLE IF NOT EXISTS permission_sets (
 CREATE INDEX IF NOT EXISTS idx_perm_set_tenant ON permission_sets(tenant_id);
 
 CREATE TABLE IF NOT EXISTS sharing_rules (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     object_name VARCHAR(200) NOT NULL,

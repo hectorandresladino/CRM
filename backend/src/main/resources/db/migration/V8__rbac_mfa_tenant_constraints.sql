@@ -8,13 +8,12 @@ ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS mfa_recovery_codes TEXT;
 ALTER TABLE usuarios DROP CONSTRAINT IF EXISTS uk_usuarios_username;
 ALTER TABLE usuarios DROP CONSTRAINT IF EXISTS uk_usuarios_email;
 
--- Add per-tenant unique constraints
-ALTER TABLE usuarios ADD CONSTRAINT IF NOT EXISTS uk_tenant_username UNIQUE (tenant_id, username);
-ALTER TABLE usuarios ADD CONSTRAINT IF NOT EXISTS uk_tenant_email UNIQUE (tenant_id, email);
+-- Tenant-scoped uniqueness is created in V18 after legacy global constraints
+-- are removed. PostgreSQL does not support ADD CONSTRAINT IF NOT EXISTS.
 
 -- RBAC: Role permissions audit
 CREATE TABLE IF NOT EXISTS role_permissions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT,
     role VARCHAR(50) NOT NULL,
     module VARCHAR(50) NOT NULL,
@@ -27,7 +26,7 @@ CREATE INDEX IF NOT EXISTS idx_role_perms_tenant ON role_permissions(tenant_id);
 
 -- MFA audit log
 CREATE TABLE IF NOT EXISTS mfa_audit_log (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT,
     user_id BIGINT NOT NULL,
     action VARCHAR(50) NOT NULL,
@@ -40,7 +39,7 @@ CREATE INDEX IF NOT EXISTS idx_mfa_audit_user ON mfa_audit_log(user_id);
 
 -- Tenant isolation test results
 CREATE TABLE IF NOT EXISTS tenant_isolation_test (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     test_name VARCHAR(200) NOT NULL,
     tenant_a BIGINT,
     tenant_b BIGINT,

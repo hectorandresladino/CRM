@@ -12,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface AccountTeamRepository extends JpaRepository<AccountTeam, Long> {
+    List<AccountTeam> findByTenantId(Long tenantId);
     List<AccountTeam> findByTenantIdAndAccountId(Long tenantId, Long accountId);
     List<AccountTeam> findByTenantIdAndUserId(Long tenantId, Long userId);
 }

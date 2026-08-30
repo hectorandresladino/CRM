@@ -51,8 +51,7 @@ public class CustomObject {
     @Column(name = "enable_search")
     private Boolean enableSearch = true;
 
-    @Column(name = "field_definitions")
-    @Lob
+    @Column(name = "field_definitions", columnDefinition = "TEXT")
     private String fieldDefinitions;
 
     @Column(name = "record_count")

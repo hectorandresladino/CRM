@@ -16,7 +16,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "prospectos")
+@Table(name = "prospectos", uniqueConstraints =
+        @UniqueConstraint(name = "uk_prospectos_tenant_email", columnNames = {"tenant_id", "email"}))
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,7 +39,7 @@ public class Prospecto {
     private String apellido;
     
     @Email(message = "Email invÃ¡lido")
-    @Column(unique = true)
+    @Column
     private String email;
     
     @Column(length = 20)

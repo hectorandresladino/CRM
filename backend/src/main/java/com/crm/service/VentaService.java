@@ -8,6 +8,8 @@ import com.crm.entity.Cliente;
 import com.crm.entity.Venta;
 import com.crm.repository.ClienteRepository;
 import com.crm.repository.VentaRepository;
+import com.crm.security.TenantAccessDeniedException;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,18 +28,20 @@ public class VentaService {
     private final ClienteRepository clienteRepository;
     
     public List<Venta> findAll() {
-        return ventaRepository.findAll();
+        return ventaRepository.findByTenantId(tenantId());
     }
     
     public Optional<Venta> findById(Long id) {
-        return ventaRepository.findById(id);
+        return ventaRepository.findByIdAndTenantId(id, tenantId());
     }
     
     public Venta save(Venta venta) {
-        Cliente cliente = clienteRepository.findById(venta.getCliente().getId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Long tenantId = tenantId();
+        Cliente cliente = clienteRepository.findByIdAndTenantId(venta.getCliente().getId(), tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Cliente"));
         
         venta.setCliente(cliente);
+        venta.setTenantId(tenantId);
         
         if (venta.getTotal() == null) {
             BigDecimal total = venta.getMonto();
@@ -54,11 +58,12 @@ public class VentaService {
     }
     
     public Venta update(Long id, Venta venta) {
-        Venta existingVenta = ventaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+        Long tenantId = tenantId();
+        Venta existingVenta = ventaRepository.findByIdAndTenantId(id, tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Venta"));
         
-        Cliente cliente = clienteRepository.findById(venta.getCliente().getId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Cliente cliente = clienteRepository.findByIdAndTenantId(venta.getCliente().getId(), tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Cliente"));
         
         existingVenta.setCliente(cliente);
         existingVenta.setCodigo(venta.getCodigo());
@@ -89,33 +94,34 @@ public class VentaService {
     }
     
     public void delete(Long id) {
-        if (!ventaRepository.existsById(id)) {
-            throw new RuntimeException("Venta no encontrada");
-        }
-        ventaRepository.deleteById(id);
+        Venta venta = ventaRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Venta"));
+        ventaRepository.delete(venta);
     }
     
     public List<Venta> findByClienteId(Long clienteId) {
-        return ventaRepository.findByClienteId(clienteId);
+        return ventaRepository.findByTenantIdAndClienteId(tenantId(), clienteId);
     }
     
     public List<Venta> findByEstado(Venta.EstadoVenta estado) {
-        return ventaRepository.findByEstado(estado);
+        return ventaRepository.findByTenantIdAndEstado(tenantId(), estado);
     }
     
     public List<Venta> findByVendedor(String vendedor) {
-        return ventaRepository.findByVendedor(vendedor);
+        return ventaRepository.findByTenantIdAndVendedor(tenantId(), vendedor);
     }
     
     public Venta cerrarVenta(Long id) {
-        Venta venta = ventaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+        Venta venta = ventaRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Venta"));
         venta.setEstado(Venta.EstadoVenta.CERRADA);
         venta.setFechaCierre(LocalDateTime.now());
         return ventaRepository.save(venta);
     }
     
     public Double getTotalVentasCerradas() {
-        return ventaRepository.sumTotalVentasCerradas();
+        return ventaRepository.sumTotalVentasCerradasByTenantId(tenantId());
     }
+
+    private Long tenantId() { return TenantContext.requireCurrentTenant(); }
 }

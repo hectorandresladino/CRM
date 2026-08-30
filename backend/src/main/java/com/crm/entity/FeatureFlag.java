@@ -24,7 +24,7 @@ public class FeatureFlag {
     @Column(name = "tenant_id", nullable = false)
     private Long tenantId;
 
-    @Column(nullable = false)
+    @Column(name = "key_name", nullable = false)
     private String key;
 
     @Column(columnDefinition = "TEXT")

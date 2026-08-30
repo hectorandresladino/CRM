@@ -13,9 +13,9 @@ const PLANS = [
     color: 'border-slate-200',
     headerBg: 'bg-slate-50',
     features: [
-      'Hasta 5 usuarios',
-      'Hasta 100 clientes',
-      '1 GB almacenamiento',
+      'Usuarios ilimitados',
+      'Hasta 500 contactos',
+      '2 GB almacenamiento',
       'Pipeline Kanban',
       'GestiÃ³n de prospectos',
       'Cotizaciones y pedidos',
@@ -24,19 +24,19 @@ const PLANS = [
     ],
   },
   {
-    name: 'PROFESSIONAL',
+    name: 'BUSINESS',
     price: 79,
     icon: Zap,
     color: 'border-blue-500 ring-2 ring-blue-500',
     headerBg: 'bg-blue-50',
     popular: true,
     features: [
-      'Hasta 20 usuarios',
-      'Hasta 1.000 clientes',
-      '10 GB almacenamiento',
+      'Usuarios ilimitados',
+      'Hasta 5.000 contactos',
+      '20 GB almacenamiento',
       'Todo lo de Starter +',
-      'WhatsApp Business API',
-      'IA Conversacional',
+      'Bandeja preparada para proveedor oficial de WhatsApp',
+      'Scoring explicable con datos del CRM',
       'Automatizaciones (10)',
       'Reportes avanzados',
       'CPQ - Configure Price Quote',
@@ -53,17 +53,36 @@ const PLANS = [
     headerBg: 'bg-indigo-50',
     features: [
       'Usuarios ilimitados',
-      'Clientes ilimitados',
-      '100 GB almacenamiento',
-      'Todo lo de Professional +',
+      'Hasta 50.000 contactos',
+      '200 GB almacenamiento',
+      'Todo lo de Business +',
       'White label completo',
       'API access + Webhooks',
-      'Automatizaciones ilimitadas',
+      'Flujos configurables y reportes avanzados',
       'SSO (SAML/OAuth)',
       'Portal de clientes',
       'GamificaciÃ³n',
       'SLA 99.9% uptime',
       'Soporte 24/7 + onboarding',
+    ],
+  },
+  {
+    name: 'AGENCY',
+    price: 399,
+    icon: Crown,
+    color: 'border-violet-300',
+    headerBg: 'bg-violet-50',
+    features: [
+      'Usuarios ilimitados',
+      'Hasta 100.000 contactos',
+      'Hasta 50 subcuentas',
+      '500 GB almacenamiento',
+      'Todo lo de Enterprise +',
+      'White label por subcuenta',
+      'Snapshots y plantillas',
+      'Rebilling y límites por cliente',
+      'Panel maestro de agencia',
+      'API y webhooks ampliados',
     ],
   },
 ];
@@ -79,7 +98,7 @@ export default function Pricing() {
           <p className="text-lg text-slate-600">Elige el plan ideal para tu empresa. 14 dÃ­as de prueba gratis, sin tarjeta de crÃ©dito.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
           {PLANS.map((plan) => {
             const Icon = plan.icon;
             return (

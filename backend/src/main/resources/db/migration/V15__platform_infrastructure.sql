@@ -2,7 +2,7 @@
 
 -- Feature flags
 CREATE TABLE IF NOT EXISTS feature_flags (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     key_name VARCHAR(100) NOT NULL,
     description TEXT,
@@ -17,10 +17,10 @@ CREATE INDEX IF NOT EXISTS idx_feature_flags_tenant ON feature_flags(tenant_id);
 
 -- System settings
 CREATE TABLE IF NOT EXISTS system_settings (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     key_name VARCHAR(100) NOT NULL,
-    value TEXT NOT NULL,
+    "value" TEXT NOT NULL,
     description TEXT,
     data_type VARCHAR(20),
     is_public BOOLEAN DEFAULT FALSE,
@@ -33,7 +33,7 @@ CREATE INDEX IF NOT EXISTS idx_settings_tenant ON system_settings(tenant_id);
 
 -- Rate limit configs
 CREATE TABLE IF NOT EXISTS rate_limit_configs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     endpoint VARCHAR(255) NOT NULL,
     requests_per_minute INT DEFAULT 100,
@@ -53,7 +53,7 @@ CREATE INDEX IF NOT EXISTS idx_rate_limits_endpoint ON rate_limit_configs(endpoi
 
 -- File storage records
 CREATE TABLE IF NOT EXISTS file_storage_records (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     file_name VARCHAR(255) NOT NULL,
     file_path VARCHAR(500),
@@ -75,7 +75,7 @@ CREATE INDEX IF NOT EXISTS idx_file_storage_entity ON file_storage_records(entit
 
 -- Backup records
 CREATE TABLE IF NOT EXISTS backup_records (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     type VARCHAR(20) NOT NULL,

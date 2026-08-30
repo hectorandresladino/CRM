@@ -33,12 +33,10 @@ public class ApprovalProcess {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "entry_criteria")
-    @Lob
+    @Column(name = "entry_criteria", columnDefinition = "TEXT")
     private String entryCriteria;
 
-    @Column(name = "approval_steps")
-    @Lob
+    @Column(name = "approval_steps", columnDefinition = "TEXT")
     private String approvalSteps;
 
     @Column(name = "is_active")

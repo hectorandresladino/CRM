@@ -8,6 +8,8 @@ import com.crm.entity.Cliente;
 import com.crm.entity.Pedido;
 import com.crm.repository.ClienteRepository;
 import com.crm.repository.PedidoRepository;
+import com.crm.security.TenantAccessDeniedException;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,18 +29,20 @@ public class PedidoService {
     private final ClienteRepository clienteRepository;
     
     public List<Pedido> findAll() {
-        return pedidoRepository.findAll();
+        return pedidoRepository.findByTenantId(tenantId());
     }
     
     public Optional<Pedido> findById(Long id) {
-        return pedidoRepository.findById(id);
+        return pedidoRepository.findByIdAndTenantId(id, tenantId());
     }
     
     public Pedido save(Pedido pedido) {
-        Cliente cliente = clienteRepository.findById(pedido.getCliente().getId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Long tenantId = tenantId();
+        Cliente cliente = clienteRepository.findByIdAndTenantId(pedido.getCliente().getId(), tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Cliente"));
         
         pedido.setCliente(cliente);
+        pedido.setTenantId(tenantId);
         
         if (pedido.getTotal() == null) {
             BigDecimal total = pedido.getSubtotal();
@@ -62,11 +66,12 @@ public class PedidoService {
     }
     
     public Pedido update(Long id, Pedido pedido) {
-        Pedido existingPedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+        Long tenantId = tenantId();
+        Pedido existingPedido = pedidoRepository.findByIdAndTenantId(id, tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Pedido"));
         
-        Cliente cliente = clienteRepository.findById(pedido.getCliente().getId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Cliente cliente = clienteRepository.findByIdAndTenantId(pedido.getCliente().getId(), tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Cliente"));
         
         existingPedido.setCliente(cliente);
         existingPedido.setCodigo(pedido.getCodigo());
@@ -103,49 +108,50 @@ public class PedidoService {
     }
     
     public void delete(Long id) {
-        if (!pedidoRepository.existsById(id)) {
-            throw new RuntimeException("Pedido no encontrado");
-        }
-        pedidoRepository.deleteById(id);
+        Pedido pedido = pedidoRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Pedido"));
+        pedidoRepository.delete(pedido);
     }
     
     public List<Pedido> findByClienteId(Long clienteId) {
-        return pedidoRepository.findByClienteId(clienteId);
+        return pedidoRepository.findByTenantIdAndClienteId(tenantId(), clienteId);
     }
     
     public List<Pedido> findByEstado(Pedido.EstadoPedido estado) {
-        return pedidoRepository.findByEstado(estado);
+        return pedidoRepository.findByTenantIdAndEstado(tenantId(), estado);
     }
     
     public List<Pedido> findByVendedor(String vendedor) {
-        return pedidoRepository.findByVendedor(vendedor);
+        return pedidoRepository.findByTenantIdAndVendedor(tenantId(), vendedor);
     }
     
     public Pedido procesarPedido(Long id) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+        Pedido pedido = pedidoRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Pedido"));
         pedido.setEstado(Pedido.EstadoPedido.PROCESANDO);
         pedido.setFechaProcesamiento(LocalDateTime.now());
         return pedidoRepository.save(pedido);
     }
     
     public Pedido enviarPedido(Long id) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+        Pedido pedido = pedidoRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Pedido"));
         pedido.setEstado(Pedido.EstadoPedido.ENVIADO);
         pedido.setFechaEnvio(LocalDateTime.now());
         return pedidoRepository.save(pedido);
     }
     
     public Pedido entregarPedido(Long id) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+        Pedido pedido = pedidoRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Pedido"));
         pedido.setEstado(Pedido.EstadoPedido.ENTREGADO);
         pedido.setFechaEntregaReal(LocalDate.now());
         return pedidoRepository.save(pedido);
     }
     
     public List<Pedido> findPedidosAtrasados() {
-        return pedidoRepository.findPedidosAtrasados(LocalDate.now());
+        return pedidoRepository.findPedidosAtrasadosByTenantId(tenantId(), LocalDate.now());
     }
+
+    private Long tenantId() { return TenantContext.requireCurrentTenant(); }
 }

@@ -2,7 +2,7 @@
 
 -- Report definitions
 CREATE TABLE IF NOT EXISTS report_definitions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -31,7 +31,7 @@ CREATE INDEX IF NOT EXISTS idx_reports_owner ON report_definitions(owner_id);
 
 -- Report executions
 CREATE TABLE IF NOT EXISTS report_executions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     report_id BIGINT NOT NULL,
     report_name VARCHAR(255),
@@ -53,7 +53,7 @@ CREATE INDEX IF NOT EXISTS idx_executions_report ON report_executions(report_id)
 
 -- KPI definitions
 CREATE TABLE IF NOT EXISTS kpi_definitions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -73,17 +73,17 @@ CREATE INDEX IF NOT EXISTS idx_kpis_tenant ON kpi_definitions(tenant_id);
 
 -- KPI snapshots
 CREATE TABLE IF NOT EXISTS kpi_snapshots (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     kpi_id BIGINT NOT NULL,
     actual_value DECIMAL(15,2),
     target_value DECIMAL(15,2),
-    attainment_percentage DOUBLE,
+    attainment_percentage DOUBLE PRECISION,
     period_start TIMESTAMP,
     period_end TIMESTAMP,
     trend VARCHAR(10),
     previous_value DECIMAL(15,2),
-    change_percentage DOUBLE,
+    change_percentage DOUBLE PRECISION,
     status VARCHAR(20),
     snapshot_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -92,7 +92,7 @@ CREATE INDEX IF NOT EXISTS idx_kpi_snapshots_kpi ON kpi_snapshots(kpi_id);
 
 -- Data exports
 CREATE TABLE IF NOT EXISTS data_exports (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     entity_type VARCHAR(50),

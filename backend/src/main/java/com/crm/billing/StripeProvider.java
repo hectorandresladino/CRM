@@ -27,26 +27,28 @@ public class StripeProvider implements PaymentProvider {
     @Override
     public PaymentResult charge(PaymentRequest request) {
         if (!isConfigured()) {
-            log.warn("Stripe not configured - simulating charge");
-            return new PaymentResult(true, "sim_stripe_" + System.currentTimeMillis(), null, "SIMULATED");
+            return unavailable("Stripe no está configurado");
         }
-        log.info("Stripe charge: {} {} for customer {}", request.amount(), request.currency(), request.customerId());
-        return new PaymentResult(true, "stripe_" + System.currentTimeMillis(), null, "OK");
+        return unavailable("La conexión real con Stripe aún no está implementada");
     }
 
     @Override
     public PaymentResult refund(String transactionId, BigDecimal amount) {
-        log.info("Stripe refund: {} for tx {}", amount, transactionId);
-        return new PaymentResult(true, "refund_" + transactionId, null, "OK");
+        return unavailable("Los reembolsos reales de Stripe aún no están implementados");
     }
 
     @Override
     public PaymentResult retrieve(String transactionId) {
-        return new PaymentResult(true, transactionId, null, "RETRIEVED");
+        return unavailable("La consulta real de Stripe aún no está implementada");
     }
 
     @Override
     public boolean isConfigured() {
-        return apiKey != null && !apiKey.isBlank();
+        return false;
+    }
+
+    private PaymentResult unavailable(String message) {
+        log.error(message);
+        return new PaymentResult(false, null, message, "NOT_IMPLEMENTED");
     }
 }

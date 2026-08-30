@@ -49,12 +49,10 @@ public class AIPrediction {
     @Column(name = "model_version")
     private String modelVersion;
 
-    @Column(name = "features_used")
-    @Lob
+    @Column(name = "features_used", columnDefinition = "TEXT")
     private String featuresUsed;
 
-    @Column(name = "explanation")
-    @Lob
+    @Column(name = "explanation", columnDefinition = "TEXT")
     private String explanation;
 
     @Column(name = "recommended_action")

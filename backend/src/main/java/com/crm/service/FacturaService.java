@@ -6,6 +6,8 @@ package com.crm.service;
 
 import com.crm.entity.Factura;
 import com.crm.repository.FacturaRepository;
+import com.crm.security.TenantAccessDeniedException;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,14 +25,15 @@ public class FacturaService {
     private final FacturaRepository facturaRepository;
     
     public List<Factura> findAll() {
-        return facturaRepository.findAll();
+        return facturaRepository.findByTenantId(tenantId());
     }
     
     public Optional<Factura> findById(Long id) {
-        return facturaRepository.findById(id);
+        return facturaRepository.findByIdAndTenantId(id, tenantId());
     }
     
     public Factura save(Factura factura) {
+        factura.setTenantId(tenantId());
         if (factura.getTotal() == null && factura.getSubtotal() != null) {
             BigDecimal total = factura.getSubtotal();
             if (factura.getImpuesto() != null) {
@@ -42,23 +45,30 @@ public class FacturaService {
     }
     
     public Factura update(Long id, Factura factura) {
-        factura.setId(id);
+        Factura existing = facturaRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Factura"));
+        factura.setId(existing.getId());
+        factura.setTenantId(existing.getTenantId());
         return facturaRepository.save(factura);
     }
     
     public void delete(Long id) {
-        facturaRepository.deleteById(id);
+        Factura factura = facturaRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Factura"));
+        facturaRepository.delete(factura);
     }
     
     public List<Factura> findByClienteId(Long clienteId) {
-        return facturaRepository.findByClienteId(clienteId);
+        return facturaRepository.findByTenantIdAndClienteId(tenantId(), clienteId);
     }
     
     public List<Factura> findByEstado(String estado) {
-        return facturaRepository.findByEstado(estado);
+        return facturaRepository.findByTenantIdAndEstado(tenantId(), estado);
     }
     
     public List<Factura> findVencidas() {
-        return facturaRepository.findByFechaVencimientoBefore(LocalDate.now());
+        return facturaRepository.findByTenantIdAndFechaVencimientoBefore(tenantId(), LocalDate.now());
     }
+
+    private Long tenantId() { return TenantContext.requireCurrentTenant(); }
 }

@@ -14,6 +14,7 @@ import java.util.List;
 @Repository
 public interface EncuestaSatisfaccionRepository extends JpaRepository<EncuestaSatisfaccion, Long> {
     
+    List<EncuestaSatisfaccion> findByTenantId(Long tenantId);
     List<EncuestaSatisfaccion> findByEstado(String estado);
     List<EncuestaSatisfaccion> findByTipo(String tipo);
     List<EncuestaSatisfaccion> findByClienteId(Long clienteId);

@@ -8,6 +8,8 @@ import com.crm.entity.Cliente;
 import com.crm.entity.ServicioCliente;
 import com.crm.repository.ClienteRepository;
 import com.crm.repository.ServicioClienteRepository;
+import com.crm.security.TenantAccessDeniedException;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,27 +27,30 @@ public class ServicioClienteService {
     private final ClienteRepository clienteRepository;
     
     public List<ServicioCliente> findAll() {
-        return servicioClienteRepository.findAll();
+        return servicioClienteRepository.findByTenantId(tenantId());
     }
     
     public Optional<ServicioCliente> findById(Long id) {
-        return servicioClienteRepository.findById(id);
+        return servicioClienteRepository.findByIdAndTenantId(id, tenantId());
     }
     
     public ServicioCliente save(ServicioCliente servicio) {
-        Cliente cliente = clienteRepository.findById(servicio.getCliente().getId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Long tenantId = tenantId();
+        Cliente cliente = clienteRepository.findByIdAndTenantId(servicio.getCliente().getId(), tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Cliente"));
         
         servicio.setCliente(cliente);
+        servicio.setTenantId(tenantId);
         return servicioClienteRepository.save(servicio);
     }
     
     public ServicioCliente update(Long id, ServicioCliente servicio) {
-        ServicioCliente existingServicio = servicioClienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Servicio no encontrado"));
+        Long tenantId = tenantId();
+        ServicioCliente existingServicio = servicioClienteRepository.findByIdAndTenantId(id, tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Servicio"));
         
-        Cliente cliente = clienteRepository.findById(servicio.getCliente().getId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Cliente cliente = clienteRepository.findByIdAndTenantId(servicio.getCliente().getId(), tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Cliente"));
         
         existingServicio.setCliente(cliente);
         existingServicio.setCodigo(servicio.getCodigo());
@@ -67,35 +72,34 @@ public class ServicioClienteService {
     }
     
     public void delete(Long id) {
-        if (!servicioClienteRepository.existsById(id)) {
-            throw new RuntimeException("Servicio no encontrado");
-        }
-        servicioClienteRepository.deleteById(id);
+        ServicioCliente servicio = servicioClienteRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Servicio"));
+        servicioClienteRepository.delete(servicio);
     }
     
     public List<ServicioCliente> findByClienteId(Long clienteId) {
-        return servicioClienteRepository.findByClienteId(clienteId);
+        return servicioClienteRepository.findByTenantIdAndClienteId(tenantId(), clienteId);
     }
     
     public List<ServicioCliente> findByEstado(ServicioCliente.EstadoServicio estado) {
-        return servicioClienteRepository.findByEstado(estado);
+        return servicioClienteRepository.findByTenantIdAndEstado(tenantId(), estado);
     }
     
     public List<ServicioCliente> findByTipo(ServicioCliente.TipoPQRS tipo) {
-        return servicioClienteRepository.findByTipo(tipo);
+        return servicioClienteRepository.findByTenantIdAndTipo(tenantId(), tipo);
     }
     
     public List<ServicioCliente> findByPrioridad(ServicioCliente.PrioridadPQRS prioridad) {
-        return servicioClienteRepository.findByPrioridad(prioridad);
+        return servicioClienteRepository.findByTenantIdAndPrioridad(tenantId(), prioridad);
     }
     
     public List<ServicioCliente> findByAsignadoA(String asignadoA) {
-        return servicioClienteRepository.findByAsignadoA(asignadoA);
+        return servicioClienteRepository.findByTenantIdAndAsignadoA(tenantId(), asignadoA);
     }
     
     public ServicioCliente asignarServicio(Long id, String asignadoA) {
-        ServicioCliente servicio = servicioClienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Servicio no encontrado"));
+        ServicioCliente servicio = servicioClienteRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Servicio"));
         servicio.setAsignadoA(asignadoA);
         servicio.setEstado(ServicioCliente.EstadoServicio.ASIGNADO);
         servicio.setFechaAsignacion(LocalDateTime.now());
@@ -103,8 +107,8 @@ public class ServicioClienteService {
     }
     
     public ServicioCliente resolverServicio(Long id, String resolucion) {
-        ServicioCliente servicio = servicioClienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Servicio no encontrado"));
+        ServicioCliente servicio = servicioClienteRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Servicio"));
         servicio.setResolucion(resolucion);
         servicio.setEstado(ServicioCliente.EstadoServicio.RESUELTO);
         servicio.setFechaCierre(LocalDateTime.now());
@@ -112,14 +116,17 @@ public class ServicioClienteService {
     }
     
     public ServicioCliente cerrarServicio(Long id) {
-        ServicioCliente servicio = servicioClienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Servicio no encontrado"));
+        ServicioCliente servicio = servicioClienteRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Servicio"));
         servicio.setEstado(ServicioCliente.EstadoServicio.CERRADO);
         servicio.setFechaCierre(LocalDateTime.now());
         return servicioClienteRepository.save(servicio);
     }
     
     public List<ServicioCliente> findUrgentesAbiertos() {
-        return servicioClienteRepository.findUrgentesAbiertos(ServicioCliente.PrioridadPQRS.URGENTE);
+        return servicioClienteRepository.findUrgentesAbiertosByTenantId(
+                tenantId(), ServicioCliente.PrioridadPQRS.URGENTE);
     }
+
+    private Long tenantId() { return TenantContext.requireCurrentTenant(); }
 }

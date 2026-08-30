@@ -8,6 +8,8 @@ import com.crm.entity.Cliente;
 import com.crm.entity.Cotizacion;
 import com.crm.repository.ClienteRepository;
 import com.crm.repository.CotizacionRepository;
+import com.crm.security.TenantAccessDeniedException;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,18 +29,20 @@ public class CotizacionService {
     private final ClienteRepository clienteRepository;
     
     public List<Cotizacion> findAll() {
-        return cotizacionRepository.findAll();
+        return cotizacionRepository.findByTenantId(tenantId());
     }
     
     public Optional<Cotizacion> findById(Long id) {
-        return cotizacionRepository.findById(id);
+        return cotizacionRepository.findByIdAndTenantId(id, tenantId());
     }
     
     public Cotizacion save(Cotizacion cotizacion) {
-        Cliente cliente = clienteRepository.findById(cotizacion.getCliente().getId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Long tenantId = tenantId();
+        Cliente cliente = clienteRepository.findByIdAndTenantId(cotizacion.getCliente().getId(), tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Cliente"));
         
         cotizacion.setCliente(cliente);
+        cotizacion.setTenantId(tenantId);
         
         if (cotizacion.getTotal() == null) {
             BigDecimal total = cotizacion.getSubtotal();
@@ -59,11 +63,12 @@ public class CotizacionService {
     }
     
     public Cotizacion update(Long id, Cotizacion cotizacion) {
-        Cotizacion existingCotizacion = cotizacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CotizaciÃ³n no encontrada"));
+        Long tenantId = tenantId();
+        Cotizacion existingCotizacion = cotizacionRepository.findByIdAndTenantId(id, tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("CotizaciÃ³n"));
         
-        Cliente cliente = clienteRepository.findById(cotizacion.getCliente().getId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Cliente cliente = clienteRepository.findByIdAndTenantId(cotizacion.getCliente().getId(), tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Cliente"));
         
         existingCotizacion.setCliente(cliente);
         existingCotizacion.setCodigo(cotizacion.getCodigo());
@@ -91,41 +96,42 @@ public class CotizacionService {
     }
     
     public void delete(Long id) {
-        if (!cotizacionRepository.existsById(id)) {
-            throw new RuntimeException("CotizaciÃ³n no encontrada");
-        }
-        cotizacionRepository.deleteById(id);
+        Cotizacion cotizacion = cotizacionRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("CotizaciÃ³n"));
+        cotizacionRepository.delete(cotizacion);
     }
     
     public List<Cotizacion> findByClienteId(Long clienteId) {
-        return cotizacionRepository.findByClienteId(clienteId);
+        return cotizacionRepository.findByTenantIdAndClienteId(tenantId(), clienteId);
     }
     
     public List<Cotizacion> findByEstado(Cotizacion.EstadoCotizacion estado) {
-        return cotizacionRepository.findByEstado(estado);
+        return cotizacionRepository.findByTenantIdAndEstado(tenantId(), estado);
     }
     
     public List<Cotizacion> findByVendedor(String vendedor) {
-        return cotizacionRepository.findByVendedor(vendedor);
+        return cotizacionRepository.findByTenantIdAndVendedor(tenantId(), vendedor);
     }
     
     public Cotizacion enviarCotizacion(Long id) {
-        Cotizacion cotizacion = cotizacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CotizaciÃ³n no encontrada"));
+        Cotizacion cotizacion = cotizacionRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("CotizaciÃ³n"));
         cotizacion.setEstado(Cotizacion.EstadoCotizacion.ENVIADA);
         cotizacion.setFechaEnvio(LocalDateTime.now());
         return cotizacionRepository.save(cotizacion);
     }
     
     public Cotizacion aprobarCotizacion(Long id) {
-        Cotizacion cotizacion = cotizacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CotizaciÃ³n no encontrada"));
+        Cotizacion cotizacion = cotizacionRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("CotizaciÃ³n"));
         cotizacion.setEstado(Cotizacion.EstadoCotizacion.APROBADA);
         cotizacion.setFechaAprobacion(LocalDateTime.now());
         return cotizacionRepository.save(cotizacion);
     }
     
     public List<Cotizacion> findExpiredCotizaciones() {
-        return cotizacionRepository.findExpiredCotizaciones(LocalDate.now());
+        return cotizacionRepository.findExpiredCotizacionesByTenantId(tenantId(), LocalDate.now());
     }
+
+    private Long tenantId() { return TenantContext.requireCurrentTenant(); }
 }

@@ -128,7 +128,7 @@ public class AnalyticsReportingService {
             Map<String, Object> row = new LinkedHashMap<>();
             row.put("id", v.getId());
             row.put("cliente", v.getCliente() != null ? v.getCliente().getNombre() + " " + v.getCliente().getApellido() : "");
-            row.put("fecha", v.getFechaVenta());
+            row.put("fecha", v.getFechaCreacion());
             row.put("total", v.getTotal());
             row.put("estado", v.getEstado());
             data.add(row);
@@ -158,7 +158,7 @@ public class AnalyticsReportingService {
             Map<String, Object> row = new LinkedHashMap<>();
             row.put("id", c.getId());
             row.put("cliente", c.getCliente() != null ? c.getCliente().getNombre() : "");
-            row.put("fecha", c.getFecha());
+            row.put("fecha", c.getFechaCreacion());
             row.put("total", c.getTotal());
             row.put("estado", c.getEstado());
             data.add(row);
@@ -173,7 +173,7 @@ public class AnalyticsReportingService {
             Map<String, Object> row = new LinkedHashMap<>();
             row.put("id", p.getId());
             row.put("cliente", p.getCliente() != null ? p.getCliente().getNombre() : "");
-            row.put("fecha", p.getFecha());
+            row.put("fecha", p.getFechaCreacion());
             row.put("total", p.getTotal());
             row.put("estado", p.getEstado());
             data.add(row);
@@ -395,15 +395,15 @@ public class AnalyticsReportingService {
 
         Map<String, Long> byStatus = new LinkedHashMap<>();
         for (Venta v : ventas) {
-            String status = v.getEstado() != null ? v.getEstado() : "UNKNOWN";
+            String status = v.getEstado() != null ? v.getEstado().name() : "UNKNOWN";
             byStatus.merge(status, 1L, Long::sum);
         }
         analytics.put("salesByStatus", byStatus);
 
         Map<String, BigDecimal> revenueByMonth = new LinkedHashMap<>();
         for (Venta v : ventas) {
-            if (v.getFechaVenta() != null) {
-                String monthKey = v.getFechaVenta().getYear() + "-" + String.format("%02d", v.getFechaVenta().getMonthValue());
+            if (v.getFechaCreacion() != null) {
+                String monthKey = v.getFechaCreacion().getYear() + "-" + String.format("%02d", v.getFechaCreacion().getMonthValue());
                 BigDecimal amount = v.getTotal() != null ? v.getTotal() : BigDecimal.ZERO;
                 revenueByMonth.merge(monthKey, amount, BigDecimal::add);
             }
@@ -459,12 +459,12 @@ public class AnalyticsReportingService {
         metrics.put("openCases", servicioRepo.findByTenantId(t).stream()
                 .filter(c -> c.getEstado() == ServicioCliente.EstadoServicio.ABIERTO).count());
         metrics.put("pendingQuotes", cotizacionRepo.findByTenantId(t).stream()
-                .filter(c -> "PENDIENTE".equalsIgnoreCase(c.getEstado())).count());
+                .filter(c -> c.getEstado() != null && "BORRADOR".equalsIgnoreCase(c.getEstado().name())).count());
         metrics.put("pendingOrders", pedidoRepo.findByTenantId(t).stream()
-                .filter(p -> "PENDIENTE".equalsIgnoreCase(p.getEstado())).count());
+                .filter(p -> p.getEstado() != null && "PENDIENTE".equalsIgnoreCase(p.getEstado().name())).count());
 
         List<Venta> todaySales = ventaRepo.findByTenantId(t).stream()
-                .filter(v -> v.getFechaVenta() != null && v.getFechaVenta().toLocalDate().equals(LocalDateTime.now().toLocalDate()))
+                .filter(v -> v.getFechaCreacion() != null && v.getFechaCreacion().toLocalDate().equals(LocalDateTime.now().toLocalDate()))
                 .toList();
         metrics.put("todaySalesCount", todaySales.size());
         metrics.put("todayRevenue", todaySales.stream()

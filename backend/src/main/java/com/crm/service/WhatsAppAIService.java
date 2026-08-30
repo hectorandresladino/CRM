@@ -233,7 +233,7 @@ public class WhatsAppAIService {
             case "GREETING":
                 return config.getWelcomeMessage();
             case "PRICING_INQUIRY":
-                return "Nuestros planes empiezan desde $29/mes (Starter), $79/mes (Professional) y $199/mes (Enterprise). Â¿Te gustarÃ­a que te envÃ­e mÃ¡s detalles o agendemos una demo?";
+                return "Nuestros planes empiezan desde $29/mes (Starter), $79/mes (Business), $199/mes (Enterprise) y $399/mes (Agency), todos con usuarios internos ilimitados. ¿Te gustaría recibir más detalles o agendar una demo?";
             case "INFO_REQUEST":
                 return "Con gusto te comparto mÃ¡s informaciÃ³n. Nuestro CRM incluye gestiÃ³n de clientes, ventas, marketing, WhatsApp Business, reportes y mÃ¡s. Â¿QuÃ© funcionalidad te interesa mÃ¡s?";
             case "DEMO_REQUEST":

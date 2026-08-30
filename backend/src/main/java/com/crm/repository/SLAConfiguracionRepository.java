@@ -12,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface SLAConfiguracionRepository extends JpaRepository<SLAConfiguracion, Long> {
+    List<SLAConfiguracion> findByTenantId(Long tenantId);
     List<SLAConfiguracion> findByTenantIdAndActivo(Long tenantId, Boolean activo);
     List<SLAConfiguracion> findByTenantIdAndPrioridad(Long tenantId, String prioridad);
 }

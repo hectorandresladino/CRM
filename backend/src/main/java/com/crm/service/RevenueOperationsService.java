@@ -22,7 +22,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class RevenueCloudService {
+public class RevenueOperationsService {
 
     private final SubscriptionRepository subscriptionRepo;
     private final SubscriptionAmendmentRepository amendmentRepo;

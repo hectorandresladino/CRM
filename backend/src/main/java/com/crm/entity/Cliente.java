@@ -18,7 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "clientes")
+@Table(name = "clientes", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_clientes_tenant_email", columnNames = {"tenant_id", "email"}),
+        @UniqueConstraint(name = "uk_clientes_tenant_identificacion", columnNames = {"tenant_id", "identificacion"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,7 +43,7 @@ public class Cliente {
     private String apellido;
     
     @Email(message = "Email invÃ¡lido")
-    @Column(unique = true)
+    @Column
     private String email;
     
     @Column(length = 20)

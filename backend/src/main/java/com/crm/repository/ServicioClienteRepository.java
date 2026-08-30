@@ -12,11 +12,19 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ServicioClienteRepository extends JpaRepository<ServicioCliente, Long> {
     
     List<ServicioCliente> findByClienteId(Long clienteId);
+    List<ServicioCliente> findByTenantId(Long tenantId);
+    Optional<ServicioCliente> findByIdAndTenantId(Long id, Long tenantId);
+    List<ServicioCliente> findByTenantIdAndClienteId(Long tenantId, Long clienteId);
+    List<ServicioCliente> findByTenantIdAndEstado(Long tenantId, ServicioCliente.EstadoServicio estado);
+    List<ServicioCliente> findByTenantIdAndTipo(Long tenantId, ServicioCliente.TipoPQRS tipo);
+    List<ServicioCliente> findByTenantIdAndPrioridad(Long tenantId, ServicioCliente.PrioridadPQRS prioridad);
+    List<ServicioCliente> findByTenantIdAndAsignadoA(Long tenantId, String asignadoA);
     
     List<ServicioCliente> findByEstado(ServicioCliente.EstadoServicio estado);
     
@@ -32,6 +40,10 @@ public interface ServicioClienteRepository extends JpaRepository<ServicioCliente
     
     @Query("SELECT s FROM ServicioCliente s WHERE s.prioridad = :prioridad AND s.estado NOT IN ('RESUELTO', 'CERRADO')")
     List<ServicioCliente> findUrgentesAbiertos(@Param("prioridad") ServicioCliente.PrioridadPQRS prioridad);
+
+    @Query("SELECT s FROM ServicioCliente s WHERE s.tenantId = :tenantId AND s.prioridad = :prioridad AND s.estado NOT IN ('RESUELTO', 'CERRADO')")
+    List<ServicioCliente> findUrgentesAbiertosByTenantId(@Param("tenantId") Long tenantId,
+            @Param("prioridad") ServicioCliente.PrioridadPQRS prioridad);
     
     @Query("SELECT COUNT(s) FROM ServicioCliente s WHERE s.estado = :estado")
     Long countByEstado(@Param("estado") ServicioCliente.EstadoServicio estado);

@@ -30,7 +30,9 @@ public class AuthV1Controller {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            AuthService.AuthResponse response = authService.login(loginRequest.getUsername(), loginRequest.getPassword());
+            AuthService.AuthResponse response = authService.login(
+                    loginRequest.getUsername(), loginRequest.getPassword(), loginRequest.getTenantSlug(),
+                    loginRequest.getMfaCode());
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -58,7 +60,7 @@ public class AuthV1Controller {
     @PostMapping("/password-reset/request")
     public ResponseEntity<?> requestPasswordReset(@RequestBody EmailRequest request) {
         try {
-            authService.requestPasswordReset(request.getEmail());
+            authService.requestPasswordReset(request.getEmail(), request.getTenantSlug());
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -88,10 +90,16 @@ public class AuthV1Controller {
     public static class LoginRequest {
         private String username;
         private String password;
+        private String tenantSlug;
+        private String mfaCode;
         public String getUsername() { return username; }
         public void setUsername(String username) { this.username = username; }
         public String getPassword() { return password; }
         public void setPassword(String password) { this.password = password; }
+        public String getTenantSlug() { return tenantSlug; }
+        public void setTenantSlug(String tenantSlug) { this.tenantSlug = tenantSlug; }
+        public String getMfaCode() { return mfaCode; }
+        public void setMfaCode(String mfaCode) { this.mfaCode = mfaCode; }
     }
 
     public static class RefreshRequest {
@@ -102,8 +110,11 @@ public class AuthV1Controller {
 
     public static class EmailRequest {
         private String email;
+        private String tenantSlug;
         public String getEmail() { return email; }
         public void setEmail(String email) { this.email = email; }
+        public String getTenantSlug() { return tenantSlug; }
+        public void setTenantSlug(String tenantSlug) { this.tenantSlug = tenantSlug; }
     }
 
     public static class PasswordResetRequest {

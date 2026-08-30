@@ -37,9 +37,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String username = tokenProvider.getUsernameFromToken(jwt);
                 Long tenantId = tokenProvider.getTenantIdFromToken(jwt);
 
-                TenantContext.setCurrentTenant(tenantId);
-
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails;
+                if (tenantId != null) {
+                    TenantContext.setCurrentTenant(tenantId);
+                    userDetails = userDetailsService.loadUserByUsername(username);
+                } else if ("SUPER_ADMIN".equals(tokenProvider.getRoleFromToken(jwt))) {
+                    userDetails = userDetailsService.loadPlatformAdminByUsername(username);
+                } else {
+                    throw new IllegalArgumentException("JWT sin tenant válido");
+                }
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -45,12 +45,10 @@ public class AnalyticsDashboard {
     @Column(name = "shared_with")
     private String sharedWith;
 
-    @Column(name = "widgets")
-    @Lob
+    @Column(name = "widgets", columnDefinition = "TEXT")
     private String widgets;
 
-    @Column(name = "filters")
-    @Lob
+    @Column(name = "filters", columnDefinition = "TEXT")
     private String filters;
 
     @Column(name = "refresh_frequency")

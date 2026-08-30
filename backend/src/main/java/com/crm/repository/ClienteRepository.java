@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     
-    Optional<Cliente> findByEmail(String email);
+    Optional<Cliente> findByTenantIdAndEmail(Long tenantId, String email);
     
     List<Cliente> findByEstado(Cliente.EstadoCliente estado);
     
@@ -29,10 +29,16 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     @Query("SELECT c FROM Cliente c WHERE c.identificacion = :identificacion")
     Optional<Cliente> findByIdentificacion(@Param("identificacion") String identificacion);
     
-    boolean existsByEmail(String email);
+    boolean existsByTenantIdAndEmail(Long tenantId, String email);
     
-    boolean existsByIdentificacion(String identificacion);
+    boolean existsByTenantIdAndIdentificacion(Long tenantId, String identificacion);
 
     long countByTenantId(Long tenantId);
     List<Cliente> findByTenantId(Long tenantId);
+    Optional<Cliente> findByIdAndTenantId(Long id, Long tenantId);
+    boolean existsByIdAndTenantId(Long id, Long tenantId);
+    List<Cliente> findByTenantIdAndEstado(Long tenantId, Cliente.EstadoCliente estado);
+    List<Cliente> findByTenantIdAndNombreContainingIgnoreCaseOrTenantIdAndApellidoContainingIgnoreCase(
+            Long tenantIdForName, String nombre, Long tenantIdForLastName, String apellido);
+    List<Cliente> findByTenantIdAndEmpresaContainingIgnoreCase(Long tenantId, String empresa);
 }

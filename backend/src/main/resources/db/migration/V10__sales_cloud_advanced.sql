@@ -2,7 +2,7 @@
 
 -- Accounts (B2B companies with hierarchy)
 CREATE TABLE IF NOT EXISTS accounts (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     parent_account_id BIGINT,
@@ -35,7 +35,7 @@ CREATE INDEX IF NOT EXISTS idx_accounts_owner ON accounts(owner_id);
 
 -- Contacts (individual people linked to accounts)
 CREATE TABLE IF NOT EXISTS contacts (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     account_id BIGINT,
     first_name VARCHAR(100) NOT NULL,
@@ -61,7 +61,7 @@ CREATE INDEX IF NOT EXISTS idx_contacts_owner ON contacts(owner_id);
 
 -- Opportunity competitors
 CREATE TABLE IF NOT EXISTS opportunity_competitors (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     opportunity_id BIGINT NOT NULL,
     competitor_name VARCHAR(255) NOT NULL,
@@ -76,7 +76,7 @@ CREATE INDEX IF NOT EXISTS idx_competitors_opp ON opportunity_competitors(opport
 
 -- Calendar events
 CREATE TABLE IF NOT EXISTS calendar_events (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     owner_id BIGINT,
     title VARCHAR(255) NOT NULL,
@@ -102,7 +102,7 @@ CREATE INDEX IF NOT EXISTS idx_calendar_start ON calendar_events(start_time);
 
 -- Booking pages
 CREATE TABLE IF NOT EXISTS booking_pages (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     owner_id BIGINT NOT NULL,
     slug VARCHAR(100) NOT NULL UNIQUE,
@@ -126,7 +126,7 @@ CREATE INDEX IF NOT EXISTS idx_booking_owner ON booking_pages(owner_id);
 
 -- Email sync log
 CREATE TABLE IF NOT EXISTS email_sync_log (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     provider VARCHAR(20) NOT NULL,

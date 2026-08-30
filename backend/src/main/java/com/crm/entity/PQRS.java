@@ -35,6 +35,7 @@ public class PQRS {
     private Long clienteId;
     
     private String canal;
+    @Column(name = "asignado_a")
     private String asignadoA;
     
     private String resolucion;

@@ -14,6 +14,11 @@ import java.util.Optional;
 
 @Repository
 public interface ContratoRepository extends JpaRepository<Contrato, Long> {
+    List<Contrato> findByTenantId(Long tenantId);
+    Optional<Contrato> findByIdAndTenantId(Long id, Long tenantId);
+    List<Contrato> findByTenantIdAndEstado(Long tenantId, String estado);
+    List<Contrato> findByTenantIdAndClienteId(Long tenantId, Long clienteId);
+    List<Contrato> findByTenantIdAndFechaFinBefore(Long tenantId, LocalDate fecha);
     
     List<Contrato> findByEstado(String estado);
     List<Contrato> findByTipo(String tipo);

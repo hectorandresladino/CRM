@@ -33,8 +33,7 @@ public class ValidationRule {
     @Column(name = "field_name")
     private String fieldName;
 
-    @Column(nullable = false)
-    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String formula;
 
     @Column(nullable = false)

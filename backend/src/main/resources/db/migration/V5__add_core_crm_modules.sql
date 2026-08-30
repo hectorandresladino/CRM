@@ -1,7 +1,7 @@
 -- V5__add_core_crm_modules.sql
 
 CREATE TABLE IF NOT EXISTS actividades (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     tipo VARCHAR(20) NOT NULL,
     titulo VARCHAR(300) NOT NULL,
@@ -27,7 +27,7 @@ CREATE INDEX IF NOT EXISTS idx_act_user ON actividades(tenant_id, asignado_a);
 CREATE INDEX IF NOT EXISTS idx_act_estado ON actividades(tenant_id, estado);
 
 CREATE TABLE IF NOT EXISTS productos_servicios (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     codigo VARCHAR(100) NOT NULL,
     nombre VARCHAR(200) NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS productos_servicios (
 CREATE INDEX IF NOT EXISTS idx_prod_tenant ON productos_servicios(tenant_id);
 
 CREATE TABLE IF NOT EXISTS metas_comerciales (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     vendedor VARCHAR(100),
     equipo VARCHAR(100),
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS metas_comerciales (
 CREATE INDEX IF NOT EXISTS idx_metas_tenant ON metas_comerciales(tenant_id);
 
 CREATE TABLE IF NOT EXISTS sla_configuraciones (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     nombre VARCHAR(200) NOT NULL,
     descripcion TEXT,
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS sla_configuraciones (
 CREATE INDEX IF NOT EXISTS idx_sla_tenant ON sla_configuraciones(tenant_id);
 
 CREATE TABLE IF NOT EXISTS pagos (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     factura_id BIGINT,
     cliente_id BIGINT,
@@ -111,7 +111,7 @@ CREATE INDEX IF NOT EXISTS idx_pagos_tenant ON pagos(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_pagos_estado ON pagos(tenant_id, estado);
 
 CREATE TABLE IF NOT EXISTS webhooks (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     url VARCHAR(500) NOT NULL,
     evento VARCHAR(100) NOT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS webhooks (
 CREATE INDEX IF NOT EXISTS idx_webhooks_tenant ON webhooks(tenant_id);
 
 CREATE TABLE IF NOT EXISTS campos_personalizados (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     entidad VARCHAR(50) NOT NULL,
     nombre_campo VARCHAR(100) NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS campos_personalizados (
 CREATE INDEX IF NOT EXISTS idx_campos_tenant ON campos_personalizados(tenant_id, entidad);
 
 CREATE TABLE IF NOT EXISTS tenant_configuraciones (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL UNIQUE,
     logo_url VARCHAR(500),
     color_primario VARCHAR(7),
@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS tenant_configuraciones (
 );
 
 CREATE TABLE IF NOT EXISTS formularios_web (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     nombre VARCHAR(200) NOT NULL,
     descripcion TEXT,
@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS formularios_web (
 CREATE INDEX IF NOT EXISTS idx_forms_tenant ON formularios_web(tenant_id);
 
 CREATE TABLE IF NOT EXISTS impuestos_configuracion (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     pais VARCHAR(5) NOT NULL,
@@ -211,10 +211,10 @@ CREATE TABLE IF NOT EXISTS impuestos_configuracion (
 CREATE INDEX IF NOT EXISTS idx_imp_tenant ON impuestos_configuracion(tenant_id);
 
 CREATE TABLE IF NOT EXISTS api_keys (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     nombre VARCHAR(200) NOT NULL,
-    key VARCHAR(100) NOT NULL UNIQUE,
+    api_key VARCHAR(100) NOT NULL UNIQUE,
     permisos TEXT,
     es_activo BOOLEAN DEFAULT TRUE,
     fecha_expiracion TIMESTAMP,
@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS api_keys (
 CREATE INDEX IF NOT EXISTS idx_apikeys_tenant ON api_keys(tenant_id);
 
 CREATE TABLE IF NOT EXISTS reglas_automaticas (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     nombre VARCHAR(200) NOT NULL,
     descripcion TEXT,

@@ -2,7 +2,7 @@
 
 -- Customer journeys
 CREATE TABLE IF NOT EXISTS customer_journeys (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS customer_journeys (
     total_enrolled INT DEFAULT 0,
     total_completed INT DEFAULT 0,
     total_converted INT DEFAULT 0,
-    conversion_rate DOUBLE DEFAULT 0.0,
+    conversion_rate DOUBLE PRECISION DEFAULT 0.0,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -22,7 +22,7 @@ CREATE INDEX IF NOT EXISTS idx_journeys_tenant ON customer_journeys(tenant_id);
 
 -- Journey steps
 CREATE TABLE IF NOT EXISTS journey_steps (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     journey_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -42,7 +42,7 @@ CREATE INDEX IF NOT EXISTS idx_journey_steps_journey ON journey_steps(journey_id
 
 -- Landing pages
 CREATE TABLE IF NOT EXISTS landing_pages (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     slug VARCHAR(100) NOT NULL UNIQUE,
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS landing_pages (
     campaign_id BIGINT,
     total_visits INT DEFAULT 0,
     total_conversions INT DEFAULT 0,
-    conversion_rate DOUBLE DEFAULT 0.0,
+    conversion_rate DOUBLE PRECISION DEFAULT 0.0,
     ab_test_variant VARCHAR(10),
     ab_test_parent_id BIGINT,
     is_published BOOLEAN DEFAULT FALSE,
@@ -67,7 +67,7 @@ CREATE INDEX IF NOT EXISTS idx_landing_tenant ON landing_pages(tenant_id);
 
 -- Marketing attribution
 CREATE TABLE IF NOT EXISTS marketing_attribution (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     contact_id BIGINT,
     client_id BIGINT,
@@ -87,7 +87,7 @@ CREATE INDEX IF NOT EXISTS idx_attribution_campaign ON marketing_attribution(cam
 
 -- Social media posts
 CREATE TABLE IF NOT EXISTS social_media_posts (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     campaign_id BIGINT,
     platform VARCHAR(20) NOT NULL,
@@ -114,7 +114,7 @@ CREATE INDEX IF NOT EXISTS idx_social_scheduled ON social_media_posts(scheduled_
 
 -- A/B tests
 CREATE TABLE IF NOT EXISTS ab_tests (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -125,9 +125,9 @@ CREATE TABLE IF NOT EXISTS ab_tests (
     variant_b_visits INT DEFAULT 0,
     variant_a_conversions INT DEFAULT 0,
     variant_b_conversions INT DEFAULT 0,
-    variant_a_rate DOUBLE DEFAULT 0.0,
-    variant_b_rate DOUBLE DEFAULT 0.0,
-    confidence_level DOUBLE DEFAULT 0.0,
+    variant_a_rate DOUBLE PRECISION DEFAULT 0.0,
+    variant_b_rate DOUBLE PRECISION DEFAULT 0.0,
+    confidence_level DOUBLE PRECISION DEFAULT 0.0,
     winning_variant VARCHAR(10),
     status VARCHAR(20) NOT NULL DEFAULT 'RUNNING',
     started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -12,15 +12,17 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
+    tenantSlug: '',
     username: '',
     password: '',
+    mfaCode: '',
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const fillDemoCredentials = async () => {
-    const creds = { username: 'superadmin', password: 'SuperAdmin123!' };
+    const creds = { tenantSlug: '', username: 'superadmin', password: 'SuperAdmin123!', mfaCode: '' };
     setFormData(creds);
     setError(null);
     setLoading(true);
@@ -149,6 +151,23 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Empresa
+                </label>
+                <div className="relative">
+                  <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-[18px] h-[18px]" />
+                  <input
+                    type="text"
+                    value={formData.tenantSlug}
+                    onChange={(e) => setFormData({ ...formData, tenantSlug: e.target.value })}
+                    className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+                    placeholder="Identificador de tu empresa (opcional)"
+                    autoComplete="organization"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Usuario
                 </label>
                 <div className="relative">
@@ -160,6 +179,24 @@ export default function Login() {
                     className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                     placeholder="Ingresa tu usuario"
                     required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Código MFA <span className="font-normal text-slate-400">(si está activado)</span>
+                </label>
+                <div className="relative">
+                  <ShieldCheck className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-[18px] h-[18px]" />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    value={formData.mfaCode}
+                    onChange={(e) => setFormData({ ...formData, mfaCode: e.target.value.replace(/\s/g, '') })}
+                    className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+                    placeholder="6 dígitos o código de recuperación"
                   />
                 </div>
               </div>

@@ -42,8 +42,7 @@ public class CustomerEvent {
     @Column(name = "event_channel")
     private String eventChannel;
 
-    @Column(name = "event_data")
-    @Lob
+    @Column(name = "event_data", columnDefinition = "TEXT")
     private String eventData;
 
     @Column(name = "page_url")

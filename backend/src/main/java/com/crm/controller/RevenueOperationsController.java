@@ -5,7 +5,7 @@
 package com.crm.controller;
 
 import com.crm.entity.*;
-import com.crm.service.RevenueCloudService;
+import com.crm.service.RevenueOperationsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/revenue-cloud")
+@RequestMapping("/api/v1/revenue-operations")
 @RequiredArgsConstructor
-public class RevenueCloudController {
+public class RevenueOperationsController {
 
-    private final RevenueCloudService service;
+    private final RevenueOperationsService service;
 
     @PostMapping("/amendments")
     public ResponseEntity<SubscriptionAmendment> createAmendment(@RequestBody SubscriptionAmendment a) { return ResponseEntity.ok(service.createAmendment(a)); }

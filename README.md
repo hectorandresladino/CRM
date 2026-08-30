@@ -18,9 +18,9 @@ Plataforma SaaS empresarial multi-tenant para gestión de clientes, ventas, mark
 - **Multiempresa (Multi-tenant)**: Aislamiento total por `tenant_id`
 - **Seguridad**: JWT, BCrypt, Refresh Token, MFA, bloqueo por intentos, rate limiting
 - **Roles**: SUPER_ADMIN, TENANT_OWNER, ADMIN, MANAGER, SALES, MARKETING, SUPPORT, ACCOUNTING
-- **Planes**: Starter ($29), Professional ($79), Enterprise ($199) con trial de 14 días
+- **Planes**: Starter ($29), Business ($79), Enterprise ($199) y Agency ($399), todos con usuarios internos ilimitados
 - **Suscripciones**: Trial, Activa, Vencida, Suspendida, Cancelada con renovación automática
-- **Facturación SaaS**: BillingInvoice, Payment, PaymentMethod (Stripe, Wompi, MercadoPago, PayU)
+- **Facturación SaaS**: modelo de BillingInvoice, Payment y PaymentMethod; conectores reales de cobro aún pendientes y configurados para fallar de forma segura
 - **SuperAdmin**: Gestión de tenants, planes, usuarios globales, métricas SaaS, auditoría
 - **Registro automático**: Creación de empresa + trial sin intervención manual
 - **Auditoría**: Registro de cambios por usuario, entidad, IP, valor anterior y nuevo
@@ -206,6 +206,7 @@ SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/crm_saas \
 SPRING_DATASOURCE_USERNAME=postgres \
 SPRING_DATASOURCE_PASSWORD=postgres \
 JWT_SECRET=tu-clave-secreta-min-256-bits \
+CORS_ALLOWED_ORIGINS=https://app.tudominio.com \
 mvn spring-boot:run
 ```
 
@@ -220,6 +221,7 @@ mvn spring-boot:run
 | `JWT_SECRET` | Clave secreta JWT | clave dev |
 | `JWT_ACCESS_EXPIRATION_MS` | Expiración access token | 900000 (15min) |
 | `JWT_REFRESH_EXPIRATION_MS` | Expiración refresh token | 604800000 (7días) |
+| `CORS_ALLOWED_ORIGINS` | Orígenes web permitidos, separados por coma | obligatorio en `prod` |
 | `REDIS_HOST` | Host Redis | `localhost` |
 | `REDIS_PORT` | Puerto Redis | `6379` |
 | `MINIO_ENDPOINT` | URL MinIO/S3 | `http://minio:9000` |
@@ -401,12 +403,15 @@ oc rollout restart deployment/crm-backend
 | Endpoint | Método | Descripción |
 |----------|--------|-------------|
 | `/api/v1/auth/register` | POST | Registrar nueva empresa + trial |
-| `/api/auth/login` | POST | Iniciar sesión (devuelve JWT) |
+| `/api/auth/login` | POST | Iniciar sesión por empresa (devuelve JWT) |
 | `/api/v1/auth/refresh` | POST | Renovar access token |
 | `/api/v1/auth/logout` | POST | Cerrar sesión (revoca refresh token) |
 | `/api/v1/auth/password-reset/request` | POST | Solicitar recuperación de contraseña |
 | `/api/v1/auth/password-reset/confirm` | POST | Confirmar nueva contraseña |
 | `/api/v1/auth/verify-email` | GET | Verificar correo electrónico |
+
+El login acepta `{ "tenantSlug": "mi-empresa", "username": "usuario", "password": "..." }`.
+`tenantSlug` puede omitirse únicamente cuando el nombre de usuario sea inequívoco entre empresas.
 
 ### SuperAdmin
 
@@ -441,17 +446,25 @@ Disponible en: `http://localhost:8080/swagger-ui.html`
 
 ## Planes SaaS
 
-| Característica | Starter ($29) | Professional ($79) | Enterprise ($199) |
-|----------------|--------------|--------------------|--------------------|
-| Usuarios | 3 | 10 | 50 |
-| Clientes | 100 | 1,000 | 10,000 |
-| Almacenamiento | 1 GB | 10 GB | 100 GB |
-| WhatsApp | - | Si | Si |
-| API Access | - | Si | Si |
-| IA Features | - | Si | Si |
-| Marca Blanca | - | - | Si |
-| Webhooks | - | Si | Si |
-| Trial | 14 días | 14 días | 30 días |
+| Característica | Starter ($29) | Business ($79) | Enterprise ($199) | Agency ($399) |
+|----------------|---------------|----------------|-------------------|---------------|
+| Usuarios internos | Ilimitados | Ilimitados | Ilimitados | Ilimitados |
+| Contactos | 500 | 5,000 | 50,000 | 100,000 |
+| Almacenamiento | 2 GB | 20 GB | 200 GB | 500 GB |
+| Subcuentas | - | - | - | 50 |
+| Marca blanca | - | - | Sí | Sí |
+| Trial | 14 días | 14 días | 30 días | 30 días |
+
+Los usuarios son ilimitados; contactos, almacenamiento, canales, automatizaciones, IA y API se controlan por consumo para mantener una operación sostenible.
+
+## Estado de producto y propiedad intelectual
+
+- [Análisis competitivo, brechas y definición verificable de “100/100”](docs/PRODUCT_GAP_ANALYSIS.md)
+- [Estado real de licencia, derechos de autor y pasos de protección](COPYRIGHT.md)
+- [Notas obligatorias para migraciones de bases existentes](docs/DATABASE_MIGRATION_NOTES.md)
+- [Licencia vigente](LICENSE) y [atribuciones](NOTICE)
+
+Los nombres de proveedores se usan únicamente para identificar integraciones compatibles. No implican afiliación ni patrocinio.
 
 ## CI/CD (GitHub Actions)
 

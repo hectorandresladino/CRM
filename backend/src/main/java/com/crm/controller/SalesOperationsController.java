@@ -5,7 +5,7 @@
 package com.crm.controller;
 
 import com.crm.entity.*;
-import com.crm.service.SalesCloudAdvancedService;
+import com.crm.service.SalesOperationsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +18,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/sales-advanced")
 @RequiredArgsConstructor
-public class SalesCloudAdvancedController {
+public class SalesOperationsController {
 
-    private final SalesCloudAdvancedService service;
+    private final SalesOperationsService service;
 
     // === Accounts (Item 15) ===
     @GetMapping("/accounts")

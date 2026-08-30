@@ -33,8 +33,7 @@ public class CustomerSegment {
     @Column(name = "segment_type")
     private String segmentType;
 
-    @Column(name = "criteria")
-    @Lob
+    @Column(name = "criteria", columnDefinition = "TEXT")
     private String criteria;
 
     @Column(name = "member_count")

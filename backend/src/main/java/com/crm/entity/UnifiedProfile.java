@@ -63,8 +63,7 @@ public class UnifiedProfile {
     @Column(name = "segments")
     private String segments;
 
-    @Column(name = "attributes")
-    @Lob
+    @Column(name = "attributes", columnDefinition = "TEXT")
     private String attributes;
 
     @Column(name = "created_at")

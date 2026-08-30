@@ -20,7 +20,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ServiceCloudAdvancedService {
+public class CustomerServiceOperationsService {
 
     private final ServicioClienteRepository casoRepo;
     private final CaseCommentRepository commentRepo;
@@ -198,7 +198,7 @@ public class ServiceCloudAdvancedService {
 
     public List<ServiceMilestone> getMilestones(Long orderId) {
         return milestoneRepo.findByTenantId(tid()).stream()
-                .filter(m -> orderId.equals(m.getOrderId()))
+                .filter(m -> orderId.equals(m.getCaseId()))
                 .toList();
     }
 
@@ -215,18 +215,19 @@ public class ServiceCloudAdvancedService {
         List<EncuestaSatisfaccion> surveys = surveyRepo.findByTenantId(tid());
         long total = surveys.size();
         double avgScore = surveys.stream()
-                .mapToInt(EncuestaSatisfaccion::getCalificacion)
+                .filter(s -> s.getCalificacionGeneral() != null)
+                .mapToInt(EncuestaSatisfaccion::getCalificacionGeneral)
                 .average().orElse(0);
 
         Map<String, Object> summary = new LinkedHashMap<>();
         summary.put("totalSurveys", total);
         summary.put("averageScore", Math.round(avgScore * 100.0) / 100.0);
-        summary.put("csatPercentage", total > 0 ? (surveys.stream().filter(s -> s.getCalificacion() >= 4).count() * 100.0 / total) : 0);
+        summary.put("csatPercentage", total > 0 ? (surveys.stream().filter(s -> s.getCalificacionGeneral() != null && s.getCalificacionGeneral() >= 4).count() * 100.0 / total) : 0);
 
         Map<Integer, Long> distribution = new LinkedHashMap<>();
         for (int i = 1; i <= 5; i++) {
             final int score = i;
-            distribution.put(score, surveys.stream().filter(s -> s.getCalificacion() == score).count());
+            distribution.put(score, surveys.stream().filter(s -> s.getCalificacionGeneral() != null && s.getCalificacionGeneral() == score).count());
         }
         summary.put("distribution", distribution);
         return summary;

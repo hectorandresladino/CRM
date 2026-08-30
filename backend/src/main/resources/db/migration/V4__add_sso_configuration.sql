@@ -1,7 +1,7 @@
 -- V4__add_sso_configuration.sql
 
 CREATE TABLE IF NOT EXISTS sso_configurations (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     provider VARCHAR(50) NOT NULL,
     protocol VARCHAR(10) NOT NULL,

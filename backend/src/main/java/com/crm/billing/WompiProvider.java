@@ -22,27 +22,26 @@ public class WompiProvider implements PaymentProvider {
 
     @Override
     public PaymentResult charge(PaymentRequest request) {
-        if (!isConfigured()) {
-            log.warn("Wompi not configured - simulating charge");
-            return new PaymentResult(true, "sim_wompi_" + System.currentTimeMillis(), null, "SIMULATED");
-        }
-        log.info("Wompi charge: {} {} for customer {}", request.amount(), request.currency(), request.customerId());
-        return new PaymentResult(true, "wompi_" + System.currentTimeMillis(), null, "OK");
+        return unavailable("La conexión real con Wompi aún no está implementada");
     }
 
     @Override
     public PaymentResult refund(String transactionId, BigDecimal amount) {
-        log.info("Wompi refund: {} for tx {}", amount, transactionId);
-        return new PaymentResult(true, "refund_" + transactionId, null, "OK");
+        return unavailable("Los reembolsos reales de Wompi aún no están implementados");
     }
 
     @Override
     public PaymentResult retrieve(String transactionId) {
-        return new PaymentResult(true, transactionId, null, "RETRIEVED");
+        return unavailable("La consulta real de Wompi aún no está implementada");
     }
 
     @Override
     public boolean isConfigured() {
-        return apiKey != null && !apiKey.isBlank();
+        return false;
+    }
+
+    private PaymentResult unavailable(String message) {
+        log.error(message);
+        return new PaymentResult(false, null, message, "NOT_IMPLEMENTED");
     }
 }

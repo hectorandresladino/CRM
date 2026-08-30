@@ -12,11 +12,17 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CotizacionRepository extends JpaRepository<Cotizacion, Long> {
     
     List<Cotizacion> findByClienteId(Long clienteId);
+    List<Cotizacion> findByTenantId(Long tenantId);
+    Optional<Cotizacion> findByIdAndTenantId(Long id, Long tenantId);
+    List<Cotizacion> findByTenantIdAndClienteId(Long tenantId, Long clienteId);
+    List<Cotizacion> findByTenantIdAndEstado(Long tenantId, Cotizacion.EstadoCotizacion estado);
+    List<Cotizacion> findByTenantIdAndVendedor(Long tenantId, String vendedor);
     
     List<Cotizacion> findByEstado(Cotizacion.EstadoCotizacion estado);
     
@@ -30,6 +36,9 @@ public interface CotizacionRepository extends JpaRepository<Cotizacion, Long> {
     
     @Query("SELECT c FROM Cotizacion c WHERE c.validez < :fecha AND c.estado = 'ENVIADA'")
     List<Cotizacion> findExpiredCotizaciones(@Param("fecha") LocalDate fecha);
+
+    @Query("SELECT c FROM Cotizacion c WHERE c.tenantId = :tenantId AND c.validez < :fecha AND c.estado = 'ENVIADA'")
+    List<Cotizacion> findExpiredCotizacionesByTenantId(@Param("tenantId") Long tenantId, @Param("fecha") LocalDate fecha);
     
     @Query("SELECT COUNT(c) FROM Cotizacion c WHERE c.estado = :estado")
     Long countByEstado(@Param("estado") Cotizacion.EstadoCotizacion estado);

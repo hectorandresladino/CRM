@@ -70,8 +70,7 @@ public class FieldServiceOrder {
     @Column(name = "status")
     private String status = "SCHEDULED";
 
-    @Column(name = "work_notes")
-    @Lob
+    @Column(name = "work_notes", columnDefinition = "TEXT")
     private String workNotes;
 
     @Column(name = "parts_used")

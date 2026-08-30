@@ -3,9 +3,41 @@
  * Licensed under MIT License. See LICENSE file for details.
  */
 import { useState, useEffect } from 'react';
-import { Users, TrendingUp, DollarSign, HeadphonesIcon, ArrowUpRight, ArrowDownRight, Calendar, Phone, Mail as MailIcon, FileText, CheckCircle2, Clock } from 'lucide-react';
+import { Users, TrendingUp, DollarSign, HeadphonesIcon, ArrowUpRight, ArrowDownRight, Calendar, Phone, Mail as MailIcon, FileText, CheckCircle2, Clock, Gauge, Sparkles, AlertTriangle, RefreshCw } from 'lucide-react';
 import apiClient from '../services/api';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, AreaChart, Area } from 'recharts';
+
+interface OutcomeMetrics {
+  revenue: number;
+  openPipeline: number;
+  pipelineCoverage: number;
+  winRate: number;
+  leadConversionRate: number;
+  activeClientRate: number;
+  serviceResolutionRate: number;
+  wonDeals: number;
+  lostDeals: number;
+  openDeals: number;
+  prospects: number;
+  convertedProspects: number;
+}
+
+interface RecommendedAction {
+  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  code: string;
+  message: string;
+}
+
+interface OutcomeScorecard {
+  outcomeScore: number;
+  calculationType: string;
+  formulaVersion: string;
+  period: string;
+  currency: string;
+  metrics: OutcomeMetrics;
+  recommendedActions: RecommendedAction[];
+  generatedAt: string;
+}
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -16,9 +48,13 @@ const Dashboard = () => {
     pedidos: 0,
     tickets: 0
   });
+  const [outcomes, setOutcomes] = useState<OutcomeScorecard | null>(null);
+  const [outcomesLoading, setOutcomesLoading] = useState(true);
+  const [outcomesError, setOutcomesError] = useState(false);
 
   useEffect(() => {
     loadStats();
+    loadOutcomes();
   }, []);
 
   const loadStats = async () => {
@@ -28,6 +64,38 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error loading stats:', error);
     }
+  };
+
+  const loadOutcomes = async () => {
+    setOutcomesLoading(true);
+    setOutcomesError(false);
+    try {
+      const response = await apiClient.get<OutcomeScorecard>('/api/v1/outcomes/scorecard');
+      setOutcomes(response.data);
+    } catch (error) {
+      console.error('Error loading outcome scorecard:', error);
+      setOutcomesError(true);
+    } finally {
+      setOutcomesLoading(false);
+    }
+  };
+
+  const formatCurrency = (value: number, currency: string) => {
+    try {
+      return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: currency || 'COP',
+        maximumFractionDigits: 0,
+      }).format(value);
+    } catch {
+      return `${currency || 'COP'} ${Number(value).toLocaleString('es-CO')}`;
+    }
+  };
+
+  const scoreTone = (score: number) => {
+    if (score >= 75) return { text: 'text-emerald-700', ring: 'stroke-emerald-500', label: 'Sólido' };
+    if (score >= 50) return { text: 'text-amber-700', ring: 'stroke-amber-500', label: 'En desarrollo' };
+    return { text: 'text-red-700', ring: 'stroke-red-500', label: 'Requiere atención' };
   };
 
   const monthlyData = [
@@ -146,6 +214,115 @@ const Dashboard = () => {
           );
         })}
       </div>
+
+      {/* Motor de resultados: métricas explicables calculadas con datos reales del tenant */}
+      <section className="overflow-hidden rounded-2xl border border-indigo-200 bg-white shadow-sm" aria-labelledby="outcome-title">
+        <div className="flex flex-col gap-3 border-b border-indigo-100 bg-gradient-to-r from-indigo-950 via-blue-900 to-cyan-800 px-5 py-5 text-white sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-white/10 p-2.5 ring-1 ring-white/20">
+              <Sparkles className="h-5 w-5 text-cyan-200" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 id="outcome-title" className="text-lg font-bold">Inteligencia de Resultados</h2>
+                <span className="rounded-full bg-cyan-300/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cyan-100 ring-1 ring-cyan-200/20">Datos reales</span>
+              </div>
+              <p className="mt-0.5 text-xs text-blue-100/75">Una lectura explicable de ventas, conversión, clientes y servicio.</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={loadOutcomes}
+            disabled={outcomesLoading}
+            className="inline-flex items-center justify-center gap-2 self-start rounded-lg bg-white/10 px-3 py-2 text-xs font-semibold ring-1 ring-white/20 transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60 sm:self-auto"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${outcomesLoading ? 'animate-spin' : ''}`} />
+            Actualizar análisis
+          </button>
+        </div>
+
+        {outcomesLoading && !outcomes ? (
+          <div className="flex min-h-56 items-center justify-center gap-3 p-6 text-sm text-slate-500" role="status">
+            <RefreshCw className="h-5 w-5 animate-spin text-blue-600" />
+            Calculando resultados del negocio...
+          </div>
+        ) : outcomesError && !outcomes ? (
+          <div className="m-5 flex min-h-32 flex-col items-center justify-center rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+            <AlertTriangle className="mb-2 h-6 w-6 text-red-600" />
+            <p className="font-semibold text-red-800">No fue posible calcular los resultados.</p>
+            <p className="mt-1 text-xs text-red-600">Conservamos el dashboard disponible; intenta actualizar el análisis.</p>
+          </div>
+        ) : outcomes ? (
+          <div className="grid grid-cols-1 gap-5 p-5 xl:grid-cols-[220px_1fr_1.15fr]">
+            <div className="flex flex-col items-center justify-center rounded-xl bg-slate-50 p-4 text-center ring-1 ring-slate-200">
+              {(() => {
+                const tone = scoreTone(outcomes.outcomeScore);
+                const circumference = 2 * Math.PI * 48;
+                const progress = circumference - (Math.min(100, Math.max(0, outcomes.outcomeScore)) / 100) * circumference;
+                return (
+                  <>
+                    <div className="relative h-32 w-32">
+                      <svg className="h-full w-full -rotate-90" viewBox="0 0 112 112" aria-hidden="true">
+                        <circle cx="56" cy="56" r="48" fill="none" strokeWidth="9" className="stroke-slate-200" />
+                        <circle cx="56" cy="56" r="48" fill="none" strokeWidth="9" strokeLinecap="round" className={tone.ring} strokeDasharray={circumference} strokeDashoffset={progress} />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className={`text-3xl font-black ${tone.text}`}>{Math.round(outcomes.outcomeScore)}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">de 100</span>
+                      </div>
+                    </div>
+                    <p className={`mt-2 text-sm font-bold ${tone.text}`}>{tone.label}</p>
+                    <p className="mt-1 flex items-center gap-1 text-[11px] text-slate-400"><Gauge className="h-3 w-3" /> Fórmula explicable {outcomes.formulaVersion}</p>
+                  </>
+                );
+              })()}
+            </div>
+
+            <div>
+              <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">Métricas determinantes</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: 'Ingresos cerrados', value: formatCurrency(outcomes.metrics.revenue, outcomes.currency) },
+                  { label: 'Pipeline abierto', value: formatCurrency(outcomes.metrics.openPipeline, outcomes.currency) },
+                  { label: 'Cobertura pipeline', value: `${outcomes.metrics.pipelineCoverage.toFixed(2)}x` },
+                  { label: 'Tasa de cierre', value: `${outcomes.metrics.winRate.toFixed(1)}%` },
+                  { label: 'Conversión de leads', value: `${outcomes.metrics.leadConversionRate.toFixed(1)}%` },
+                  { label: 'Resolución de soporte', value: `${outcomes.metrics.serviceResolutionRate.toFixed(1)}%` },
+                ].map((metric) => (
+                  <div key={metric.label} className="rounded-xl border border-slate-200 p-3">
+                    <p className="truncate text-[11px] text-slate-500" title={metric.label}>{metric.label}</p>
+                    <p className="mt-1 truncate text-sm font-bold text-slate-900" title={metric.value}>{metric.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">Acciones prioritarias</h3>
+              <div className="space-y-2">
+                {outcomes.recommendedActions.map((action) => {
+                  const priorityStyle = action.priority === 'HIGH'
+                    ? 'bg-red-50 text-red-700 ring-red-200'
+                    : action.priority === 'MEDIUM'
+                      ? 'bg-amber-50 text-amber-700 ring-amber-200'
+                      : 'bg-emerald-50 text-emerald-700 ring-emerald-200';
+                  const priorityLabel = action.priority === 'HIGH' ? 'Alta' : action.priority === 'MEDIUM' ? 'Media' : 'Baja';
+                  return (
+                    <div key={action.code} className="flex items-start gap-3 rounded-xl border border-slate-200 p-3.5">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium leading-5 text-slate-700">{action.message}</p>
+                        <span className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ring-1 ${priorityStyle}`}>Prioridad {priorityLabel}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="mt-3 text-[10px] text-slate-400">Periodo: histórico completo · Calculado {new Date(outcomes.generatedAt).toLocaleString('es-CO')}</p>
+            </div>
+          </div>
+        ) : null}
+      </section>
 
       {/* GrÃ¡ficos */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">

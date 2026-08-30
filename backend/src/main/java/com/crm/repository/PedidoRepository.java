@@ -12,11 +12,17 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     
     List<Pedido> findByClienteId(Long clienteId);
+    List<Pedido> findByTenantId(Long tenantId);
+    Optional<Pedido> findByIdAndTenantId(Long id, Long tenantId);
+    List<Pedido> findByTenantIdAndClienteId(Long tenantId, Long clienteId);
+    List<Pedido> findByTenantIdAndEstado(Long tenantId, Pedido.EstadoPedido estado);
+    List<Pedido> findByTenantIdAndVendedor(Long tenantId, String vendedor);
     
     List<Pedido> findByEstado(Pedido.EstadoPedido estado);
     
@@ -30,6 +36,9 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     
     @Query("SELECT p FROM Pedido p WHERE p.fechaEntregaEstimada < :fecha AND p.estado NOT IN ('ENTREGADO', 'CANCELADO')")
     List<Pedido> findPedidosAtrasados(@Param("fecha") LocalDate fecha);
+
+    @Query("SELECT p FROM Pedido p WHERE p.tenantId = :tenantId AND p.fechaEntregaEstimada < :fecha AND p.estado NOT IN ('ENTREGADO', 'CANCELADO')")
+    List<Pedido> findPedidosAtrasadosByTenantId(@Param("tenantId") Long tenantId, @Param("fecha") LocalDate fecha);
     
     @Query("SELECT COUNT(p) FROM Pedido p WHERE p.estado = :estado")
     Long countByEstado(@Param("estado") Pedido.EstadoPedido estado);

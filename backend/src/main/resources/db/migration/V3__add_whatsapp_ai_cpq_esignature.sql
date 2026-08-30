@@ -1,7 +1,7 @@
 -- V3__add_whatsapp_ai_cpq_esignature.sql
 
 CREATE TABLE IF NOT EXISTS whatsapp_conversations (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     contact_phone VARCHAR(30) NOT NULL,
     contact_name VARCHAR(200),
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS whatsapp_conversations (
     message_type VARCHAR(20),
     ai_response BOOLEAN DEFAULT FALSE,
     ai_intent VARCHAR(50),
-    ai_confidence DOUBLE,
+    ai_confidence DOUBLE PRECISION,
     ai_handled BOOLEAN DEFAULT TRUE,
     human_taken_over BOOLEAN DEFAULT FALSE,
     assigned_agent VARCHAR(100),
@@ -24,7 +24,7 @@ CREATE INDEX IF NOT EXISTS idx_wa_conv_tenant ON whatsapp_conversations(tenant_i
 CREATE INDEX IF NOT EXISTS idx_wa_conv_phone ON whatsapp_conversations(tenant_id, contact_phone);
 
 CREATE TABLE IF NOT EXISTS whatsapp_ai_configs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL UNIQUE,
     enabled BOOLEAN DEFAULT TRUE,
     auto_reply BOOLEAN DEFAULT TRUE,
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS whatsapp_ai_configs (
 );
 
 CREATE TABLE IF NOT EXISTS cpq_products (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     sku VARCHAR(100) NOT NULL,
     name VARCHAR(200) NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS cpq_products (
 CREATE INDEX IF NOT EXISTS idx_cpq_prod_tenant ON cpq_products(tenant_id);
 
 CREATE TABLE IF NOT EXISTS cpq_quote_items (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     cotizacion_id BIGINT NOT NULL,
     product_id BIGINT,
@@ -86,7 +86,7 @@ CREATE INDEX IF NOT EXISTS idx_cpq_qi_tenant ON cpq_quote_items(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_cpq_qi_cotiz ON cpq_quote_items(tenant_id, cotizacion_id);
 
 CREATE TABLE IF NOT EXISTS esignature_requests (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     contrato_id BIGINT,
     document_title VARCHAR(300) NOT NULL,

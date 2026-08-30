@@ -12,5 +12,6 @@ import java.util.List;
 
 @Repository
 public interface CampoPersonalizadoRepository extends JpaRepository<CampoPersonalizado, Long> {
+    List<CampoPersonalizado> findByTenantId(Long tenantId);
     List<CampoPersonalizado> findByTenantIdAndEntidadOrderByOrden(Long tenantId, String entidad);
 }

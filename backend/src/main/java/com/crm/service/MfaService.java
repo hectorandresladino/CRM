@@ -19,8 +19,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.crm.security.TenantContext;
 
 import java.util.*;
+import java.security.SecureRandom;
 
 @Slf4j
 @Service
@@ -34,10 +36,17 @@ public class MfaService {
     private final TimeProvider timeProvider = new SystemTimeProvider();
     private final CodeVerifier verifier = new DefaultCodeVerifier(codeGenerator, timeProvider);
     private final QrGenerator qrGenerator = new ZxingPngQrGenerator();
+    private final SecureRandom secureRandom = new SecureRandom();
 
     public Map<String, String> setupMfa(String username) {
-        Usuario user = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return setupMfa(username, null);
+    }
+
+    public Map<String, String> setupMfa(String username, String currentCode) {
+        Usuario user = findCurrentUser(username);
+        if (Boolean.TRUE.equals(user.getMfaEnabled()) && !verifyLoginCode(user, currentCode)) {
+            throw new RuntimeException("Confirme el MFA actual antes de reemplazarlo");
+        }
 
         String secret = secretGenerator.generate();
         user.setMfaSecret(secret);
@@ -76,8 +85,7 @@ public class MfaService {
     }
 
     public boolean verifyAndEnableMfa(String username, String code) {
-        Usuario user = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario user = findCurrentUser(username);
 
         if (user.getMfaSecret() == null) {
             throw new RuntimeException("MFA no configurado. Ejecute setup primero.");
@@ -93,11 +101,16 @@ public class MfaService {
     }
 
     public boolean verifyCode(String username, String code) {
-        Usuario user = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario user = findCurrentUser(username);
+        return verifyLoginCode(user, code);
+    }
 
-        if (user.getMfaSecret() == null || !Boolean.TRUE.equals(user.getMfaEnabled())) {
-            return true;
+    /** Verifies TOTP or a single-use recovery code before issuing a session. */
+    public boolean verifyLoginCode(Usuario user, String code) {
+
+        if (code == null || code.isBlank() || user.getMfaSecret() == null
+                || !Boolean.TRUE.equals(user.getMfaEnabled())) {
+            return false;
         }
 
         if (user.getMfaRecoveryCodes() != null && !user.getMfaRecoveryCodes().isEmpty()) {
@@ -106,7 +119,7 @@ public class MfaService {
                 codes.remove(code);
                 user.setMfaRecoveryCodes(String.join(",", codes));
                 usuarioRepository.save(user);
-                log.info("Recovery code usado para usuario {}", username);
+                log.info("Recovery code usado para usuario {}", user.getUsername());
                 return true;
             }
         }
@@ -115,8 +128,7 @@ public class MfaService {
     }
 
     public void disableMfa(String username, String code) {
-        Usuario user = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario user = findCurrentUser(username);
 
         if (!verifyCode(username, code)) {
             throw new RuntimeException("Codigo MFA invalido");
@@ -129,9 +141,11 @@ public class MfaService {
         log.info("MFA desactivado para usuario {}", username);
     }
 
-    public List<String> regenerateRecoveryCodes(String username) {
-        Usuario user = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    public List<String> regenerateRecoveryCodes(String username, String currentCode) {
+        Usuario user = findCurrentUser(username);
+        if (!verifyLoginCode(user, currentCode)) {
+            throw new RuntimeException("Código MFA inválido");
+        }
 
         List<String> codes = generateRecoveryCodes();
         user.setMfaRecoveryCodes(String.join(",", codes));
@@ -140,18 +154,26 @@ public class MfaService {
     }
 
     private List<String> generateRecoveryCodes() {
-        Random random = new Random();
         List<String> codes = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            int code = 100000000 + random.nextInt(900000000);
+            int code = 100000000 + secureRandom.nextInt(900000000);
             codes.add(String.valueOf(code));
         }
         return codes;
     }
 
     public boolean isMfaRequired(String username) {
-        return usuarioRepository.findByUsername(username)
-                .map(u -> Boolean.TRUE.equals(u.getMfaEnabled()))
-                .orElse(false);
+        return Boolean.TRUE.equals(findCurrentUser(username).getMfaEnabled());
+    }
+
+    private Usuario findCurrentUser(String username) {
+        Usuario user = (TenantContext.hasTenant()
+                ? usuarioRepository.findByTenantIdAndUsername(TenantContext.requireCurrentTenant(), username)
+                : usuarioRepository.findByUsernameAndTenantIdIsNull(username))
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (!TenantContext.hasTenant() && user.getRol() != Usuario.Role.SUPER_ADMIN) {
+            throw new RuntimeException("Usuario de plataforma inválido");
+        }
+        return user;
     }
 }

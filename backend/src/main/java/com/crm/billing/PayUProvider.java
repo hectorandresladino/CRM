@@ -22,27 +22,26 @@ public class PayUProvider implements PaymentProvider {
 
     @Override
     public PaymentResult charge(PaymentRequest request) {
-        if (!isConfigured()) {
-            log.warn("PayU not configured - simulating charge");
-            return new PaymentResult(true, "sim_payu_" + System.currentTimeMillis(), null, "SIMULATED");
-        }
-        log.info("PayU charge: {} {} for customer {}", request.amount(), request.currency(), request.customerId());
-        return new PaymentResult(true, "payu_" + System.currentTimeMillis(), null, "OK");
+        return unavailable("La conexión real con PayU aún no está implementada");
     }
 
     @Override
     public PaymentResult refund(String transactionId, BigDecimal amount) {
-        log.info("PayU refund: {} for tx {}", amount, transactionId);
-        return new PaymentResult(true, "refund_" + transactionId, null, "OK");
+        return unavailable("Los reembolsos reales de PayU aún no están implementados");
     }
 
     @Override
     public PaymentResult retrieve(String transactionId) {
-        return new PaymentResult(true, transactionId, null, "RETRIEVED");
+        return unavailable("La consulta real de PayU aún no está implementada");
     }
 
     @Override
     public boolean isConfigured() {
-        return apiKey != null && !apiKey.isBlank();
+        return false;
+    }
+
+    private PaymentResult unavailable(String message) {
+        log.error(message);
+        return new PaymentResult(false, null, message, "NOT_IMPLEMENTED");
     }
 }

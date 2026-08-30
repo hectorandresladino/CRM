@@ -3,7 +3,7 @@
 -- email templates, integrations, gamification, and client portal.
 
 CREATE TABLE IF NOT EXISTS gdpr_consents (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     cliente_id BIGINT,
     prospecto_id BIGINT,
@@ -22,7 +22,7 @@ CREATE INDEX IF NOT EXISTS idx_gdpr_consents_tenant ON gdpr_consents(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_gdpr_consents_cliente ON gdpr_consents(cliente_id);
 
 CREATE TABLE IF NOT EXISTS currency_rates (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     base VARCHAR(3) NOT NULL,
     target VARCHAR(3) NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS currency_rates (
 CREATE INDEX IF NOT EXISTS idx_currency_rates_tenant ON currency_rates(tenant_id);
 
 CREATE TABLE IF NOT EXISTS workflow_automations (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     description TEXT,
@@ -54,7 +54,7 @@ CREATE INDEX IF NOT EXISTS idx_workflow_tenant ON workflow_automations(tenant_id
 CREATE INDEX IF NOT EXISTS idx_workflow_trigger ON workflow_automations(tenant_id, trigger_type);
 
 CREATE TABLE IF NOT EXISTS lead_scores (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     prospecto_id BIGINT NOT NULL,
     score INT NOT NULL,
@@ -75,7 +75,7 @@ CREATE INDEX IF NOT EXISTS idx_lead_scores_tenant ON lead_scores(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_lead_scores_score ON lead_scores(tenant_id, score DESC);
 
 CREATE TABLE IF NOT EXISTS email_templates (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     subject VARCHAR(500) NOT NULL,
@@ -92,7 +92,7 @@ CREATE INDEX IF NOT EXISTS idx_email_templates_tenant ON email_templates(tenant_
 CREATE INDEX IF NOT EXISTS idx_email_templates_category ON email_templates(tenant_id, category);
 
 CREATE TABLE IF NOT EXISTS integrations (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     provider VARCHAR(50) NOT NULL,
     category VARCHAR(50) NOT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS integrations (
 CREATE INDEX IF NOT EXISTS idx_integrations_tenant ON integrations(tenant_id);
 
 CREATE TABLE IF NOT EXISTS gamification_badges (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(100) NOT NULL,
     description VARCHAR(500) NOT NULL,
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS gamification_badges (
 CREATE INDEX IF NOT EXISTS idx_gamification_tenant ON gamification_badges(tenant_id);
 
 CREATE TABLE IF NOT EXISTS client_portal_access (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     cliente_id BIGINT NOT NULL,
     portal_token VARCHAR(255) NOT NULL UNIQUE,

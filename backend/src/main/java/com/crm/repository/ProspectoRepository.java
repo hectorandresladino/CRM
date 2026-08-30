@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface ProspectoRepository extends JpaRepository<Prospecto, Long> {
     
-    Optional<Prospecto> findByEmail(String email);
+    Optional<Prospecto> findByTenantIdAndEmail(Long tenantId, String email);
     
     List<Prospecto> findByEstado(Prospecto.EstadoProspecto estado);
     
@@ -32,5 +32,13 @@ public interface ProspectoRepository extends JpaRepository<Prospecto, Long> {
     List<Prospecto> findByEstadoAndPrioridad(@Param("estado") Prospecto.EstadoProspecto estado, 
                                               @Param("prioridad") Prospecto.PrioridadProspecto prioridad);
     
-    boolean existsByEmail(String email);
+    boolean existsByTenantIdAndEmail(Long tenantId, String email);
+    List<Prospecto> findByTenantId(Long tenantId);
+    Optional<Prospecto> findByIdAndTenantId(Long id, Long tenantId);
+    boolean existsByIdAndTenantId(Long id, Long tenantId);
+    List<Prospecto> findByTenantIdAndEstado(Long tenantId, Prospecto.EstadoProspecto estado);
+    List<Prospecto> findByTenantIdAndPrioridad(Long tenantId, Prospecto.PrioridadProspecto prioridad);
+    List<Prospecto> findByTenantIdAndNombreContainingIgnoreCaseOrTenantIdAndApellidoContainingIgnoreCase(
+            Long tenantIdForName, String nombre, Long tenantIdForLastName, String apellido);
+    List<Prospecto> findByTenantIdAndEmpresaContainingIgnoreCase(Long tenantId, String empresa);
 }

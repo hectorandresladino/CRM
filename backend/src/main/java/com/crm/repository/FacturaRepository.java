@@ -14,6 +14,11 @@ import java.util.Optional;
 
 @Repository
 public interface FacturaRepository extends JpaRepository<Factura, Long> {
+    List<Factura> findByTenantId(Long tenantId);
+    Optional<Factura> findByIdAndTenantId(Long id, Long tenantId);
+    List<Factura> findByTenantIdAndEstado(Long tenantId, String estado);
+    List<Factura> findByTenantIdAndClienteId(Long tenantId, Long clienteId);
+    List<Factura> findByTenantIdAndFechaVencimientoBefore(Long tenantId, LocalDate fecha);
     
     List<Factura> findByEstado(String estado);
     List<Factura> findByTipo(String tipo);

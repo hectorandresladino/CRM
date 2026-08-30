@@ -39,12 +39,10 @@ public class FlowDefinition {
     @Column(name = "trigger_object")
     private String triggerObject;
 
-    @Column(name = "trigger_condition")
-    @Lob
+    @Column(name = "trigger_condition", columnDefinition = "TEXT")
     private String triggerCondition;
 
-    @Column(name = "flow_steps")
-    @Lob
+    @Column(name = "flow_steps", columnDefinition = "TEXT")
     private String flowSteps;
 
     @Column(name = "is_active")

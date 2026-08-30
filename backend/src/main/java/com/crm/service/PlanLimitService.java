@@ -55,12 +55,9 @@ public class PlanLimitService {
     }
 
     public void checkUserLimit(Long tenantId) {
-        Plan plan = getPlanForTenant(tenantId);
-        long currentUsers = usuarioRepository.countByTenantId(tenantId);
-        if (plan.getMaxUsers() != null && currentUsers >= plan.getMaxUsers()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "LÃ­mite de usuarios alcanzado (" + plan.getMaxUsers() + "). Actualice su plan.");
-        }
+        // Commercial plans intentionally have unlimited seats. Cost controls
+        // are enforced through contacts, storage, messages, AI and API usage.
+        getPlanForTenant(tenantId);
     }
 
     public void checkClientLimit(Long tenantId) {
@@ -84,7 +81,8 @@ public class PlanLimitService {
         Plan plan = getPlanForTenant(tenantId);
         Map<String, Object> stats = new HashMap<>();
         stats.put("planName", plan.getName());
-        stats.put("maxUsers", plan.getMaxUsers());
+        stats.put("maxUsers", null);
+        stats.put("unlimitedUsers", true);
         stats.put("currentUsers", usuarioRepository.countByTenantId(tenantId));
         stats.put("maxClients", plan.getMaxClients());
         stats.put("currentClients", clienteRepository.countByTenantId(tenantId));

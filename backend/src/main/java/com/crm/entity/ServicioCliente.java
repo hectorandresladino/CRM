@@ -58,6 +58,7 @@ public class ServicioCliente {
     @Column(nullable = false)
     private EstadoServicio estado = EstadoServicio.ABIERTO;
     
+    @Column(name = "asignado_a")
     private String asignadoA;
     
     @Column(columnDefinition = "TEXT")

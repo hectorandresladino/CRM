@@ -30,16 +30,13 @@ public class PermissionSet {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "object_permissions")
-    @Lob
+    @Column(name = "object_permissions", columnDefinition = "TEXT")
     private String objectPermissions;
 
-    @Column(name = "field_permissions")
-    @Lob
+    @Column(name = "field_permissions", columnDefinition = "TEXT")
     private String fieldPermissions;
 
-    @Column(name = "tab_permissions")
-    @Lob
+    @Column(name = "tab_permissions", columnDefinition = "TEXT")
     private String tabPermissions;
 
     @Column(name = "is_custom")

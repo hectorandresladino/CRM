@@ -2,7 +2,7 @@
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   Calendar, Plus, CheckCircle, Clock, Phone, Users, Mail,
   MapPin, Trash2, Filter, ListTodo
@@ -52,7 +52,7 @@ export default function Actividades() {
     tipo: 'TAREA', titulo: '', estado: 'PENDIENTE', prioridad: 'MEDIA',
   });
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const url = filterEstado !== 'ALL' ? `/api/actividades/estado/${filterEstado}` : '/api/actividades';
@@ -63,9 +63,9 @@ export default function Actividades() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterEstado]);
 
-  useEffect(() => { loadData(); }, [filterEstado]);
+  useEffect(() => { loadData(); }, [loadData]);
 
   const handleSubmit = async () => {
     try {

@@ -2,7 +2,7 @@
 
 -- Flow execution logs
 CREATE TABLE IF NOT EXISTS flow_execution_logs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     flow_id BIGINT NOT NULL,
     flow_name VARCHAR(255),
@@ -25,7 +25,7 @@ CREATE INDEX IF NOT EXISTS idx_flow_logs_status ON flow_execution_logs(status);
 
 -- Webhook delivery logs
 CREATE TABLE IF NOT EXISTS webhook_logs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     webhook_id BIGINT NOT NULL,
     event_type VARCHAR(100),
@@ -44,7 +44,7 @@ CREATE INDEX IF NOT EXISTS idx_webhook_logs_status ON webhook_logs(status);
 
 -- Integration sync logs
 CREATE TABLE IF NOT EXISTS integration_sync_logs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     integration_id BIGINT NOT NULL,
     provider VARCHAR(50),
@@ -64,7 +64,7 @@ CREATE INDEX IF NOT EXISTS idx_sync_logs_integration ON integration_sync_logs(in
 
 -- Scheduled jobs
 CREATE TABLE IF NOT EXISTS scheduled_jobs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,

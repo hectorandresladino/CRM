@@ -25,15 +25,15 @@ public class DevOpsService {
 
     public Map<String, Object> getFeatureFlags() {
         Map<String, Object> flags = new LinkedHashMap<>();
-        flags.put("sales_cloud_forecasts", true);
-        flags.put("service_cloud_knowledge", true);
-        flags.put("revenue_cloud_amendments", true);
-        flags.put("data360_cdp", true);
-        flags.put("platform_custom_objects", true);
-        flags.put("flow_engine", true);
-        flags.put("agentforce_ai", true);
+        flags.put("sales_forecasting", true);
+        flags.put("service_knowledge", true);
+        flags.put("subscription_amendments", true);
+        flags.put("customer_data_hub", true);
+        flags.put("custom_object_studio", true);
+        flags.put("automation_studio", true);
+        flags.put("revenue_ai_engine", true);
         flags.put("analytics_dashboards", true);
-        flags.put("experience_cloud", true);
+        flags.put("customer_partner_portals", true);
         flags.put("enterprise_security", true);
         flags.put("whatsapp_ai", true);
         flags.put("integrations_sync", true);

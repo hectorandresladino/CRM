@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,14 +27,42 @@ public class AuthService {
     private final SubscriptionRepository subscriptionRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MfaService mfaService;
 
     private static final int MAX_FAILED_ATTEMPTS = 5;
     private static final int LOCK_DURATION_MINUTES = 30;
 
     @Transactional
     public AuthResponse login(String username, String password) {
-        Usuario usuario = usuarioRepository.findByUsername(username)
+        List<Usuario> matches = usuarioRepository.findAllByUsername(username);
+        if (matches.size() != 1) {
+            throw new RuntimeException("Credenciales invÃ¡lidas; indique la empresa para iniciar sesiÃ³n");
+        }
+        return authenticate(matches.get(0), password, null);
+    }
+
+    @Transactional
+    public AuthResponse login(String username, String password, String tenantSlug) {
+        return login(username, password, tenantSlug, null);
+    }
+
+    @Transactional
+    public AuthResponse login(String username, String password, String tenantSlug, String mfaCode) {
+        if (tenantSlug == null || tenantSlug.isBlank()) {
+            List<Usuario> matches = usuarioRepository.findAllByUsername(username);
+            if (matches.size() != 1) {
+                throw new RuntimeException("Credenciales inválidas; indique la empresa para iniciar sesión");
+            }
+            return authenticate(matches.get(0), password, mfaCode);
+        }
+        Tenant tenant = tenantRepository.findBySlug(tenantSlug)
                 .orElseThrow(() -> new RuntimeException("Credenciales invÃ¡lidas"));
+        Usuario usuario = usuarioRepository.findByTenantIdAndUsername(tenant.getId(), username)
+                .orElseThrow(() -> new RuntimeException("Credenciales invÃ¡lidas"));
+        return authenticate(usuario, password, mfaCode);
+    }
+
+    private AuthResponse authenticate(Usuario usuario, String password, String mfaCode) {
 
         if (usuario.getAccountLockedUntil() != null &&
             usuario.getAccountLockedUntil().isAfter(LocalDateTime.now())) {
@@ -41,17 +70,18 @@ public class AuthService {
         }
 
         if (!passwordEncoder.matches(password, usuario.getPassword())) {
-            int attempts = usuario.getFailedLoginAttempts() + 1;
-            usuario.setFailedLoginAttempts(attempts);
-            if (attempts >= MAX_FAILED_ATTEMPTS) {
-                usuario.setAccountLockedUntil(LocalDateTime.now().plusMinutes(LOCK_DURATION_MINUTES));
-            }
-            usuarioRepository.save(usuario);
+            registerFailedAttempt(usuario);
             throw new RuntimeException("Credenciales invÃ¡lidas");
         }
 
         if (!usuario.getActivo()) {
             throw new RuntimeException("Usuario inactivo");
+        }
+
+        if (Boolean.TRUE.equals(usuario.getMfaEnabled())
+                && (mfaCode == null || mfaCode.isBlank() || !mfaService.verifyLoginCode(usuario, mfaCode))) {
+            registerFailedAttempt(usuario);
+            throw new RuntimeException("Código MFA requerido o inválido");
         }
 
         usuario.setFailedLoginAttempts(0);
@@ -72,10 +102,6 @@ public class AuthService {
         if (tenantRepository.existsBySlug(generateSlug(request.getCompanyName()))) {
             throw new RuntimeException("Ya existe una empresa con ese nombre");
         }
-        if (usuarioRepository.existsByEmail(request.getAdminEmail())) {
-            throw new RuntimeException("El email ya estÃ¡ registrado");
-        }
-
         Plan plan = planRepository.findByName(request.getPlanName())
                 .orElseThrow(() -> new RuntimeException("Plan no encontrado: " + request.getPlanName()));
 
@@ -89,7 +115,7 @@ public class AuthService {
         tenant.setStatus(Tenant.TenantStatus.TRIAL);
         tenant.setPlanId(plan.getId());
         tenant.setTrialEndsAt(LocalDateTime.now().plusDays(plan.getTrialDays()));
-        tenant.setMaxUsers(plan.getMaxUsers());
+        tenant.setMaxUsers(null);
         tenant.setMaxClients(plan.getMaxClients());
         tenant.setMaxStorageMb(plan.getMaxStorageMb());
         tenant = tenantRepository.save(tenant);
@@ -131,8 +157,14 @@ public class AuthService {
         }
 
         String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
-        Usuario usuario = usuarioRepository.findByUsername(username)
+        Long tenantId = jwtTokenProvider.getTenantIdFromToken(refreshToken);
+        Usuario usuario = (tenantId != null
+                ? usuarioRepository.findByTenantIdAndUsername(tenantId, username)
+                : usuarioRepository.findByUsernameAndTenantIdIsNull(username))
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (tenantId == null && usuario.getRol() != Usuario.Role.SUPER_ADMIN) {
+            throw new RuntimeException("Refresh token sin tenant válido");
+        }
 
         if (!refreshToken.equals(usuario.getRefreshToken()) ||
             usuario.getRefreshTokenExpires() != null &&
@@ -151,8 +183,13 @@ public class AuthService {
 
     @Transactional
     public void logout(String username) {
-        Usuario usuario = usuarioRepository.findByUsername(username)
+        Usuario usuario = (TenantContext.hasTenant()
+                ? usuarioRepository.findByTenantIdAndUsername(TenantContext.requireCurrentTenant(), username)
+                : usuarioRepository.findByUsernameAndTenantIdIsNull(username))
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (!TenantContext.hasTenant() && usuario.getRol() != Usuario.Role.SUPER_ADMIN) {
+            throw new RuntimeException("Usuario de plataforma inválido");
+        }
         usuario.setRefreshToken(null);
         usuario.setRefreshTokenExpires(null);
         usuarioRepository.save(usuario);
@@ -160,8 +197,27 @@ public class AuthService {
 
     @Transactional
     public void requestPasswordReset(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+        List<Usuario> matches = usuarioRepository.findAllByEmail(email);
+        if (matches.size() != 1) {
+            throw new RuntimeException("Email no encontrado; indique la empresa");
+        }
+        issuePasswordReset(matches.get(0));
+    }
+
+    @Transactional
+    public void requestPasswordReset(String email, String tenantSlug) {
+        if (tenantSlug == null || tenantSlug.isBlank()) {
+            requestPasswordReset(email);
+            return;
+        }
+        Tenant tenant = tenantRepository.findBySlug(tenantSlug)
                 .orElseThrow(() -> new RuntimeException("Email no encontrado"));
+        Usuario usuario = usuarioRepository.findByTenantIdAndEmail(tenant.getId(), email)
+                .orElseThrow(() -> new RuntimeException("Email no encontrado"));
+        issuePasswordReset(usuario);
+    }
+
+    private void issuePasswordReset(Usuario usuario) {
         usuario.setPasswordResetToken(UUID.randomUUID().toString());
         usuario.setPasswordResetExpires(LocalDateTime.now().plusHours(24));
         usuarioRepository.save(usuario);
@@ -191,6 +247,15 @@ public class AuthService {
 
     public Long getCurrentTenantId() {
         return TenantContext.getCurrentTenant();
+    }
+
+    private void registerFailedAttempt(Usuario usuario) {
+        int attempts = (usuario.getFailedLoginAttempts() == null ? 0 : usuario.getFailedLoginAttempts()) + 1;
+        usuario.setFailedLoginAttempts(attempts);
+        if (attempts >= MAX_FAILED_ATTEMPTS) {
+            usuario.setAccountLockedUntil(LocalDateTime.now().plusMinutes(LOCK_DURATION_MINUTES));
+        }
+        usuarioRepository.save(usuario);
     }
 
     private String generateSlug(String name) {

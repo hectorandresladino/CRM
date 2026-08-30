@@ -6,6 +6,8 @@ package com.crm.service;
 
 import com.crm.entity.Cliente;
 import com.crm.repository.ClienteRepository;
+import com.crm.security.TenantAccessDeniedException;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,19 +23,21 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     
     public List<Cliente> findAll() {
-        return clienteRepository.findAll();
+        return clienteRepository.findByTenantId(tenantId());
     }
     
     public Optional<Cliente> findById(Long id) {
-        return clienteRepository.findById(id);
+        return clienteRepository.findByIdAndTenantId(id, tenantId());
     }
     
     public Cliente save(Cliente cliente) {
         try {
-            if (cliente.getEmail() != null && !cliente.getEmail().isEmpty() && clienteRepository.existsByEmail(cliente.getEmail())) {
+            Long tenantId = tenantId();
+            cliente.setTenantId(tenantId);
+            if (cliente.getEmail() != null && !cliente.getEmail().isEmpty() && clienteRepository.existsByTenantIdAndEmail(tenantId, cliente.getEmail())) {
                 throw new RuntimeException("Ya existe un cliente con ese email");
             }
-            if (cliente.getIdentificacion() != null && !cliente.getIdentificacion().isEmpty() && clienteRepository.existsByIdentificacion(cliente.getIdentificacion())) {
+            if (cliente.getIdentificacion() != null && !cliente.getIdentificacion().isEmpty() && clienteRepository.existsByTenantIdAndIdentificacion(tenantId, cliente.getIdentificacion())) {
                 throw new RuntimeException("Ya existe un cliente con esa identificaciÃ³n");
             }
             return clienteRepository.save(cliente);
@@ -43,11 +47,12 @@ public class ClienteService {
     }
     
     public Cliente update(Long id, Cliente cliente) {
-        Cliente existingCliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Long tenantId = tenantId();
+        Cliente existingCliente = clienteRepository.findByIdAndTenantId(id, tenantId)
+                .orElseThrow(() -> new TenantAccessDeniedException("Cliente"));
         
         if (!existingCliente.getEmail().equals(cliente.getEmail()) && 
-            clienteRepository.existsByEmail(cliente.getEmail())) {
+            clienteRepository.existsByTenantIdAndEmail(tenantId, cliente.getEmail())) {
             throw new RuntimeException("Ya existe un cliente con ese email");
         }
         
@@ -72,21 +77,26 @@ public class ClienteService {
     }
     
     public void delete(Long id) {
-        if (!clienteRepository.existsById(id)) {
-            throw new RuntimeException("Cliente no encontrado");
-        }
-        clienteRepository.deleteById(id);
+        Cliente cliente = clienteRepository.findByIdAndTenantId(id, tenantId())
+                .orElseThrow(() -> new TenantAccessDeniedException("Cliente"));
+        clienteRepository.delete(cliente);
     }
     
     public List<Cliente> findByEstado(Cliente.EstadoCliente estado) {
-        return clienteRepository.findByEstado(estado);
+        return clienteRepository.findByTenantIdAndEstado(tenantId(), estado);
     }
     
     public List<Cliente> buscarPorNombre(String nombre, String apellido) {
-        return clienteRepository.buscarPorNombre(nombre, apellido);
+        Long tenantId = tenantId();
+        return clienteRepository.findByTenantIdAndNombreContainingIgnoreCaseOrTenantIdAndApellidoContainingIgnoreCase(
+                tenantId, nombre, tenantId, apellido);
     }
     
     public List<Cliente> buscarPorEmpresa(String empresa) {
-        return clienteRepository.buscarPorEmpresa(empresa);
+        return clienteRepository.findByTenantIdAndEmpresaContainingIgnoreCase(tenantId(), empresa);
+    }
+
+    private Long tenantId() {
+        return TenantContext.requireCurrentTenant();
     }
 }

@@ -19,7 +19,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class SalesCloudAdvancedService {
+public class SalesOperationsService {
 
     private final AccountRepository accountRepo;
     private final ContactRepository contactRepo;
@@ -96,12 +96,12 @@ public class SalesCloudAdvancedService {
 
         Map<String, Object> view = new LinkedHashMap<>();
         view.put("cliente", cliente);
-        view.put("ventas", ventaRepo.findByCliente(cliente));
-        view.put("cotizaciones", cotizacionRepo.findByCliente(cliente));
-        view.put("pedidos", pedidoRepo.findByCliente(cliente));
-        view.put("servicios", servicioRepo.findByCliente(cliente));
-        view.put("contratos", contratoRepo.findByCliente(cliente));
-        view.put("facturas", facturaRepo.findByCliente(cliente));
+        view.put("ventas", ventaRepo.findByClienteId(cliente.getId()));
+        view.put("cotizaciones", cotizacionRepo.findByClienteId(cliente.getId()));
+        view.put("pedidos", pedidoRepo.findByClienteId(cliente.getId()));
+        view.put("servicios", servicioRepo.findByClienteId(cliente.getId()));
+        view.put("contratos", contratoRepo.findByClienteId(cliente.getId()));
+        view.put("facturas", facturaRepo.findByClienteId(cliente.getId()));
 
         List<CalendarEvent> meetings = calendarRepo.findByTenantId(tid()).stream()
                 .filter(e -> clienteId.equals(e.getContactId()) || clienteId.equals(e.getAccountId()))
@@ -203,13 +203,13 @@ public class SalesCloudAdvancedService {
         for (MetaComercial g : goals) {
             Map<String, Object> r = new LinkedHashMap<>();
             r.put("id", g.getId());
-            r.put("usuario", g.getUsuario());
+            r.put("usuario", g.getVendedor());
             r.put("anio", g.getAnio());
             r.put("mes", g.getMes());
-            r.put("meta", g.getMeta());
-            r.put("realizado", g.getRealizado());
-            r.put("cumplimiento", g.getMeta() != null && g.getMeta().compareTo(java.math.BigDecimal.ZERO) > 0 ?
-                    g.getRealizado().divide(g.getMeta(), 4, java.math.RoundingMode.HALF_UP) : java.math.BigDecimal.ZERO);
+            r.put("meta", g.getMontoObjetivo());
+            r.put("realizado", g.getMontoAlcanzado());
+            r.put("cumplimiento", g.getMontoObjetivo() != null && g.getMontoObjetivo().compareTo(java.math.BigDecimal.ZERO) > 0 && g.getMontoAlcanzado() != null ?
+                    g.getMontoAlcanzado().divide(g.getMontoObjetivo(), 4, java.math.RoundingMode.HALF_UP) : java.math.BigDecimal.ZERO);
             results.add(r);
         }
         return Map.of("goals", results, "count", results.size());

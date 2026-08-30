@@ -2,7 +2,7 @@
 
 -- SSO configs
 CREATE TABLE IF NOT EXISTS sso_configs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     provider VARCHAR(20) NOT NULL,
     client_id VARCHAR(255),
@@ -22,7 +22,7 @@ CREATE INDEX IF NOT EXISTS idx_sso_tenant ON sso_configs(tenant_id);
 
 -- Password policies
 CREATE TABLE IF NOT EXISTS password_policies (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     min_length INT DEFAULT 8,
     require_uppercase BOOLEAN DEFAULT TRUE,
@@ -43,7 +43,7 @@ CREATE INDEX IF NOT EXISTS idx_password_policy_tenant ON password_policies(tenan
 
 -- Data retention policies
 CREATE TABLE IF NOT EXISTS data_retention_policies (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -60,7 +60,7 @@ CREATE INDEX IF NOT EXISTS idx_retention_tenant ON data_retention_policies(tenan
 
 -- GDPR requests
 CREATE TABLE IF NOT EXISTS gdpr_requests (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     client_id BIGINT,
     client_email VARCHAR(255),
@@ -81,7 +81,7 @@ CREATE INDEX IF NOT EXISTS idx_gdpr_requests_status ON gdpr_requests(status);
 
 -- Compliance audits
 CREATE TABLE IF NOT EXISTS compliance_audits (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     standard VARCHAR(20) NOT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS compliance_audits (
     result VARCHAR(30) NOT NULL DEFAULT 'PENDING',
     findings TEXT,
     recommendations TEXT,
-    score DOUBLE,
+    score DOUBLE PRECISION,
     report_url VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -100,7 +100,7 @@ CREATE INDEX IF NOT EXISTS idx_compliance_tenant ON compliance_audits(tenant_id)
 
 -- IP whitelist
 CREATE TABLE IF NOT EXISTS ip_whitelists (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     ip_address VARCHAR(45) NOT NULL,
     cidr_mask VARCHAR(10),
@@ -113,7 +113,7 @@ CREATE INDEX IF NOT EXISTS idx_ip_whitelist_tenant ON ip_whitelists(tenant_id);
 
 -- Security scans
 CREATE TABLE IF NOT EXISTS security_scans (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     type VARCHAR(30) NOT NULL,
@@ -133,7 +133,7 @@ CREATE INDEX IF NOT EXISTS idx_security_scans_tenant ON security_scans(tenant_id
 
 -- Session records
 CREATE TABLE IF NOT EXISTS session_records (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     tenant_id BIGINT NOT NULL,
     user_id BIGINT,
     user_email VARCHAR(255),

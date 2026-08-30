@@ -11,7 +11,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuarios", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_usuarios_tenant_username", columnNames = {"tenant_id", "username"}),
+        @UniqueConstraint(name = "uk_usuarios_tenant_email", columnNames = {"tenant_id", "email"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,13 +27,13 @@ public class Usuario {
     @Column(name = "tenant_id")
     private Long tenantId;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(unique = true)
+    @Column
     private String email;
 
     private String nombre;

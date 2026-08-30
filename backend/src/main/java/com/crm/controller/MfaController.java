@@ -8,6 +8,7 @@ import com.crm.service.MfaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Map;
@@ -20,35 +21,42 @@ public class MfaController {
     private final MfaService mfaService;
 
     @PostMapping("/setup")
-    public ResponseEntity<Map<String, String>> setup(@RequestBody Map<String, String> body) {
-        return ResponseEntity.ok(mfaService.setupMfa(body.get("username")));
+    public ResponseEntity<Map<String, String>> setup(Authentication authentication,
+                                                      @RequestBody(required = false) Map<String, String> body) {
+        String currentCode = body == null ? null : body.get("code");
+        return ResponseEntity.ok(mfaService.setupMfa(authentication.getName(), currentCode));
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<Map<String, Boolean>> verify(@RequestBody Map<String, String> body) {
-        boolean valid = mfaService.verifyAndEnableMfa(body.get("username"), body.get("code"));
+    public ResponseEntity<Map<String, Boolean>> verify(Authentication authentication,
+                                                        @RequestBody Map<String, String> body) {
+        boolean valid = mfaService.verifyAndEnableMfa(authentication.getName(), body.get("code"));
         return ResponseEntity.ok(Map.of("verified", valid));
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<Map<String, Boolean>> validate(@RequestBody Map<String, String> body) {
-        boolean valid = mfaService.verifyCode(body.get("username"), body.get("code"));
+    public ResponseEntity<Map<String, Boolean>> validate(Authentication authentication,
+                                                          @RequestBody Map<String, String> body) {
+        boolean valid = mfaService.verifyCode(authentication.getName(), body.get("code"));
         return ResponseEntity.ok(Map.of("valid", valid));
     }
 
     @PostMapping("/disable")
-    public ResponseEntity<Void> disable(@RequestBody Map<String, String> body) {
-        mfaService.disableMfa(body.get("username"), body.get("code"));
+    public ResponseEntity<Void> disable(Authentication authentication,
+                                         @RequestBody Map<String, String> body) {
+        mfaService.disableMfa(authentication.getName(), body.get("code"));
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/recovery-codes")
-    public ResponseEntity<Map<String, List<String>>> recoveryCodes(@RequestBody Map<String, String> body) {
-        return ResponseEntity.ok(Map.of("codes", mfaService.regenerateRecoveryCodes(body.get("username"))));
+    public ResponseEntity<Map<String, List<String>>> recoveryCodes(Authentication authentication,
+                                                                    @RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(Map.of("codes", mfaService.regenerateRecoveryCodes(
+                authentication.getName(), body.get("code"))));
     }
 
-    @GetMapping("/status/{username}")
-    public ResponseEntity<Map<String, Boolean>> status(@PathVariable String username) {
-        return ResponseEntity.ok(Map.of("mfaRequired", mfaService.isMfaRequired(username)));
+    @GetMapping("/status")
+    public ResponseEntity<Map<String, Boolean>> status(Authentication authentication) {
+        return ResponseEntity.ok(Map.of("mfaRequired", mfaService.isMfaRequired(authentication.getName())));
     }
 }
