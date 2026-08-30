@@ -1,0 +1,14 @@
+package com.crm.repository;
+
+import com.crm.entity.*;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface EntitlementRepository extends JpaRepository<Entitlement, Long> {
+    List<Entitlement> findByTenantId(Long tenantId);
+    List<Entitlement> findByTenantIdAndClientId(Long tenantId, Long clientId);
+    List<Entitlement> findByTenantIdAndStatus(Long tenantId, String status);
+}
