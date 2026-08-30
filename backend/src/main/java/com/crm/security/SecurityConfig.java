@@ -66,6 +66,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/client-portal/login").permitAll()
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/health/**").permitAll()
+                .requestMatchers("/api/v1/mfa/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/swagger-ui.html").permitAll()

@@ -61,6 +61,9 @@ public class Usuario {
     @Column(name = "mfa_secret")
     private String mfaSecret;
 
+    @Column(name = "mfa_recovery_codes", columnDefinition = "TEXT")
+    private String mfaRecoveryCodes;
+
     @Column(name = "failed_login_attempts")
     private Integer failedLoginAttempts = 0;
 
