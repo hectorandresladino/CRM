@@ -427,6 +427,29 @@ CREATE TABLE IF NOT EXISTS analytics_dashboards (
 );
 CREATE INDEX IF NOT EXISTS idx_dashboard_tenant ON analytics_dashboards(tenant_id);
 
+-- Experience Cloud
+CREATE TABLE IF NOT EXISTS portal_configs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tenant_id BIGINT NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    portal_type VARCHAR(50),
+    is_active BOOLEAN DEFAULT true,
+    custom_domain VARCHAR(200),
+    theme_primary_color VARCHAR(20),
+    theme_secondary_color VARCHAR(20),
+    logo_url VARCHAR(500),
+    header_html TEXT,
+    footer_html TEXT,
+    visible_objects TEXT,
+    self_service_actions TEXT,
+    require_login BOOLEAN DEFAULT true,
+    allow_registration BOOLEAN DEFAULT true,
+    default_language VARCHAR(10) DEFAULT 'es',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_portal_tenant ON portal_configs(tenant_id);
+
 -- Enterprise Security
 CREATE TABLE IF NOT EXISTS permission_sets (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,

@@ -26,7 +26,7 @@ public class ApiKey {
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "api_key", nullable = false, unique = true)
     private String key;
 
     @Column(name = "permisos", columnDefinition = "TEXT")
