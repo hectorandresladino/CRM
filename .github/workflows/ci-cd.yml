@@ -1,0 +1,182 @@
+name: CI/CD - CRM SaaS
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  JAVA_VERSION: '17'
+  NODE_VERSION: '18'
+
+jobs:
+  # ============================================
+  # Backend: Build + Test + Security
+  # ============================================
+  backend-build:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Compile backend
+        run: mvn clean compile -q
+
+      - name: Run tests
+        run: mvn test -q
+
+      - name: Package backend (skip tests)
+        run: mvn package -DskipTests -q
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jar
+          path: backend/target/*.jar
+
+  backend-security:
+    name: Backend Security Scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: OWASP Dependency Check
+        run: mvn org.owasp:dependency-check-maven:check -q || true
+        continue-on-error: true
+
+      - name: CodeQL Analysis
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
+      - name: CodeQL Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: CodeQL Analyze
+        uses: github/codeql-action/analyze@v3
+
+  # ============================================
+  # Frontend: Build + Lint + Test
+  # ============================================
+  frontend-build:
+    name: Frontend Build & Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+
+  # ============================================
+  # Docker Build
+  # ============================================
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [backend-build, frontend-build]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: crm-saas-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: false
+          tags: crm-saas-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================
+  # Trivy Security Scan
+  # ============================================
+  trivy-scan:
+    name: Trivy Container Scan
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -t crm-saas-backend:latest ./backend
+
+      - name: Build frontend image
+        run: docker build -t crm-saas-frontend:latest ./frontend
+
+      - name: Trivy scan backend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: crm-saas-backend:latest
+          format: 'sarif'
+          output: 'trivy-backend.sarif'
+        continue-on-error: true
+
+      - name: Trivy scan frontend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: crm-saas-frontend:latest
+          format: 'sarif'
+          output: 'trivy-frontend.sarif'
+        continue-on-error: true

@@ -22,6 +22,9 @@ public class Prospecto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(name = "tenant_id", nullable = false)
+    private Long tenantId;
+    
     @NotBlank(message = "El nombre es obligatorio")
     @Column(nullable = false)
     private String nombre;

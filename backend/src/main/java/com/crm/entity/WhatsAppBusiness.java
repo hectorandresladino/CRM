@@ -17,6 +17,9 @@ public class WhatsAppBusiness {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(name = "tenant_id", nullable = false)
+    private Long tenantId;
+    
     private String telefono;
     private String mensaje;
     private String estado;

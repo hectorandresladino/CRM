@@ -1,13 +1,31 @@
-# CRM - Sistema de Gestión de Relaciones con Clientes
+# CRM SaaS - Sistema Multiempresa de Gestión de Relaciones con Clientes
 
-Sistema CRM completo con arquitectura de microservicios.
+Plataforma SaaS empresarial multi-tenant para gestión de clientes, ventas, marketing y soporte. Monolito modular construido con Spring Boot + React.
 
 ## Stack Tecnológico
 
-- **Frontend**: React 18 + TypeScript + TailwindCSS + shadcn/ui
-- **Backend**: Spring Boot 3.x + Java 17
-- **Base de Datos**: H2 (desarrollo) / PostgreSQL (producción)
-- **Contenedores**: Docker + Docker Compose
+- **Frontend**: React 18 + TypeScript + TailwindCSS + Vite + PWA + Capacitor (Android/iOS)
+- **Backend**: Spring Boot 3.x + Java 17 + Spring Security + JWT + Redis
+- **Base de Datos**: H2 (desarrollo) / PostgreSQL (producción) + Flyway
+- **Cache/Sesiones**: Redis
+- **Almacenamiento**: MinIO / S3
+- **Contenedores**: Docker + Docker Compose + OpenShift
+- **CI/CD**: GitHub Actions (build, test, lint, CodeQL, Trivy, OWASP)
+- **Observabilidad**: Actuator + Prometheus + Grafana
+
+## Capacidades SaaS
+
+- **Multiempresa (Multi-tenant)**: Aislamiento total por `tenant_id`
+- **Seguridad**: JWT, BCrypt, Refresh Token, MFA, bloqueo por intentos, rate limiting
+- **Roles**: SUPER_ADMIN, TENANT_OWNER, ADMIN, MANAGER, SALES, MARKETING, SUPPORT, ACCOUNTING
+- **Planes**: Starter ($29), Professional ($79), Enterprise ($199) con trial de 14 días
+- **Suscripciones**: Trial, Activa, Vencida, Suspendida, Cancelada con renovación automática
+- **Facturación SaaS**: BillingInvoice, Payment, PaymentMethod (Stripe, Wompi, MercadoPago, PayU)
+- **SuperAdmin**: Gestión de tenants, planes, usuarios globales, métricas SaaS, auditoría
+- **Registro automático**: Creación de empresa + trial sin intervención manual
+- **Auditoría**: Registro de cambios por usuario, entidad, IP, valor anterior y nuevo
+- **Internacionalización**: Español/Inglés, moneda, zona horaria, formato de fecha
+- **API v1**: Swagger/OpenAPI, API Keys, Webhooks, versionamiento
 
 ## Módulos Principales
 
@@ -31,17 +49,52 @@ Sistema CRM completo con arquitectura de microservicios.
 
 ```
 CRM/
-├── backend/          # Spring Boot API
+├── backend/                    # Spring Boot API (Monolito modular SaaS)
+│   ├── src/main/java/com/crm/
+│   │   ├── config/             # DataInitializer, configuracion
+│   │   ├── controller/         # 18 controladores REST + AuthV1 + SuperAdmin
+│   │   ├── entity/             # 21 entidades JPA con tenant_id
+│   │   │   └── base/           # TenantAware (clase base)
+│   │   ├── repository/         # 24 repositorios JPA
+│   │   ├── security/           # JWT, TenantContext, SecurityConfig, filtros
+│   │   └── service/            # 16 servicios + AuthService SaaS
+│   ├── src/main/resources/
+│   │   ├── application.properties          # Config base
+│   │   ├── application-dev.properties      # Desarrollo (H2)
+│   │   ├── application-test.properties     # Testing (H2)
+│   │   ├── application-prod.properties     # Produccion (PostgreSQL + Redis)
+│   │   └── db/migration/                   # Flyway V1__init_saas_schema.sql
 │   ├── Dockerfile
-│   └── .dockerignore
-├── frontend/         # React Application
+│   └── pom.xml
+├── frontend/                   # React App + PWA + Capacitor
+│   ├── src/
+│   │   ├── components/         # UI + ProtectedRoute + RoleGuard
+│   │   ├── context/            # AuthContext (JWT)
+│   │   ├── config/             # API endpoints
+│   │   ├── i18n/               # Traducciones ES/EN
+│   │   ├── pages/              # 17 paginas + Login + Register
+│   │   └── services/           # Axios con interceptor JWT + refresh
+│   ├── android/                # Proyecto Capacitor Android
 │   ├── Dockerfile
-│   ├── nginx.conf
-│   └── .dockerignore
-├── db/               # Scripts de base de datos
-│   ├── schema.sql    # Esquema completo de tablas
-│   └── init.sql      # Datos iniciales
-└── docker-compose.yml # Contenedores completos
+│   └── capacitor.config.ts
+├── db/                         # Scripts SQL legacy
+│   ├── schema.sql
+│   └── init.sql
+├── openshift/                  # Manifiestos OpenShift (8 archivos)
+│   ├── 01-postgresql.yaml      # PostgreSQL + Secret + PVC
+│   ├── 02-backend.yaml         # Backend + ConfigMap + Secrets + probes
+│   ├── 03-frontend.yaml        # Frontend
+│   ├── 04-routes.yaml          # Routes TLS
+│   ├── 05-config-secrets.yaml  # ConfigMaps + Secrets SaaS
+│   ├── 06-redis.yaml           # Redis + PVC
+│   ├── 07-minio.yaml           # MinIO/S3 + PVC
+│   ├── 08-hpa-networkpolicy.yaml # HPA + NetworkPolicy
+│   ├── deploy.bat              # Script Windows
+│   └── deploy.sh               # Script Linux/Mac
+├── .github/workflows/          # CI/CD
+│   └── ci-cd.yml               # Build, test, lint, security, docker
+├── docker-compose.yml
+└── README.md
 ```
 
 ## Requisitos Previos
@@ -133,15 +186,46 @@ La aplicación estará disponible en: `http://localhost:5174`
 
 ## Configuración
 
-### Backend
+### Backend - Perfiles por Ambiente
 
-Editar `backend/src/main/resources/application.properties`:
+El backend usa Spring Profiles para separar configuración:
 
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/crm_db
-spring.datasource.username=postgres
-spring.datasource.password=postgres
+| Perfil | BD | Cache | Flyway | Uso |
+|--------|-----|-------|--------|-----|
+| `dev` (default) | H2 en memoria | - | No | Desarrollo local |
+| `test` | H2 en memoria | - | No | Pruebas automatizadas |
+| `prod` | PostgreSQL | Redis | Si | Producción / OpenShift |
+
+```bash
+# Desarrollo (default)
+mvn spring-boot:run
+
+# Produccion
+SPRING_PROFILES_ACTIVE=prod \
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/crm_saas \
+SPRING_DATASOURCE_USERNAME=postgres \
+SPRING_DATASOURCE_PASSWORD=postgres \
+JWT_SECRET=tu-clave-secreta-min-256-bits \
+mvn spring-boot:run
 ```
+
+### Variables de Entorno (Producción)
+
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `SPRING_PROFILES_ACTIVE` | Perfil activo | `dev` |
+| `SPRING_DATASOURCE_URL` | URL de PostgreSQL | H2 en memoria |
+| `SPRING_DATASOURCE_USERNAME` | Usuario BD | `sa` |
+| `SPRING_DATASOURCE_PASSWORD` | Password BD | - |
+| `JWT_SECRET` | Clave secreta JWT | clave dev |
+| `JWT_ACCESS_EXPIRATION_MS` | Expiración access token | 900000 (15min) |
+| `JWT_REFRESH_EXPIRATION_MS` | Expiración refresh token | 604800000 (7días) |
+| `REDIS_HOST` | Host Redis | `localhost` |
+| `REDIS_PORT` | Puerto Redis | `6379` |
+| `MINIO_ENDPOINT` | URL MinIO/S3 | `http://minio:9000` |
+| `MAIL_HOST` | Host SMTP | `smtp.gmail.com` |
+| `MAIL_USERNAME` | Usuario mail | - |
+| `MAIL_PASSWORD` | Password mail | - |
 
 ### Frontend
 
@@ -209,14 +293,258 @@ cd frontend
 npm run build
 ```
 
-## Despliegue en Sandbox
+## Despliegue en Red Hat OpenShift Sandbox
 
-Para desplegar en un entorno de sandbox:
+### Archivos de Despliegue
 
-1. Subir el código al repositorio
-2. El sandbox detectará automáticamente el `docker-compose.yml`
-3. Iniciará los contenedores en el orden correcto
-4. La aplicación estará disponible en la URL del sandbox
+```
+openshift/
+├── 01-postgresql.yaml    # Secret, PVC, Deployment y Service de PostgreSQL
+├── 02-backend.yaml       # ImageStream, BuildConfig, Deployment y Service del Backend
+├── 03-frontend.yaml      # ImageStream, BuildConfig, Deployment y Service del Frontend
+├── 04-routes.yaml        # Routes con TLS para Frontend y Backend
+├── deploy.bat            # Script de despliegue para Windows
+└── deploy.sh             # Script de despliegue para Linux/Mac
+```
+
+### Despliegue Automático
+
+#### Windows
+```cmd
+cd c:\Users\User\Desktop\CRM
+openshift\deploy.bat
+```
+
+#### Linux/Mac
+```bash
+cd /path/to/CRM
+chmod +x openshift/deploy.sh
+./openshift/deploy.sh
+```
+
+### Despliegue Manual Paso a Paso
+
+1. **Login en OpenShift:**
+```bash
+oc login https://api.sandbox.openshift.com:6443
+```
+
+2. **Crear proyecto:**
+```bash
+oc new-project crm --display-name="CRM System"
+```
+
+3. **Desplegar PostgreSQL:**
+```bash
+oc apply -f openshift/01-postgresql.yaml
+oc rollout status deployment/postgresql --watch
+```
+
+4. **Desplegar Backend:**
+```bash
+oc apply -f openshift/02-backend.yaml
+oc rollout status deployment/crm-backend --watch
+```
+
+5. **Desplegar Frontend:**
+```bash
+oc apply -f openshift/03-frontend.yaml
+oc rollout status deployment/crm-frontend --watch
+```
+
+6. **Crear Routes (URLs públicas):**
+```bash
+oc apply -f openshift/04-routes.yaml
+```
+
+7. **Obtener URLs de acceso:**
+```bash
+oc get route crm-frontend -o jsonpath='{.spec.host}'
+oc get route crm-backend -o jsonpath='{.spec.host}'
+```
+
+### Configuración Importante
+
+Antes de desplegar, actualiza la URL del repositorio Git en:
+- `openshift/02-backend.yaml` - campo `git.uri`
+- `openshift/03-frontend.yaml` - campo `git.uri`
+
+Reemplaza `TU_USUARIO` con tu usuario de GitHub.
+
+### Comandos Útiles
+
+```bash
+# Ver pods
+oc get pods
+
+# Ver logs
+oc logs -f deployment/crm-backend
+oc logs -f deployment/crm-frontend
+
+# Ver servicios
+oc get svc
+
+# Ver routes
+oc get routes
+
+# Escalar backend
+oc scale deployment/crm-backend --replicas=2
+
+# Reiniciar despliegue
+oc rollout restart deployment/crm-backend
+```
+
+## API SaaS v1
+
+### Autenticación
+
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/api/v1/auth/register` | POST | Registrar nueva empresa + trial |
+| `/api/auth/login` | POST | Iniciar sesión (devuelve JWT) |
+| `/api/v1/auth/refresh` | POST | Renovar access token |
+| `/api/v1/auth/logout` | POST | Cerrar sesión (revoca refresh token) |
+| `/api/v1/auth/password-reset/request` | POST | Solicitar recuperación de contraseña |
+| `/api/v1/auth/password-reset/confirm` | POST | Confirmar nueva contraseña |
+| `/api/v1/auth/verify-email` | GET | Verificar correo electrónico |
+
+### SuperAdmin
+
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/api/v1/superadmin/tenants` | GET | Listar todas las empresas |
+| `/api/v1/superadmin/tenants/{id}` | GET | Ver empresa específica |
+| `/api/v1/superadmin/tenants/{id}/suspend` | PUT | Suspender empresa |
+| `/api/v1/superadmin/tenants/{id}/activate` | PUT | Activar empresa |
+| `/api/v1/superadmin/plans` | GET/POST | Listar/crear planes |
+| `/api/v1/superadmin/subscriptions` | GET | Listar suscripciones |
+| `/api/v1/superadmin/users` | GET | Listar usuarios globales |
+| `/api/v1/superadmin/metrics` | GET | Métricas SaaS (tenants, revenue, etc.) |
+| `/api/v1/superadmin/audit-logs` | GET | Logs de auditoría global |
+
+### Swagger/OpenAPI
+
+Disponible en: `http://localhost:8080/swagger-ui.html`
+
+## Roles y Permisos
+
+| Rol | Descripción | Alcance |
+|-----|-------------|---------|
+| `SUPER_ADMIN` | Administrador del SaaS | Global (todas las empresas) |
+| `TENANT_OWNER` | Dueño de la empresa | Su empresa |
+| `ADMIN` | Administrador de empresa | Su empresa |
+| `MANAGER` | Gerente | Su empresa (sin gestión de usuarios) |
+| `SALES` | Vendedor | Su empresa (solo ventas/prospectos) |
+| `MARKETING` | Marketing | Su empresa (solo campañas/email) |
+| `SUPPORT` | Soporte | Su empresa (solo PQRS/tickets) |
+| `ACCOUNTING` | Contabilidad | Su empresa (solo facturas/contratos) |
+
+## Planes SaaS
+
+| Característica | Starter ($29) | Professional ($79) | Enterprise ($199) |
+|----------------|--------------|--------------------|--------------------|
+| Usuarios | 3 | 10 | 50 |
+| Clientes | 100 | 1,000 | 10,000 |
+| Almacenamiento | 1 GB | 10 GB | 100 GB |
+| WhatsApp | - | Si | Si |
+| API Access | - | Si | Si |
+| IA Features | - | Si | Si |
+| Marca Blanca | - | - | Si |
+| Webhooks | - | Si | Si |
+| Trial | 14 días | 14 días | 30 días |
+
+## CI/CD (GitHub Actions)
+
+El pipeline de `.github/workflows/ci-cd.yml` ejecuta:
+
+1. **Backend Build & Test**: Compila, ejecuta tests, empaqueta JAR
+2. **Backend Security**: OWASP Dependency Check + CodeQL Analysis
+3. **Frontend Build & Lint**: Instala, lint, build
+4. **Docker Build**: Construye imágenes backend y frontend
+5. **Trivy Scan**: Escaneo de vulnerabilidades en contenedores
+
+## PWA (Progressive Web App)
+
+El frontend está configurado como PWA con las siguientes características:
+
+- **Manifest**: Configurado con `vite-plugin-pwa`
+- **Service Worker**: Registro automático con `autoUpdate`
+- **Offline**: Cache de recursos estáticos con Workbox
+- **Instalable**: Se puede instalar en dispositivos móviles y desktop
+
+### Generar iconos PWA
+
+```bash
+cd frontend
+npm run build
+```
+
+Los iconos se generan automáticamente en `public/icons/`.
+
+## App Store (iOS y Android) con Capacitor
+
+El proyecto está configurado con Capacitor para empaquetar la PWA como aplicación nativa.
+
+### Requisitos
+
+- **iOS**: macOS con Xcode instalado
+- **Android**: Android Studio instalado
+
+### Configuración Inicial
+
+```bash
+cd frontend
+npm install
+```
+
+### Agregar Plataformas
+
+```bash
+# Para iOS (requiere macOS)
+npm run cap:add:ios
+
+# Para Android
+npm run cap:add:android
+```
+
+### Sincronizar Cambios
+
+Después de modificar el frontend:
+
+```bash
+npm run cap:sync
+```
+
+### Abrir en IDE Nativo
+
+```bash
+# iOS - abre Xcode
+npm run cap:open:ios
+
+# Android - abre Android Studio
+npm run cap:open:android
+```
+
+### Compilar para App Store
+
+#### iOS
+1. Abrir Xcode con `npm run cap:open:ios`
+2. Configurar certificados de Apple Developer
+3. Product > Archive
+4. Subir a App Store Connect
+
+#### Android
+1. Abrir Android Studio con `npm run cap:open:android`
+2. Build > Generate Signed Bundle/APK
+3. Firmar con keystore
+4. Subir a Google Play Console
+
+### Configuración de appId
+
+- **iOS Bundle ID**: `com.crm.app`
+- **Android Package**: `com.crm.app`
+
+Configurado en `frontend/capacitor.config.ts`.
 
 ## Licencia
 

@@ -1,0 +1,34 @@
+package com.crm.controller;
+
+import com.crm.entity.ApiKey;
+import com.crm.service.ApiKeyService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/api-keys")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+public class ApiKeyController {
+    private final ApiKeyService service;
+
+    @GetMapping
+    public ResponseEntity<List<ApiKey>> getAll() {
+        return ResponseEntity.ok(service.findAll(1L));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiKey> create(@RequestBody ApiKey apiKey) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(apiKey));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}

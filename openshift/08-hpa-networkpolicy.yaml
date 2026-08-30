@@ -1,0 +1,159 @@
+# ============================================
+# HPA - Horizontal Pod Autoscaler
+# ============================================
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: crm-backend-hpa
+  labels:
+    app: crm
+    component: backend
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: crm-backend
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: crm-frontend-hpa
+  labels:
+    app: crm
+    component: frontend
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: crm-frontend
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+# ============================================
+# NetworkPolicy - Seguridad de red
+# ============================================
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: crm-network-policy
+  labels:
+    app: crm
+spec:
+  podSelector:
+    matchLabels:
+      app: crm
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Frontend: permite trafico externo (Route)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: crm
+              component: frontend
+      ports:
+        - protocol: TCP
+          port: 8080
+    # Backend: solo desde frontend
+    - from:
+        - podSelector:
+            matchLabels:
+              app: crm
+              component: frontend
+      ports:
+        - protocol: TCP
+          port: 8080
+    # PostgreSQL: solo desde backend
+    - from:
+        - podSelector:
+            matchLabels:
+              app: crm
+              component: backend
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Redis: solo desde backend
+    - from:
+        - podSelector:
+            matchLabels:
+              app: crm
+              component: backend
+      ports:
+        - protocol: TCP
+          port: 6379
+    # MinIO: solo desde backend
+    - from:
+        - podSelector:
+            matchLabels:
+              app: crm
+              component: backend
+      ports:
+        - protocol: TCP
+          port: 9000
+  egress:
+    # DNS
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # PostgreSQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app: crm
+              component: database
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: crm
+              component: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # MinIO
+    - to:
+        - podSelector:
+            matchLabels:
+              app: crm
+              component: minio
+      ports:
+        - protocol: TCP
+          port: 9000
+    # Backend -> Frontend
+    - to:
+        - podSelector:
+            matchLabels:
+              app: crm
+              component: frontend
+      ports:
+        - protocol: TCP
+          port: 8080

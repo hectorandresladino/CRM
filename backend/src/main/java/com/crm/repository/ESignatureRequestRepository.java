@@ -1,0 +1,15 @@
+package com.crm.repository;
+
+import com.crm.entity.ESignatureRequest;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface ESignatureRequestRepository extends JpaRepository<ESignatureRequest, Long> {
+    List<ESignatureRequest> findByTenantId(Long tenantId);
+    Optional<ESignatureRequest> findBySignatureToken(String token);
+    List<ESignatureRequest> findByTenantIdAndStatus(Long tenantId, String status);
+}

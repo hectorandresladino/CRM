@@ -1,0 +1,169 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: crm-backend
+  labels:
+    app: crm
+    component: backend
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: crm-backend
+  labels:
+    app: crm
+    component: backend
+spec:
+  source:
+    git:
+      uri: https://github.com/TU_USUARIO/crm.git
+      ref: main
+    contextDir: backend
+  strategy:
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: crm-backend:latest
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crm-backend
+  labels:
+    app: crm
+    component: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crm
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: crm
+        component: backend
+    spec:
+      containers:
+        - name: crm-backend
+          image: crm-backend:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: crm-config
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: SPRING_DATASOURCE_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: SPRING_DATASOURCE_PASSWORD
+            - name: SPRING_DATASOURCE_DRIVER
+              value: org.postgresql.Driver
+            - name: SPRING_JPA_DIALECT
+              value: org.hibernate.dialect.PostgreSQLDialect
+            - name: SPRING_H2_CONSOLE
+              value: "false"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: crm-secrets
+                  key: JWT_SECRET
+            - name: JWT_ACCESS_EXPIRATION_MS
+              valueFrom:
+                secretKeyRef:
+                  name: crm-secrets
+                  key: JWT_ACCESS_EXPIRATION_MS
+            - name: JWT_REFRESH_EXPIRATION_MS
+              valueFrom:
+                secretKeyRef:
+                  name: crm-secrets
+                  key: JWT_REFRESH_EXPIRATION_MS
+            - name: REDIS_HOST
+              valueFrom:
+                configMapRef:
+                  name: crm-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapRef:
+                  name: crm-config
+                  key: REDIS_PORT
+            - name: MINIO_ENDPOINT
+              valueFrom:
+                configMapRef:
+                  name: crm-config
+                  key: MINIO_ENDPOINT
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: crm-secrets
+                  key: MINIO_ACCESS_KEY
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: crm-secrets
+                  key: MINIO_SECRET_KEY
+            - name: MAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: crm-secrets
+                  key: MAIL_USERNAME
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: crm-secrets
+                  key: MAIL_PASSWORD
+          resources:
+            requests:
+              memory: "384Mi"
+              cpu: "200m"
+            limits:
+              memory: "768Mi"
+              cpu: "1000m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  labels:
+    app: crm
+    component: backend
+spec:
+  selector:
+    app: crm
+    component: backend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

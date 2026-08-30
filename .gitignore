@@ -42,3 +42,8 @@ logs/
 
 # Docker
 postgres_data/
+
+# Capacitor
+frontend/ios/
+frontend/android/
+frontend/native/

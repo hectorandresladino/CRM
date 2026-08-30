@@ -1,0 +1,28 @@
+package com.crm.service;
+
+import com.crm.entity.SLAConfiguracion;
+import com.crm.repository.SLAConfiguracionRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class SLAService {
+    private final SLAConfiguracionRepository repository;
+
+    public List<SLAConfiguracion> findAll(Long tenantId) {
+        return repository.findByTenantIdAndActivo(tenantId, true);
+    }
+
+    public SLAConfiguracion save(SLAConfiguracion sla) {
+        return repository.save(sla);
+    }
+
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
+}

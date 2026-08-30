@@ -3,10 +3,11 @@ import { cn } from '../lib/utils';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', children, ...props }, ref) => {
+  ({ className, variant = 'primary', size = 'md', children, ...props }, ref) => {
     return (
       <button
         ref={ref}
@@ -16,6 +17,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             'btn-primary': variant === 'primary',
             'btn-secondary': variant === 'secondary',
             'btn-danger': variant === 'danger',
+            'btn-sm': size === 'sm',
+            'btn-lg': size === 'lg',
           },
           className
         )}
