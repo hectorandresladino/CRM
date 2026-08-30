@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 package com.crm.service;
 
 import com.crm.entity.LeadScore;
@@ -35,7 +39,7 @@ public class LeadScoreService {
         }
         if (prospecto.getTelefono() != null || prospecto.getCelular() != null) {
             score += 10;
-            factors.append("Teléfono (+10); ");
+            factors.append("TelÃ©fono (+10); ");
         }
         if (prospecto.getEmpresa() != null && !prospecto.getEmpresa().isEmpty()) {
             score += 15;
@@ -55,7 +59,7 @@ public class LeadScoreService {
         }
         if (prospecto.getEstado() == Prospecto.EstadoProspecto.NEGOCIACION) {
             score += 30;
-            factors.append("En negociación (+30); ");
+            factors.append("En negociaciÃ³n (+30); ");
         }
         if (prospecto.getEstado() == Prospecto.EstadoProspecto.PROPUESTA) {
             score += 25;

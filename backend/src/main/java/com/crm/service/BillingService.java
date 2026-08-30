@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 package com.crm.service;
 
 import com.crm.entity.*;
@@ -34,7 +38,7 @@ public class BillingService {
                 .orElseThrow(() -> new RuntimeException("Tenant no encontrado"));
 
         Subscription sub = subscriptionRepository.findByTenantId(tenantId).stream().findFirst()
-                .orElseThrow(() -> new RuntimeException("Sin suscripción activa"));
+                .orElseThrow(() -> new RuntimeException("Sin suscripciÃ³n activa"));
 
         Plan plan = planRepository.findById(sub.getPlanId())
                 .orElseThrow(() -> new RuntimeException("Plan no encontrado"));
@@ -85,7 +89,7 @@ public class BillingService {
         billingInvoiceRepository.save(invoice);
 
         Subscription sub = subscriptionRepository.findById(invoice.getSubscriptionId())
-                .orElseThrow(() -> new RuntimeException("Suscripción no encontrada"));
+                .orElseThrow(() -> new RuntimeException("SuscripciÃ³n no encontrada"));
         sub.setStatus(Subscription.SubscriptionStatus.ACTIVE);
         sub.setCurrentPeriodStart(LocalDateTime.now());
         sub.setCurrentPeriodEnd(sub.getBillingCycle() == Subscription.BillingCycle.YEARLY
@@ -161,7 +165,7 @@ public class BillingService {
                         .anyMatch(inv -> inv.getDueDate().isBefore(LocalDateTime.now().minusDays(7)));
                 if (hasOldOverdue) {
                     tenant.setStatus(Tenant.TenantStatus.SUSPENDED);
-                    tenant.setSuspendedReason("Pago vencido por más de 7 días");
+                    tenant.setSuspendedReason("Pago vencido por mÃ¡s de 7 dÃ­as");
                     tenantRepository.save(tenant);
 
                     Subscription sub = subscriptionRepository.findByTenantId(tenant.getId()).stream().findFirst().orElse(null);

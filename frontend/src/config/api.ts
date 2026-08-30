@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8080' : '');
 
 export const API = {

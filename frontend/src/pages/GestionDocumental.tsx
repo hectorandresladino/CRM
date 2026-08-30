@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import apiClient from '../services/api';
@@ -61,7 +65,7 @@ const GestionDocumentalPage = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar este documento?')) {
+    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este documento?')) {
       try {
         await apiClient.delete(`/api/gestion-documental/${id}`);
         loadDocumentos();
@@ -80,7 +84,7 @@ const GestionDocumentalPage = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Gestión Documental</h1>
+        <h1 className="text-3xl font-bold text-gray-900">GestiÃ³n Documental</h1>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Nuevo Documento
@@ -100,9 +104,9 @@ const GestionDocumentalPage = () => {
             <tr>
               <th>Nombre</th>
               <th>Tipo</th>
-              <th>Categoría</th>
+              <th>CategorÃ­a</th>
               <th>Estado</th>
-              <th>Tamaño</th>
+              <th>TamaÃ±o</th>
               <th>Vencimiento</th>
               <th>Acciones</th>
             </tr>
@@ -149,7 +153,7 @@ const GestionDocumentalPage = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">CategorÃ­a</label>
               <select className="input" value={formData.categoria} onChange={(e) => setFormData({ ...formData, categoria: e.target.value as any })}>
                 <option value="CONTRATO">Contrato</option>
                 <option value="FACTURA">Factura</option>
@@ -166,12 +170,12 @@ const GestionDocumentalPage = () => {
               </select>
             </div>
             <Input label="ID Cliente" type="number" value={formData.clienteId} onChange={(e) => setFormData({ ...formData, clienteId: Number(e.target.value) })} />
-            <Input label="Tamaño (KB)" type="number" value={formData.tamanoKb} onChange={(e) => setFormData({ ...formData, tamanoKb: Number(e.target.value) })} />
-            <Input label="Extensión" value={formData.extension} onChange={(e) => setFormData({ ...formData, extension: e.target.value })} />
+            <Input label="TamaÃ±o (KB)" type="number" value={formData.tamanoKb} onChange={(e) => setFormData({ ...formData, tamanoKb: Number(e.target.value) })} />
+            <Input label="ExtensiÃ³n" value={formData.extension} onChange={(e) => setFormData({ ...formData, extension: e.target.value })} />
             <Input label="Fecha Vencimiento" type="date" value={formData.fechaVencimiento} onChange={(e) => setFormData({ ...formData, fechaVencimiento: e.target.value })} />
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">DescripciÃ³n</label>
             <textarea className="input" rows={2} value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} />
           </div>
           <div className="mt-4">

@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { 
   Calendar, Plus, CheckCircle, Clock, Phone, Users, Mail,
@@ -77,7 +81,7 @@ export default function Actividades() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Eliminar esta actividad?')) {
+    if (window.confirm('Â¿Eliminar esta actividad?')) {
       try { await apiClient.delete(`/api/actividades/${id}`); loadData(); } catch (e) { console.error(e); }
     }
   };
@@ -187,18 +191,18 @@ export default function Actividades() {
                 <select className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.tipo} onChange={e => setFormData({ ...formData, tipo: e.target.value })}>
                   <option value="TAREA">Tarea</option>
                   <option value="LLAMADA">Llamada</option>
-                  <option value="REUNION">Reunión</option>
+                  <option value="REUNION">ReuniÃ³n</option>
                   <option value="EMAIL">Email</option>
                   <option value="VISITA">Visita</option>
                   <option value="NOTA">Nota</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Título</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">TÃ­tulo</label>
                 <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.titulo} onChange={e => setFormData({ ...formData, titulo: e.target.value })} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Descripción</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">DescripciÃ³n</label>
                 <textarea className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" rows={2} value={formData.descripcion || ''} onChange={e => setFormData({ ...formData, descripcion: e.target.value })} />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -220,7 +224,7 @@ export default function Actividades() {
                 <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.asignadoA || ''} onChange={e => setFormData({ ...formData, asignadoA: e.target.value })} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Ubicación</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">UbicaciÃ³n</label>
                 <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.ubicacion || ''} onChange={e => setFormData({ ...formData, ubicacion: e.target.value })} />
               </div>
             </div>

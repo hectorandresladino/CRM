@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import apiClient from '../services/api';
@@ -58,7 +62,7 @@ const EmailMarketingPage = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar este email?')) {
+    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este email?')) {
       try {
         await apiClient.delete(`/api/email-marketing/${id}`);
         loadEmails();
@@ -97,7 +101,7 @@ const EmailMarketingPage = () => {
               <th>Asunto</th>
               <th>Tipo</th>
               <th>Estado</th>
-              <th>Fecha Envío</th>
+              <th>Fecha EnvÃ­o</th>
               <th>Enviados</th>
               <th>Apertura</th>
               <th>Acciones</th>

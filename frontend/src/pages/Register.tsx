@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../services/api';
@@ -49,7 +53,7 @@ export default function Register() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent mb-2">
             Registrar Empresa
           </h1>
-          <p className="text-gray-600 text-sm">Crea tu cuenta SaaS con 14 días de trial gratis</p>
+          <p className="text-gray-600 text-sm">Crea tu cuenta SaaS con 14 dÃ­as de trial gratis</p>
         </div>
 
         {error && (
@@ -90,7 +94,7 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Contraseña</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">ContraseÃ±a</label>
             <input type="password" name="adminPassword" value={formData.adminPassword} onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
               placeholder="Minimo 8 caracteres" required minLength={8} />

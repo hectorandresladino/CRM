@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { 
   DollarSign, RefreshCw, TrendingUp, ArrowRight, Plus
@@ -80,7 +84,7 @@ export default function MultiCurrency() {
             <DollarSign className="w-7 h-7 text-green-600" />
             Multi-Moneda
           </h1>
-          <p className="text-sm text-slate-500 mt-1">Conversión automática de divisas para operaciones internacionales</p>
+          <p className="text-sm text-slate-500 mt-1">ConversiÃ³n automÃ¡tica de divisas para operaciones internacionales</p>
         </div>
         <div className="flex gap-3">
           <button onClick={handleFetchRates} disabled={fetching} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-slate-400">
@@ -141,7 +145,7 @@ export default function MultiCurrency() {
                 <td className="px-4 py-3 text-sm font-medium text-slate-900">{r.target}</td>
                 <td className="px-4 py-3 text-sm text-slate-700 font-mono">{r.rate.toFixed(4)}</td>
                 <td className="px-4 py-3 text-sm text-slate-500">{r.source || 'Manual'}</td>
-                <td className="px-4 py-3 text-sm text-slate-500">{r.fetchedAt ? new Date(r.fetchedAt).toLocaleString('es-CO') : '—'}</td>
+                <td className="px-4 py-3 text-sm text-slate-500">{r.fetchedAt ? new Date(r.fetchedAt).toLocaleString('es-CO') : 'â€”'}</td>
               </tr>
             ))}
           </tbody>

@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { 
   Zap, Plus, Edit, Trash2, Clock, 
@@ -25,7 +29,7 @@ const TRIGGER_LABELS: Record<string, string> = {
   VENTA_STAGE_CHANGE: 'Cambio de estado (Venta)',
   NEW_CLIENTE: 'Nuevo Cliente',
   NEW_TICKET: 'Nuevo Ticket',
-  TICKET_ESCALATION: 'Escalación de Ticket',
+  TICKET_ESCALATION: 'EscalaciÃ³n de Ticket',
   SCHEDULED: 'Programado',
   WEBHOOK: 'Webhook',
 };
@@ -98,7 +102,7 @@ export default function WorkflowBuilder() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Eliminar esta automatización?')) {
+    if (window.confirm('Â¿Eliminar esta automatizaciÃ³n?')) {
       try {
         await apiClient.delete(`/api/workflows/${id}`);
         loadData();
@@ -127,7 +131,7 @@ export default function WorkflowBuilder() {
           <p className="text-sm text-slate-500 mt-1">{activeCount} activas de {workflows.length} totales</p>
         </div>
         <button onClick={() => { setEditing(null); setFormData({ name: '', description: '', triggerType: 'NEW_PROSPECTO', actionType: 'SEND_EMAIL', active: true }); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Nueva Automatización
+          <Plus className="w-4 h-4" /> Nueva AutomatizaciÃ³n
         </button>
       </div>
 
@@ -175,7 +179,7 @@ export default function WorkflowBuilder() {
         <div className="text-center py-16 text-slate-400">
           <Zap className="w-12 h-12 mx-auto mb-3" />
           <p className="text-lg font-medium">No hay automatizaciones</p>
-          <p className="text-sm">Crea tu primera automatización para ahorrar tiempo</p>
+          <p className="text-sm">Crea tu primera automatizaciÃ³n para ahorrar tiempo</p>
         </div>
       )}
       {loading && <div className="text-center py-12 text-slate-400">Cargando...</div>}
@@ -183,14 +187,14 @@ export default function WorkflowBuilder() {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6">
-            <h2 className="text-lg font-bold text-slate-900 mb-4">{editing?.id ? 'Editar Automatización' : 'Nueva Automatización'}</h2>
+            <h2 className="text-lg font-bold text-slate-900 mb-4">{editing?.id ? 'Editar AutomatizaciÃ³n' : 'Nueva AutomatizaciÃ³n'}</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
                 <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Ej: Email de bienvenida a nuevos prospectos" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Descripción</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">DescripciÃ³n</label>
                 <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -201,18 +205,18 @@ export default function WorkflowBuilder() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Acción</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">AcciÃ³n</label>
                   <select className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.actionType} onChange={e => setFormData({ ...formData, actionType: e.target.value })}>
                     {Object.entries(ACTION_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Configuración del disparador (JSON)</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">ConfiguraciÃ³n del disparador (JSON)</label>
                 <textarea className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono" rows={2} value={formData.triggerConfig || ''} onChange={e => setFormData({ ...formData, triggerConfig: e.target.value })} placeholder='{"stage":"CALIFICADO"}' />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Configuración de la acción (JSON)</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">ConfiguraciÃ³n de la acciÃ³n (JSON)</label>
                 <textarea className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono" rows={2} value={formData.actionConfig || ''} onChange={e => setFormData({ ...formData, actionConfig: e.target.value })} placeholder='{"template":"welcome","delay":"1h"}' />
               </div>
             </div>

@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 package com.crm.security;
 
 import jakarta.servlet.FilterChain;
@@ -43,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
-            logger.error("No se pudo establecer el contexto de autenticación", ex);
+            logger.error("No se pudo establecer el contexto de autenticaciÃ³n", ex);
         } finally {
             filterChain.doFilter(request, response);
             TenantContext.clear();

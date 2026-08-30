@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import apiClient from '../services/api';
@@ -63,7 +67,7 @@ const Cotizaciones = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar esta cotización?')) {
+    if (window.confirm('Â¿EstÃ¡ seguro de eliminar esta cotizaciÃ³n?')) {
       try {
         await apiClient.delete(`/api/cotizaciones/${id}`);
         loadCotizaciones();
@@ -85,7 +89,7 @@ const Cotizaciones = () => {
         <h1 className="text-3xl font-bold text-gray-900">Cotizaciones</h1>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Nueva Cotización
+          Nueva CotizaciÃ³n
         </Button>
       </div>
       
@@ -100,8 +104,8 @@ const Cotizaciones = () => {
         <table className="table">
           <thead>
             <tr>
-              <th>Código</th>
-              <th>Descripción</th>
+              <th>CÃ³digo</th>
+              <th>DescripciÃ³n</th>
               <th>Subtotal</th>
               <th>Total</th>
               <th>Validez</th>
@@ -138,12 +142,12 @@ const Cotizaciones = () => {
         {filteredCotizaciones.length === 0 && <p className="text-center text-gray-500 py-8">No hay cotizaciones registradas</p>}
       </div>
       
-      <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingCotizacion(null); }} title={editingCotizacion?.id ? 'Editar Cotización' : 'Nueva Cotización'}>
+      <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingCotizacion(null); }} title={editingCotizacion?.id ? 'Editar CotizaciÃ³n' : 'Nueva CotizaciÃ³n'}>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Código" value={formData.codigo} onChange={(e) => setFormData({ ...formData, codigo: e.target.value })} required />
+            <Input label="CÃ³digo" value={formData.codigo} onChange={(e) => setFormData({ ...formData, codigo: e.target.value })} required />
             <Input label="ID Cliente" type="number" value={formData.clienteId} onChange={(e) => setFormData({ ...formData, clienteId: Number(e.target.value) })} required />
-            <Input label="Descripción" value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} required />
+            <Input label="DescripciÃ³n" value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} required />
             <Input label="Subtotal" type="number" value={formData.subtotal} onChange={(e) => setFormData({ ...formData, subtotal: Number(e.target.value) })} required />
             <Input label="Descuento" type="number" value={formData.descuento} onChange={(e) => setFormData({ ...formData, descuento: Number(e.target.value) })} />
             <Input label="Impuesto" type="number" value={formData.impuesto} onChange={(e) => setFormData({ ...formData, impuesto: Number(e.target.value) })} />
@@ -160,7 +164,7 @@ const Cotizaciones = () => {
             </div>
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Términos</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">TÃ©rminos</label>
             <textarea className="input" rows={2} value={formData.terminos} onChange={(e) => setFormData({ ...formData, terminos: e.target.value })} />
           </div>
           <div className="mt-4">

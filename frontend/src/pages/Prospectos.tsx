@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import apiClient from '../services/api';
@@ -78,7 +82,7 @@ const Prospectos = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar este prospecto?')) {
+    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este prospecto?')) {
       try {
         await apiClient.delete(`/api/prospectos/${id}`);
         loadProspectos();
@@ -219,7 +223,7 @@ const Prospectos = () => {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
             <Input
-              label="Teléfono"
+              label="TelÃ©fono"
               value={formData.telefono}
               onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
             />
@@ -246,7 +250,7 @@ const Prospectos = () => {
                 <option value="CONTACTADO">Contactado</option>
                 <option value="CALIFICADO">Calificado</option>
                 <option value="PROPUESTA">Propuesta</option>
-                <option value="NEGOCIACION">Negociación</option>
+                <option value="NEGOCIACION">NegociaciÃ³n</option>
                 <option value="CERRADO">Cerrado</option>
                 <option value="PERDIDO">Perdido</option>
               </select>
@@ -275,7 +279,7 @@ const Prospectos = () => {
             />
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Interés</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">InterÃ©s</label>
             <textarea
               className="input"
               rows={2}

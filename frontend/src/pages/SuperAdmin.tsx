@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { 
   Building2, Users, DollarSign, TrendingUp, AlertCircle,
@@ -82,7 +86,7 @@ export default function SuperAdmin() {
   useEffect(() => { loadData(); }, []);
 
   const handleSuspend = async (id: number) => {
-    const reason = window.prompt('Motivo de suspensión:');
+    const reason = window.prompt('Motivo de suspensiÃ³n:');
     if (reason) {
       try {
         await apiClient.put(`/api/v1/superadmin/tenants/${id}/suspend`, { reason });
@@ -113,14 +117,14 @@ export default function SuperAdmin() {
           <Shield className="w-7 h-7 text-indigo-600" />
           Panel SuperAdmin
         </h1>
-        <p className="text-sm text-slate-500 mt-1">Gestión de tenants, planes, suscripciones y métricas SaaS</p>
+        <p className="text-sm text-slate-500 mt-1">GestiÃ³n de tenants, planes, suscripciones y mÃ©tricas SaaS</p>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 bg-slate-100 p-1 rounded-lg w-fit">
         <button onClick={() => setTab('tenants')} className={`px-4 py-2 text-sm font-medium rounded-md transition ${tab === 'tenants' ? 'bg-white text-slate-900 shadow' : 'text-slate-500'}`}>Tenants</button>
         <button onClick={() => setTab('plans')} className={`px-4 py-2 text-sm font-medium rounded-md transition ${tab === 'plans' ? 'bg-white text-slate-900 shadow' : 'text-slate-500'}`}>Planes</button>
-        <button onClick={() => setTab('metrics')} className={`px-4 py-2 text-sm font-medium rounded-md transition ${tab === 'metrics' ? 'bg-white text-slate-900 shadow' : 'text-slate-500'}`}>Métricas</button>
+        <button onClick={() => setTab('metrics')} className={`px-4 py-2 text-sm font-medium rounded-md transition ${tab === 'metrics' ? 'bg-white text-slate-900 shadow' : 'text-slate-500'}`}>MÃ©tricas</button>
       </div>
 
       {/* Metrics tab */}
@@ -168,7 +172,7 @@ export default function SuperAdmin() {
               </div>
               <div className="mb-4">
                 <p className="text-3xl font-bold text-slate-900">{fmt(p.priceMonthly)}<span className="text-sm font-normal text-slate-500">/mes</span></p>
-                <p className="text-sm text-slate-500">{fmt(p.priceYearly)}/año</p>
+                <p className="text-sm text-slate-500">{fmt(p.priceYearly)}/aÃ±o</p>
               </div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-slate-500">Usuarios</span><span className="font-medium text-slate-900">{p.maxUsers}</span></div>
@@ -198,9 +202,9 @@ export default function SuperAdmin() {
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Empresa</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">País</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">PaÃ­s</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Estado</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Límites</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">LÃ­mites</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Trial hasta</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Acciones</th>
                 </tr>
@@ -222,9 +226,9 @@ export default function SuperAdmin() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm text-slate-500">
-                        <span>{t.maxUsers} users</span> · <span>{t.maxClients} clients</span>
+                        <span>{t.maxUsers} users</span> Â· <span>{t.maxClients} clients</span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-500">{t.trialEndsAt ? new Date(t.trialEndsAt).toLocaleDateString('es-CO') : '—'}</td>
+                      <td className="px-4 py-3 text-sm text-slate-500">{t.trialEndsAt ? new Date(t.trialEndsAt).toLocaleDateString('es-CO') : 'â€”'}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1">
                           {t.status !== 'SUSPENDED' ? (

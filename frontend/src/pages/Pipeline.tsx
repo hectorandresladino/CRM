@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { 
   GripVertical, Calendar, DollarSign, User, Phone, Mail, 
@@ -11,7 +15,7 @@ const PROSPECTO_STAGES = [
   { key: 'CONTACTADO', label: 'Contactado', color: 'bg-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-200' },
   { key: 'CALIFICADO', label: 'Calificado', color: 'bg-cyan-500', bg: 'bg-cyan-50', border: 'border-cyan-200' },
   { key: 'PROPUESTA', label: 'Propuesta', color: 'bg-purple-500', bg: 'bg-purple-50', border: 'border-purple-200' },
-  { key: 'NEGOCIACION', label: 'Negociación', color: 'bg-orange-500', bg: 'bg-orange-50', border: 'border-orange-200' },
+  { key: 'NEGOCIACION', label: 'NegociaciÃ³n', color: 'bg-orange-500', bg: 'bg-orange-50', border: 'border-orange-200' },
   { key: 'CERRADO', label: 'Cerrado', color: 'bg-green-500', bg: 'bg-green-50', border: 'border-green-200' },
   { key: 'PERDIDO', label: 'Perdido', color: 'bg-red-500', bg: 'bg-red-50', border: 'border-red-200' },
 ];
@@ -151,7 +155,7 @@ export default function Pipeline() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Pipeline de Ventas</h1>
           <p className="text-sm text-slate-500 mt-1">
-            {filteredCards.length} oportunidades · {formatCurrency(totalValue)} en pipeline
+            {filteredCards.length} oportunidades Â· {formatCurrency(totalValue)} en pipeline
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -270,7 +274,7 @@ export default function Pipeline() {
                   {cards.length === 0 && !loading && (
                     <div className="text-center py-8 text-slate-300">
                       <LayoutGrid className="w-8 h-8 mx-auto mb-2" />
-                      <p className="text-xs">Arrastra tarjetas aquí</p>
+                      <p className="text-xs">Arrastra tarjetas aquÃ­</p>
                     </div>
                   )}
 

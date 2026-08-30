@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 package com.crm.service;
 
 import com.crm.entity.ClientPortalAccess;
@@ -38,7 +42,7 @@ public class ClientPortalService {
 
     public ClientPortalAccess login(String portalToken) {
         ClientPortalAccess access = clientPortalAccessRepository.findByPortalToken(portalToken)
-                .orElseThrow(() -> new RuntimeException("Token de portal inválido"));
+                .orElseThrow(() -> new RuntimeException("Token de portal invÃ¡lido"));
         if (!access.getActive()) {
             throw new RuntimeException("Acceso de portal desactivado");
         }

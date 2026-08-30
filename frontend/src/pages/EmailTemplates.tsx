@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { 
   Mail, Plus, Edit, Trash2, Eye, Code
@@ -20,7 +24,7 @@ const CATEGORIES: Record<string, string> = {
   FOLLOW_UP: 'Seguimiento',
   PROPOSAL: 'Propuesta',
   NEWSLETTER: 'Newsletter',
-  PROMOTION: 'Promoción',
+  PROMOTION: 'PromociÃ³n',
   SUPPORT: 'Soporte',
   ONBOARDING: 'Onboarding',
   CUSTOM: 'Personalizado',
@@ -75,7 +79,7 @@ export default function EmailTemplates() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Eliminar esta plantilla?')) {
+    if (window.confirm('Â¿Eliminar esta plantilla?')) {
       try {
         await apiClient.delete(`/api/email-templates/${id}`);
         loadData();
@@ -93,7 +97,7 @@ export default function EmailTemplates() {
             <Mail className="w-7 h-7 text-blue-600" />
             Plantillas de Email
           </h1>
-          <p className="text-sm text-slate-500 mt-1">Plantillas reutilizables para campañas y automatizaciones</p>
+          <p className="text-sm text-slate-500 mt-1">Plantillas reutilizables para campaÃ±as y automatizaciones</p>
         </div>
         <button onClick={() => { setEditing(null); setFormData({ name: '', subject: '', bodyHtml: '', bodyText: '', category: 'WELCOME', isActive: true }); setPreviewMode(false); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
           <Plus className="w-4 h-4" /> Nueva Plantilla
@@ -160,7 +164,7 @@ export default function EmailTemplates() {
                   <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Categoría</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">CategorÃ­a</label>
                   <select className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
                     {Object.entries(CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                   </select>

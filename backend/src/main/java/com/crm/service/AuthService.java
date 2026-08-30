@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 package com.crm.service;
 
 import com.crm.entity.*;
@@ -29,11 +33,11 @@ public class AuthService {
     @Transactional
     public AuthResponse login(String username, String password) {
         Usuario usuario = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
+                .orElseThrow(() -> new RuntimeException("Credenciales invÃ¡lidas"));
 
         if (usuario.getAccountLockedUntil() != null &&
             usuario.getAccountLockedUntil().isAfter(LocalDateTime.now())) {
-            throw new RuntimeException("Cuenta bloqueada. Intente más tarde.");
+            throw new RuntimeException("Cuenta bloqueada. Intente mÃ¡s tarde.");
         }
 
         if (!passwordEncoder.matches(password, usuario.getPassword())) {
@@ -43,7 +47,7 @@ public class AuthService {
                 usuario.setAccountLockedUntil(LocalDateTime.now().plusMinutes(LOCK_DURATION_MINUTES));
             }
             usuarioRepository.save(usuario);
-            throw new RuntimeException("Credenciales inválidas");
+            throw new RuntimeException("Credenciales invÃ¡lidas");
         }
 
         if (!usuario.getActivo()) {
@@ -69,7 +73,7 @@ public class AuthService {
             throw new RuntimeException("Ya existe una empresa con ese nombre");
         }
         if (usuarioRepository.existsByEmail(request.getAdminEmail())) {
-            throw new RuntimeException("El email ya está registrado");
+            throw new RuntimeException("El email ya estÃ¡ registrado");
         }
 
         Plan plan = planRepository.findByName(request.getPlanName())
@@ -123,7 +127,7 @@ public class AuthService {
     @Transactional
     public AuthResponse refreshToken(String refreshToken) {
         if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new RuntimeException("Refresh token inválido");
+            throw new RuntimeException("Refresh token invÃ¡lido");
         }
 
         String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
@@ -166,7 +170,7 @@ public class AuthService {
     @Transactional
     public void resetPassword(String token, String newPassword) {
         Usuario usuario = usuarioRepository.findByPasswordResetToken(token)
-                .orElseThrow(() -> new RuntimeException("Token inválido"));
+                .orElseThrow(() -> new RuntimeException("Token invÃ¡lido"));
         if (usuario.getPasswordResetExpires().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Token expirado");
         }
@@ -179,7 +183,7 @@ public class AuthService {
     @Transactional
     public void verifyEmail(String token) {
         Usuario usuario = usuarioRepository.findByEmailVerificationToken(token)
-                .orElseThrow(() -> new RuntimeException("Token inválido"));
+                .orElseThrow(() -> new RuntimeException("Token invÃ¡lido"));
         usuario.setEmailVerified(true);
         usuario.setEmailVerificationToken(null);
         usuarioRepository.save(usuario);

@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import apiClient from '../services/api';
@@ -68,7 +72,7 @@ const Pedidos = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar este pedido?')) {
+    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este pedido?')) {
       try {
         await apiClient.delete(`/api/pedidos/${id}`);
         loadPedidos();
@@ -105,8 +109,8 @@ const Pedidos = () => {
         <table className="table">
           <thead>
             <tr>
-              <th>Código</th>
-              <th>Descripción</th>
+              <th>CÃ³digo</th>
+              <th>DescripciÃ³n</th>
               <th>Total</th>
               <th>Fecha Entrega</th>
               <th>Estado</th>
@@ -144,14 +148,14 @@ const Pedidos = () => {
       <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingPedido(null); }} title={editingPedido?.id ? 'Editar Pedido' : 'Nuevo Pedido'}>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Código" value={formData.codigo} onChange={(e) => setFormData({ ...formData, codigo: e.target.value })} required />
+            <Input label="CÃ³digo" value={formData.codigo} onChange={(e) => setFormData({ ...formData, codigo: e.target.value })} required />
             <Input label="ID Cliente" type="number" value={formData.clienteId} onChange={(e) => setFormData({ ...formData, clienteId: Number(e.target.value) })} required />
-            <Input label="Descripción" value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} required />
+            <Input label="DescripciÃ³n" value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} required />
             <Input label="Subtotal" type="number" value={formData.subtotal} onChange={(e) => setFormData({ ...formData, subtotal: Number(e.target.value) })} required />
-            <Input label="Costo Envío" type="number" value={formData.costoEnvio} onChange={(e) => setFormData({ ...formData, costoEnvio: Number(e.target.value) })} />
+            <Input label="Costo EnvÃ­o" type="number" value={formData.costoEnvio} onChange={(e) => setFormData({ ...formData, costoEnvio: Number(e.target.value) })} />
             <Input label="Fecha Entrega Estimada" type="date" value={formData.fechaEntregaEstimada} onChange={(e) => setFormData({ ...formData, fechaEntregaEstimada: e.target.value })} required />
-            <Input label="Dirección Envío" value={formData.direccionEnvio} onChange={(e) => setFormData({ ...formData, direccionEnvio: e.target.value })} />
-            <Input label="Ciudad Envío" value={formData.ciudadEnvio} onChange={(e) => setFormData({ ...formData, ciudadEnvio: e.target.value })} />
+            <Input label="DirecciÃ³n EnvÃ­o" value={formData.direccionEnvio} onChange={(e) => setFormData({ ...formData, direccionEnvio: e.target.value })} />
+            <Input label="Ciudad EnvÃ­o" value={formData.ciudadEnvio} onChange={(e) => setFormData({ ...formData, ciudadEnvio: e.target.value })} />
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
               <select className="input" value={formData.estado} onChange={(e) => setFormData({ ...formData, estado: e.target.value as any })}>
@@ -163,9 +167,9 @@ const Pedidos = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Método Envío</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">MÃ©todo EnvÃ­o</label>
               <select className="input" value={formData.metodoEnvio} onChange={(e) => setFormData({ ...formData, metodoEnvio: e.target.value as any })}>
-                <option value="ESTANDAR">Estándar</option>
+                <option value="ESTANDAR">EstÃ¡ndar</option>
                 <option value="EXPRESS">Express</option>
                 <option value="RECOGIDA">Recogida</option>
               </select>

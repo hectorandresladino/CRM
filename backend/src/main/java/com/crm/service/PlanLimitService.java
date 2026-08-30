@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 package com.crm.service;
 
 import com.crm.entity.*;
@@ -55,7 +59,7 @@ public class PlanLimitService {
         long currentUsers = usuarioRepository.countByTenantId(tenantId);
         if (plan.getMaxUsers() != null && currentUsers >= plan.getMaxUsers()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Límite de usuarios alcanzado (" + plan.getMaxUsers() + "). Actualice su plan.");
+                    "LÃ­mite de usuarios alcanzado (" + plan.getMaxUsers() + "). Actualice su plan.");
         }
     }
 
@@ -64,7 +68,7 @@ public class PlanLimitService {
         long currentClients = clienteRepository.countByTenantId(tenantId);
         if (plan.getMaxClients() != null && currentClients >= plan.getMaxClients()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Límite de clientes alcanzado (" + plan.getMaxClients() + "). Actualice su plan.");
+                    "LÃ­mite de clientes alcanzado (" + plan.getMaxClients() + "). Actualice su plan.");
         }
     }
 
@@ -72,7 +76,7 @@ public class PlanLimitService {
         Plan plan = getPlanForTenant(tenantId);
         if (plan.getMaxAutomations() != null && currentAutomations >= plan.getMaxAutomations()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Límite de automatizaciones alcanzado (" + plan.getMaxAutomations() + ").");
+                    "LÃ­mite de automatizaciones alcanzado (" + plan.getMaxAutomations() + ").");
         }
     }
 

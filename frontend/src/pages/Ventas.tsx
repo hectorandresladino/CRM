@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import apiClient from '../services/api';
@@ -62,7 +66,7 @@ const Ventas = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar esta venta?')) {
+    if (window.confirm('Â¿EstÃ¡ seguro de eliminar esta venta?')) {
       try {
         await apiClient.delete(`/api/ventas/${id}`);
         loadVentas();
@@ -105,8 +109,8 @@ const Ventas = () => {
         <table className="table">
           <thead>
             <tr>
-              <th>Código</th>
-              <th>Descripción</th>
+              <th>CÃ³digo</th>
+              <th>DescripciÃ³n</th>
               <th>Monto</th>
               <th>Total</th>
               <th>Vendedor</th>
@@ -151,9 +155,9 @@ const Ventas = () => {
       <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingVenta(null); }} title={editingVenta?.id ? 'Editar Venta' : 'Nueva Venta'}>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Código" value={formData.codigo} onChange={(e) => setFormData({ ...formData, codigo: e.target.value })} required />
+            <Input label="CÃ³digo" value={formData.codigo} onChange={(e) => setFormData({ ...formData, codigo: e.target.value })} required />
             <Input label="ID Cliente" type="number" value={formData.clienteId} onChange={(e) => setFormData({ ...formData, clienteId: Number(e.target.value) })} required />
-            <Input label="Descripción" value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} required />
+            <Input label="DescripciÃ³n" value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} required />
             <Input label="Monto" type="number" value={formData.monto} onChange={(e) => setFormData({ ...formData, monto: Number(e.target.value) })} required />
             <Input label="Descuento" type="number" value={formData.descuento} onChange={(e) => setFormData({ ...formData, descuento: Number(e.target.value) })} />
             <Input label="Impuesto" type="number" value={formData.impuesto} onChange={(e) => setFormData({ ...formData, impuesto: Number(e.target.value) })} />

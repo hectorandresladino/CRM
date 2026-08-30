@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import apiClient from '../services/api';
@@ -66,7 +70,7 @@ const FacturasPage = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar esta factura?')) {
+    if (window.confirm('Â¿EstÃ¡ seguro de eliminar esta factura?')) {
       try {
         await apiClient.delete(`/api/facturas/${id}`);
         loadFacturas();
@@ -84,7 +88,7 @@ const FacturasPage = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Facturación</h1>
+        <h1 className="text-3xl font-bold text-gray-900">FacturaciÃ³n</h1>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Nueva Factura
@@ -102,10 +106,10 @@ const FacturasPage = () => {
         <table className="table">
           <thead>
             <tr>
-              <th>Número</th>
+              <th>NÃºmero</th>
               <th>Tipo</th>
               <th>Estado</th>
-              <th>Fecha Emisión</th>
+              <th>Fecha EmisiÃ³n</th>
               <th>Fecha Vencimiento</th>
               <th>Total</th>
               <th>Acciones</th>
@@ -142,13 +146,13 @@ const FacturasPage = () => {
       <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingFactura(null); }} title={editingFactura?.id ? 'Editar Factura' : 'Nueva Factura'}>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Número" value={formData.numero} onChange={(e) => setFormData({ ...formData, numero: e.target.value })} required />
+            <Input label="NÃºmero" value={formData.numero} onChange={(e) => setFormData({ ...formData, numero: e.target.value })} required />
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
               <select className="input" value={formData.tipo} onChange={(e) => setFormData({ ...formData, tipo: e.target.value as any })}>
                 <option value="VENTA">Venta</option>
                 <option value="SERVICIO">Servicio</option>
-                <option value="SUSCRIPCION">Suscripción</option>
+                <option value="SUSCRIPCION">SuscripciÃ³n</option>
               </select>
             </div>
             <div>
@@ -162,7 +166,7 @@ const FacturasPage = () => {
             </div>
             <Input label="ID Cliente" type="number" value={formData.clienteId} onChange={(e) => setFormData({ ...formData, clienteId: Number(e.target.value) })} />
             <Input label="ID Venta" type="number" value={formData.ventaId} onChange={(e) => setFormData({ ...formData, ventaId: Number(e.target.value) })} />
-            <Input label="Fecha Emisión" type="date" value={formData.fechaEmision} onChange={(e) => setFormData({ ...formData, fechaEmision: e.target.value })} />
+            <Input label="Fecha EmisiÃ³n" type="date" value={formData.fechaEmision} onChange={(e) => setFormData({ ...formData, fechaEmision: e.target.value })} />
             <Input label="Fecha Vencimiento" type="date" value={formData.fechaVencimiento} onChange={(e) => setFormData({ ...formData, fechaVencimiento: e.target.value })} />
             <Input label="Subtotal" type="number" value={formData.subtotal} onChange={(e) => setFormData({ ...formData, subtotal: Number(e.target.value) })} />
             <Input label="Impuesto" type="number" value={formData.impuesto} onChange={(e) => setFormData({ ...formData, impuesto: Number(e.target.value) })} />
@@ -176,7 +180,7 @@ const FacturasPage = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Método Pago</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">MÃ©todo Pago</label>
               <select className="input" value={formData.metodoPago} onChange={(e) => setFormData({ ...formData, metodoPago: e.target.value as any })}>
                 <option value="TRANSFERENCIA">Transferencia</option>
                 <option value="TARJETA">Tarjeta</option>
@@ -186,7 +190,7 @@ const FacturasPage = () => {
             </div>
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">DescripciÃ³n</label>
             <textarea className="input" rows={2} value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} />
           </div>
           <div className="mt-4">

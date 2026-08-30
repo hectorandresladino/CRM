@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { 
   ExternalLink, Copy, UserCircle, Ban, Plus
@@ -46,7 +50,7 @@ export default function ClientPortal() {
   };
 
   const handleRevoke = async (id: number) => {
-    if (window.confirm('¿Revocar este acceso al portal?')) {
+    if (window.confirm('Â¿Revocar este acceso al portal?')) {
       try {
         await apiClient.patch(`/api/client-portal/${id}/revoke`);
         loadData();
@@ -83,7 +87,7 @@ export default function ClientPortal() {
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Email</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Token</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Logins</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Último login</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Ãšltimo login</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Estado</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Acciones</th>
             </tr>

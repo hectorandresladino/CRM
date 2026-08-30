@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Users, TrendingUp, DollarSign, HeadphonesIcon, ArrowUpRight, ArrowDownRight, Calendar, Phone, Mail as MailIcon, FileText, CheckCircle2, Clock } from 'lucide-react';
 import apiClient from '../services/api';
@@ -42,10 +46,10 @@ const Dashboard = () => {
   ];
 
   const pipelineData = [
-    { name: 'Prospección', value: 30, color: '#3b82f6' },
-    { name: 'Calificación', value: 20, color: '#06b6d4' },
+    { name: 'ProspecciÃ³n', value: 30, color: '#3b82f6' },
+    { name: 'CalificaciÃ³n', value: 20, color: '#06b6d4' },
     { name: 'Propuesta', value: 25, color: '#8b5cf6' },
-    { name: 'Negociación', value: 15, color: '#f59e0b' },
+    { name: 'NegociaciÃ³n', value: 15, color: '#f59e0b' },
     { name: 'Cierre', value: 10, color: '#10b981' },
   ];
 
@@ -94,16 +98,16 @@ const Dashboard = () => {
 
   const actividadesRecientes = [
     { icon: Users, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', title: 'Nueva oportunidad creada', desc: 'Empresa ABC - $12,500', time: 'Hace 5 min' },
-    { icon: FileText, iconBg: 'bg-blue-100', iconColor: 'text-blue-600', title: 'Cotización enviada', desc: 'Cliente XYZ - #COT-00125', time: 'Hace 22 min' },
+    { icon: FileText, iconBg: 'bg-blue-100', iconColor: 'text-blue-600', title: 'CotizaciÃ³n enviada', desc: 'Cliente XYZ - #COT-00125', time: 'Hace 22 min' },
     { icon: DollarSign, iconBg: 'bg-violet-100', iconColor: 'text-violet-600', title: 'Pago recibido', desc: 'Factura #FAC-00845 - $8,200', time: 'Hace 1 hora' },
     { icon: CheckCircle2, iconBg: 'bg-cyan-100', iconColor: 'text-cyan-600', title: 'Ticket resuelto', desc: 'Mesa de Ayuda #890', time: 'Hace 2 horas' },
   ];
 
   const proximasActividades = [
     { icon: Phone, iconBg: 'bg-blue-100', iconColor: 'text-blue-600', title: 'Llamada de seguimiento', desc: 'Empresa ABC', time: 'Hoy 10:00 AM' },
-    { icon: Calendar, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', title: 'Reunión con cliente', desc: 'Cliente XYZ', time: 'Hoy 3:00 PM' },
-    { icon: MailIcon, iconBg: 'bg-violet-100', iconColor: 'text-violet-600', title: 'Enviar propuesta', desc: 'Empresa 123', time: 'Mañana 9:00 AM' },
-    { icon: Clock, iconBg: 'bg-amber-100', iconColor: 'text-amber-600', title: 'Renovación de contrato', desc: 'Empresa DEF', time: 'Viernes 11:00 AM' },
+    { icon: Calendar, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', title: 'ReuniÃ³n con cliente', desc: 'Cliente XYZ', time: 'Hoy 3:00 PM' },
+    { icon: MailIcon, iconBg: 'bg-violet-100', iconColor: 'text-violet-600', title: 'Enviar propuesta', desc: 'Empresa 123', time: 'MaÃ±ana 9:00 AM' },
+    { icon: Clock, iconBg: 'bg-amber-100', iconColor: 'text-amber-600', title: 'RenovaciÃ³n de contrato', desc: 'Empresa DEF', time: 'Viernes 11:00 AM' },
   ];
   
   return (
@@ -112,7 +116,7 @@ const Dashboard = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Visión general de tu negocio en tiempo real</p>
+          <p className="text-slate-500 text-sm mt-0.5">VisiÃ³n general de tu negocio en tiempo real</p>
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-600 bg-white border border-slate-200 px-4 py-2 rounded-lg shadow-sm">
           <Calendar className="w-4 h-4 text-blue-600" />
@@ -120,7 +124,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Tarjetas de métricas */}
+      {/* Tarjetas de mÃ©tricas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {topStats.map((stat) => {
           const Icon = stat.icon;
@@ -143,14 +147,14 @@ const Dashboard = () => {
         })}
       </div>
 
-      {/* Gráficos */}
+      {/* GrÃ¡ficos */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {/* Ventas por mes */}
         <div className="lg:col-span-3 bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-base font-bold text-slate-900">Ventas por Mes</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Ingresos mensuales del año actual</p>
+              <p className="text-xs text-slate-400 mt-0.5">Ingresos mensuales del aÃ±o actual</p>
             </div>
             <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">+15.3% anual</span>
           </div>
@@ -178,7 +182,7 @@ const Dashboard = () => {
         <div className="lg:col-span-2 bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
           <div className="mb-4">
             <h2 className="text-base font-bold text-slate-900">Oportunidades por Etapa</h2>
-            <p className="text-xs text-slate-400 mt-0.5">Distribución del pipeline de ventas</p>
+            <p className="text-xs text-slate-400 mt-0.5">DistribuciÃ³n del pipeline de ventas</p>
           </div>
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
@@ -237,10 +241,10 @@ const Dashboard = () => {
           </div>
         </div>
         
-        {/* Próximas Actividades */}
+        {/* PrÃ³ximas Actividades */}
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-bold text-slate-900">Próximas Actividades</h2>
+            <h2 className="text-base font-bold text-slate-900">PrÃ³ximas Actividades</h2>
             <button className="text-xs font-semibold text-blue-600 hover:text-blue-800">Ver agenda</button>
           </div>
           <div className="space-y-1">

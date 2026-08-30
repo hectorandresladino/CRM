@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { 
   BarChart3, TrendingUp, DollarSign, 
@@ -74,7 +78,7 @@ export default function AdvancedReports() {
     { key: 'contactados', label: 'Contactados', color: 'bg-cyan-500' },
     { key: 'calificados', label: 'Calificados', color: 'bg-teal-500' },
     { key: 'propuesta', label: 'Propuesta', color: 'bg-purple-500' },
-    { key: 'negociacion', label: 'Negociación', color: 'bg-orange-500' },
+    { key: 'negociacion', label: 'NegociaciÃ³n', color: 'bg-orange-500' },
     { key: 'cerrados', label: 'Cerrados', color: 'bg-green-500' },
   ];
 
@@ -90,7 +94,7 @@ export default function AdvancedReports() {
             <BarChart3 className="w-7 h-7 text-blue-600" />
             Reportes & Analytics
           </h1>
-          <p className="text-sm text-slate-500 mt-1">Dashboards avanzados con forecasting y embudo de conversión</p>
+          <p className="text-sm text-slate-500 mt-1">Dashboards avanzados con forecasting y embudo de conversiÃ³n</p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">
           <Download className="w-4 h-4" /> Exportar
@@ -158,7 +162,7 @@ export default function AdvancedReports() {
       {funnel && (
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Filter className="w-5 h-5 text-orange-600" /> Embudo de Conversión
+            <Filter className="w-5 h-5 text-orange-600" /> Embudo de ConversiÃ³n
           </h2>
           <div className="space-y-3">
             {funnelStages.map((stage) => {
@@ -173,7 +177,7 @@ export default function AdvancedReports() {
                       <span className="text-xs font-semibold text-white">{value}</span>
                     </div>
                   </div>
-                  <div className="w-20 text-xs text-slate-500">{conversionPct}% conversión</div>
+                  <div className="w-20 text-xs text-slate-500">{conversionPct}% conversiÃ³n</div>
                 </div>
               );
             })}
@@ -183,7 +187,7 @@ export default function AdvancedReports() {
               <span className="font-semibold text-slate-900">{funnel.cerrados}</span> cerrados de <span className="font-semibold text-slate-900">{funnel.total}</span> prospectos
             </div>
             <div className="text-sm">
-              <span className="text-slate-500">Tasa de conversión: </span>
+              <span className="text-slate-500">Tasa de conversiÃ³n: </span>
               <span className="font-bold text-green-600">{funnel.conversionRate.toFixed(1)}%</span>
             </div>
           </div>

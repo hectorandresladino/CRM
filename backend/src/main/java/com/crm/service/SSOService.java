@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 package com.crm.service;
 
 import com.crm.entity.SSOConfiguration;
@@ -30,14 +34,14 @@ public class SSOService {
 
     public SSOConfiguration toggleActive(Long id) {
         SSOConfiguration config = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Configuración SSO no encontrada"));
+                .orElseThrow(() -> new RuntimeException("ConfiguraciÃ³n SSO no encontrada"));
         config.setIsActive(!config.getIsActive());
         return repository.save(config);
     }
 
     public SSOConfiguration sync(Long id) {
         SSOConfiguration config = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Configuración SSO no encontrada"));
+                .orElseThrow(() -> new RuntimeException("ConfiguraciÃ³n SSO no encontrada"));
         config.setLastSyncAt(LocalDateTime.now());
         return repository.save(config);
     }

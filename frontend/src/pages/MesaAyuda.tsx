@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import apiClient from '../services/api';
@@ -61,7 +65,7 @@ const MesaAyudaPage = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar este ticket?')) {
+    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este ticket?')) {
       try {
         await apiClient.delete(`/api/mesa-ayuda/${id}`);
         loadTickets();
@@ -111,7 +115,7 @@ const MesaAyudaPage = () => {
             <tr>
               <th>Ticket</th>
               <th>Asunto</th>
-              <th>Categoría</th>
+              <th>CategorÃ­a</th>
               <th>Prioridad</th>
               <th>Estado</th>
               <th>Asignado A</th>
@@ -156,10 +160,10 @@ const MesaAyudaPage = () => {
             <Input label="Ticket" value={formData.ticket} onChange={(e) => setFormData({ ...formData, ticket: e.target.value })} required />
             <Input label="Asunto" value={formData.asunto} onChange={(e) => setFormData({ ...formData, asunto: e.target.value })} required />
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">CategorÃ­a</label>
               <select className="input" value={formData.categoria} onChange={(e) => setFormData({ ...formData, categoria: e.target.value as any })}>
-                <option value="TECNICO">Técnico</option>
-                <option value="FACTURACION">Facturación</option>
+                <option value="TECNICO">TÃ©cnico</option>
+                <option value="FACTURACION">FacturaciÃ³n</option>
                 <option value="PRODUCTO">Producto</option>
                 <option value="SERVICIO">Servicio</option>
                 <option value="OTRO">Otro</option>
@@ -172,7 +176,7 @@ const MesaAyudaPage = () => {
                 <option value="MEDIA">Media</option>
                 <option value="ALTA">Alta</option>
                 <option value="URGENTE">Urgente</option>
-                <option value="CRITICA">Crítica</option>
+                <option value="CRITICA">CrÃ­tica</option>
               </select>
             </div>
             <div>
@@ -189,7 +193,7 @@ const MesaAyudaPage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Canal</label>
               <select className="input" value={formData.canal} onChange={(e) => setFormData({ ...formData, canal: e.target.value as any })}>
                 <option value="EMAIL">Email</option>
-                <option value="TELEFONO">Teléfono</option>
+                <option value="TELEFONO">TelÃ©fono</option>
                 <option value="CHAT">Chat</option>
                 <option value="WEB">Web</option>
               </select>
@@ -197,11 +201,11 @@ const MesaAyudaPage = () => {
             <Input label="Asignado A" value={formData.asignadoA} onChange={(e) => setFormData({ ...formData, asignadoA: e.target.value })} />
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">DescripciÃ³n</label>
             <textarea className="input" rows={3} value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} required />
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Solución</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">SoluciÃ³n</label>
             <textarea className="input" rows={2} value={formData.solucion} onChange={(e) => setFormData({ ...formData, solucion: e.target.value })} />
           </div>
           <div className="mt-4">

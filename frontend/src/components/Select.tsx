@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { SelectHTMLAttributes, forwardRef } from 'react';
 import { cn } from '../lib/utils';
 

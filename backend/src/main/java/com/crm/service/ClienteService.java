@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 package com.crm.service;
 
 import com.crm.entity.Cliente;
@@ -30,7 +34,7 @@ public class ClienteService {
                 throw new RuntimeException("Ya existe un cliente con ese email");
             }
             if (cliente.getIdentificacion() != null && !cliente.getIdentificacion().isEmpty() && clienteRepository.existsByIdentificacion(cliente.getIdentificacion())) {
-                throw new RuntimeException("Ya existe un cliente con esa identificación");
+                throw new RuntimeException("Ya existe un cliente con esa identificaciÃ³n");
             }
             return clienteRepository.save(cliente);
         } catch (Exception e) {

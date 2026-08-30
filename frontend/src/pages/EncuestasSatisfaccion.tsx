@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import apiClient from '../services/api';
@@ -65,7 +69,7 @@ const EncuestasSatisfaccionPage = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar esta encuesta?')) {
+    if (window.confirm('Â¿EstÃ¡ seguro de eliminar esta encuesta?')) {
       try {
         await apiClient.delete(`/api/encuestas-satisfaccion/${id}`);
         loadEncuestas();
@@ -83,7 +87,7 @@ const EncuestasSatisfaccionPage = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Encuestas de Satisfacción</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Encuestas de SatisfacciÃ³n</h1>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Nueva Encuesta
@@ -104,9 +108,9 @@ const EncuestasSatisfaccionPage = () => {
               <th>Nombre</th>
               <th>Tipo</th>
               <th>Estado</th>
-              <th>Fecha Envío</th>
-              <th>Calificación</th>
-              <th>Recomendaría</th>
+              <th>Fecha EnvÃ­o</th>
+              <th>CalificaciÃ³n</th>
+              <th>RecomendarÃ­a</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -124,7 +128,7 @@ const EncuestasSatisfaccionPage = () => {
                 </td>
                 <td>{enc.fechaEnvio}</td>
                 <td>{enc.calificacionGeneral}/5</td>
-                <td>{enc.recomendaria ? '✓' : '✗'}</td>
+                <td>{enc.recomendaria ? 'âœ“' : 'âœ—'}</td>
                 <td>
                   <div className="flex space-x-2">
                     <Button variant="secondary" onClick={() => handleEdit(enc)}><Edit className="w-4 h-4" /></Button>
@@ -147,7 +151,7 @@ const EncuestasSatisfaccionPage = () => {
               <select className="input" value={formData.tipo} onChange={(e) => setFormData({ ...formData, tipo: e.target.value as any })}>
                 <option value="PRODUCTO">Producto</option>
                 <option value="SERVICIO">Servicio</option>
-                <option value="ATENCION">Atención</option>
+                <option value="ATENCION">AtenciÃ³n</option>
                 <option value="GENERAL">General</option>
               </select>
             </div>
@@ -160,15 +164,15 @@ const EncuestasSatisfaccionPage = () => {
               </select>
             </div>
             <Input label="ID Cliente" type="number" value={formData.clienteId} onChange={(e) => setFormData({ ...formData, clienteId: Number(e.target.value) })} />
-            <Input label="Fecha Envío" type="date" value={formData.fechaEnvio} onChange={(e) => setFormData({ ...formData, fechaEnvio: e.target.value })} />
-            <Input label="Calificación General" type="number" min="1" max="5" value={formData.calificacionGeneral} onChange={(e) => setFormData({ ...formData, calificacionGeneral: Number(e.target.value) })} />
+            <Input label="Fecha EnvÃ­o" type="date" value={formData.fechaEnvio} onChange={(e) => setFormData({ ...formData, fechaEnvio: e.target.value })} />
+            <Input label="CalificaciÃ³n General" type="number" min="1" max="5" value={formData.calificacionGeneral} onChange={(e) => setFormData({ ...formData, calificacionGeneral: Number(e.target.value) })} />
             <div className="flex items-center mt-6">
               <input type="checkbox" checked={formData.recomendaria} onChange={(e) => setFormData({ ...formData, recomendaria: e.target.checked })} className="mr-2" />
-              <label className="text-sm font-medium text-gray-700">Recomendaría el servicio</label>
+              <label className="text-sm font-medium text-gray-700">RecomendarÃ­a el servicio</label>
             </div>
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">DescripciÃ³n</label>
             <textarea className="input" rows={2} value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} />
           </div>
           <div className="mt-4">

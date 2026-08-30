@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 package com.crm.service;
 
 import com.crm.entity.Cliente;
@@ -56,7 +60,7 @@ public class CotizacionService {
     
     public Cotizacion update(Long id, Cotizacion cotizacion) {
         Cotizacion existingCotizacion = cotizacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cotización no encontrada"));
+                .orElseThrow(() -> new RuntimeException("CotizaciÃ³n no encontrada"));
         
         Cliente cliente = clienteRepository.findById(cotizacion.getCliente().getId())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
@@ -88,7 +92,7 @@ public class CotizacionService {
     
     public void delete(Long id) {
         if (!cotizacionRepository.existsById(id)) {
-            throw new RuntimeException("Cotización no encontrada");
+            throw new RuntimeException("CotizaciÃ³n no encontrada");
         }
         cotizacionRepository.deleteById(id);
     }
@@ -107,7 +111,7 @@ public class CotizacionService {
     
     public Cotizacion enviarCotizacion(Long id) {
         Cotizacion cotizacion = cotizacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cotización no encontrada"));
+                .orElseThrow(() -> new RuntimeException("CotizaciÃ³n no encontrada"));
         cotizacion.setEstado(Cotizacion.EstadoCotizacion.ENVIADA);
         cotizacion.setFechaEnvio(LocalDateTime.now());
         return cotizacionRepository.save(cotizacion);
@@ -115,7 +119,7 @@ public class CotizacionService {
     
     public Cotizacion aprobarCotizacion(Long id) {
         Cotizacion cotizacion = cotizacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cotización no encontrada"));
+                .orElseThrow(() -> new RuntimeException("CotizaciÃ³n no encontrada"));
         cotizacion.setEstado(Cotizacion.EstadoCotizacion.APROBADA);
         cotizacion.setFechaAprobacion(LocalDateTime.now());
         return cotizacionRepository.save(cotizacion);

@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { 
   Trophy, Star, Award, Target, Crown, Medal, Flame
@@ -19,7 +23,7 @@ const GRADE_CONFIG: Record<string, { color: string; bg: string; label: string; i
   A: { color: 'text-green-700', bg: 'bg-green-100', label: 'Hot Lead', icon: Flame },
   B: { color: 'text-blue-700', bg: 'bg-blue-100', label: 'Warm Lead', icon: Target },
   C: { color: 'text-yellow-700', bg: 'bg-yellow-100', label: 'Tibio', icon: Star },
-  D: { color: 'text-orange-700', bg: 'bg-orange-100', label: 'Frío', icon: Medal },
+  D: { color: 'text-orange-700', bg: 'bg-orange-100', label: 'FrÃ­o', icon: Medal },
   F: { color: 'text-red-700', bg: 'bg-red-100', label: 'No calificado', icon: Crown },
 };
 
@@ -53,7 +57,7 @@ export default function LeadScoring() {
             <Target className="w-7 h-7 text-purple-600" />
             Lead Scoring
           </h1>
-          <p className="text-sm text-slate-500 mt-1">Puntuación automática de prospectos basada en engagement</p>
+          <p className="text-sm text-slate-500 mt-1">PuntuaciÃ³n automÃ¡tica de prospectos basada en engagement</p>
         </div>
       </div>
 
@@ -131,7 +135,7 @@ export default function LeadScoring() {
         {scores.length === 0 && !loading && (
           <div className="text-center py-12 text-slate-400">
             <Target className="w-12 h-12 mx-auto mb-3" />
-            <p>No hay scores calculados. Los scores se generan automáticamente al evaluar prospectos.</p>
+            <p>No hay scores calculados. Los scores se generan automÃ¡ticamente al evaluar prospectos.</p>
           </div>
         )}
         {loading && <div className="text-center py-12 text-slate-400">Cargando...</div>}

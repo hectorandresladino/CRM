@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 package com.crm.entity;
 
 import jakarta.persistence.*;
@@ -35,7 +39,7 @@ public class Cliente {
     @Column(nullable = false)
     private String apellido;
     
-    @Email(message = "Email inválido")
+    @Email(message = "Email invÃ¡lido")
     @Column(unique = true)
     private String email;
     

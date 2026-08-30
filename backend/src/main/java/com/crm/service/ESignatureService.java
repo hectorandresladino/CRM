@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 package com.crm.service;
 
 import com.crm.entity.ESignatureRequest;
@@ -32,10 +36,10 @@ public class ESignatureService {
 
     public ESignatureRequest sign(String token, String signerIp) {
         ESignatureRequest request = repository.findBySignatureToken(token)
-                .orElseThrow(() -> new RuntimeException("Token de firma inválido"));
+                .orElseThrow(() -> new RuntimeException("Token de firma invÃ¡lido"));
 
         if (!"PENDING".equals(request.getStatus())) {
-            throw new RuntimeException("Este documento ya fue firmado o expiró");
+            throw new RuntimeException("Este documento ya fue firmado o expirÃ³");
         }
 
         if (request.getExpiresAt() != null && request.getExpiresAt().isBefore(LocalDateTime.now())) {

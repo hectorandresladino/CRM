@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { 
   Target, Plus, Award, Trash2
@@ -47,7 +51,7 @@ export default function MetasComerciales() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Eliminar esta meta?')) {
+    if (window.confirm('Â¿Eliminar esta meta?')) {
       try { await apiClient.delete(`/api/metas/${id}`); loadData(); } catch (e) { console.error(e); }
     }
   };
@@ -118,7 +122,7 @@ export default function MetasComerciales() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Año</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">AÃ±o</label>
                   <input type="number" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.anio} onChange={e => setFormData({ ...formData, anio: Number(e.target.value) })} />
                 </div>
               </div>
@@ -137,7 +141,7 @@ export default function MetasComerciales() {
                 <input type="number" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.montoObjetivo} onChange={e => setFormData({ ...formData, montoObjetivo: Number(e.target.value) })} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">N° ventas objetivo</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">NÂ° ventas objetivo</label>
                 <input type="number" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.numeroVentasObjetivo || ''} onChange={e => setFormData({ ...formData, numeroVentasObjetivo: Number(e.target.value) })} />
               </div>
             </div>

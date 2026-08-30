@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Cloud, Lock, User, ShieldCheck, Building2, TrendingUp, Eye, EyeOff, Wand2 } from 'lucide-react';
@@ -29,7 +33,7 @@ export default function Login() {
       console.error('Error en login:', error);
       const msg = typeof error.response?.data === 'string'
         ? error.response.data
-        : error.response?.data?.message || 'Error al iniciar sesión';
+        : error.response?.data?.message || 'Error al iniciar sesiÃ³n';
       setError(msg);
     } finally {
       setLoading(false);
@@ -50,7 +54,7 @@ export default function Login() {
       console.error('Error en login:', error);
       const msg = typeof error.response?.data === 'string' 
         ? error.response.data 
-        : error.response?.data?.message || 'Error al iniciar sesión';
+        : error.response?.data?.message || 'Error al iniciar sesiÃ³n';
       setError(msg);
     } finally {
       setLoading(false);
@@ -61,7 +65,7 @@ export default function Login() {
     <div className="min-h-screen flex bg-[#0b1730]">
       {/* Panel izquierdo - Branding */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden">
-        {/* Decoración de fondo */}
+        {/* DecoraciÃ³n de fondo */}
         <div className="absolute inset-0">
           <div className="absolute top-20 -left-20 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
@@ -74,7 +78,7 @@ export default function Login() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">CRM SaaS Empresarial</h1>
-              <p className="text-xs text-blue-300/70">Sistema de Gestión de Relaciones con Clientes</p>
+              <p className="text-xs text-blue-300/70">Sistema de GestiÃ³n de Relaciones con Clientes</p>
             </div>
           </div>
         </div>
@@ -101,7 +105,7 @@ export default function Login() {
               </div>
               <div>
                 <p className="text-sm font-semibold text-white">Seguridad Avanzada</p>
-                <p className="text-xs text-slate-400">JWT, Roles, Permisos y Auditoría</p>
+                <p className="text-xs text-slate-400">JWT, Roles, Permisos y AuditorÃ­a</p>
               </div>
             </div>
             <div className="flex items-center gap-3 text-slate-300">
@@ -110,7 +114,7 @@ export default function Login() {
               </div>
               <div>
                 <p className="text-sm font-semibold text-white">Escalable e Inteligente</p>
-                <p className="text-xs text-slate-400">Diseñado para crecer contigo</p>
+                <p className="text-xs text-slate-400">DiseÃ±ado para crecer contigo</p>
               </div>
             </div>
           </div>
@@ -122,7 +126,7 @@ export default function Login() {
       {/* Panel derecho - Formulario */}
       <div className="flex-1 flex items-center justify-center p-6 bg-slate-50 lg:rounded-l-[2.5rem]">
         <div className="w-full max-w-md">
-          {/* Logo móvil */}
+          {/* Logo mÃ³vil */}
           <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
             <div className="bg-gradient-to-br from-blue-500 to-cyan-400 p-2.5 rounded-xl shadow-lg">
               <Cloud className="w-7 h-7 text-white" />
@@ -162,7 +166,7 @@ export default function Login() {
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Contraseña
+                  ContraseÃ±a
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-[18px] h-[18px]" />
@@ -171,7 +175,7 @@ export default function Login() {
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     className="w-full pl-11 pr-11 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
-                    placeholder="Ingresa tu contraseña"
+                    placeholder="Ingresa tu contraseÃ±a"
                     required
                   />
                   <button
@@ -190,7 +194,7 @@ export default function Login() {
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-4 rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:from-slate-400 disabled:to-slate-500 transition-all font-semibold shadow-lg shadow-blue-600/25 hover:shadow-xl text-sm"
               >
-                {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                {loading ? 'Iniciando sesiÃ³n...' : 'Iniciar SesiÃ³n'}
               </button>
 
               <button
@@ -208,16 +212,16 @@ export default function Login() {
                 Credenciales de prueba: <strong className="text-slate-700">superadmin</strong> / <strong className="text-slate-700">SuperAdmin123!</strong>
               </p>
               <Link to="/register" className="block text-blue-600 hover:text-blue-800 font-semibold">
-                ¿No tienes cuenta? Registra tu empresa
+                Â¿No tienes cuenta? Registra tu empresa
               </Link>
               <Link to="/pricing" className="block text-slate-500 hover:text-slate-700 font-medium">
-                Ver planes y precios →
+                Ver planes y precios â†’
               </Link>
             </div>
           </div>
 
           <p className="text-center text-xs text-slate-400 mt-6">
-            Multiempresa · Seguro · Escalable · Inteligente
+            Multiempresa Â· Seguro Â· Escalable Â· Inteligente
           </p>
         </div>
       </div>

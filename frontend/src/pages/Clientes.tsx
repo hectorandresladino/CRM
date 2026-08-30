@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import apiClient from '../services/api';
@@ -92,7 +96,7 @@ const Clientes = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar este cliente?')) {
+    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este cliente?')) {
       try {
         await apiClient.delete(`/api/clientes/${id}`);
         loadClientes();
@@ -138,7 +142,7 @@ const Clientes = () => {
             <tr>
               <th>Nombre</th>
               <th>Email</th>
-              <th>Teléfono</th>
+              <th>TelÃ©fono</th>
               <th>Empresa</th>
               <th>Estado</th>
               <th>Acciones</th>
@@ -228,7 +232,7 @@ const Clientes = () => {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
             <Input
-              label="Teléfono"
+              label="TelÃ©fono"
               value={formData.telefono}
               onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
             />
@@ -248,7 +252,7 @@ const Clientes = () => {
               onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
             />
             <Input
-              label="Identificación"
+              label="IdentificaciÃ³n"
               value={formData.identificacion}
               onChange={(e) => setFormData({ ...formData, identificacion: e.target.value })}
             />
@@ -258,7 +262,7 @@ const Clientes = () => {
               onChange={(e) => setFormData({ ...formData, ciudad: e.target.value })}
             />
             <Input
-              label="País"
+              label="PaÃ­s"
               value={formData.pais}
               onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
             />

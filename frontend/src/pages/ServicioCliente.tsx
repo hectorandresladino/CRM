@@ -1,3 +1,7 @@
+﻿/*
+ * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
+ * Licensed under MIT License. See LICENSE file for details.
+ */
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Search } from 'lucide-react';
 import apiClient from '../services/api';
@@ -61,7 +65,7 @@ const ServicioClientePage = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar este servicio?')) {
+    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este servicio?')) {
       try {
         await apiClient.delete(`/api/servicio-cliente/${id}`);
         loadServicios();
@@ -109,7 +113,7 @@ const ServicioClientePage = () => {
         <table className="table">
           <thead>
             <tr>
-              <th>Código</th>
+              <th>CÃ³digo</th>
               <th>Asunto</th>
               <th>Tipo</th>
               <th>Prioridad</th>
@@ -153,7 +157,7 @@ const ServicioClientePage = () => {
       <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingServicio(null); }} title={editingServicio?.id ? 'Editar Ticket' : 'Nuevo Ticket'}>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Código" value={formData.codigo} onChange={(e) => setFormData({ ...formData, codigo: e.target.value })} required />
+            <Input label="CÃ³digo" value={formData.codigo} onChange={(e) => setFormData({ ...formData, codigo: e.target.value })} required />
             <Input label="ID Cliente" type="number" value={formData.clienteId} onChange={(e) => setFormData({ ...formData, clienteId: Number(e.target.value) })} required />
             <Input label="Asunto" value={formData.asunto} onChange={(e) => setFormData({ ...formData, asunto: e.target.value })} required />
             <div>
@@ -163,7 +167,7 @@ const ServicioClientePage = () => {
                 <option value="QUEJA">Queja</option>
                 <option value="RECLAMO">Reclamo</option>
                 <option value="SUGERENCIA">Sugerencia</option>
-                <option value="FELICITACION">Felicitación</option>
+                <option value="FELICITACION">FelicitaciÃ³n</option>
               </select>
             </div>
             <div>
@@ -173,14 +177,14 @@ const ServicioClientePage = () => {
                 <option value="MEDIA">Media</option>
                 <option value="ALTA">Alta</option>
                 <option value="URGENTE">Urgente</option>
-                <option value="CRITICA">Crítica</option>
+                <option value="CRITICA">CrÃ­tica</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Canal</label>
               <select className="input" value={formData.canal} onChange={(e) => setFormData({ ...formData, canal: e.target.value as any })}>
                 <option value="EMAIL">Email</option>
-                <option value="TELEFONO">Teléfono</option>
+                <option value="TELEFONO">TelÃ©fono</option>
                 <option value="CHAT">Chat</option>
                 <option value="WHATSAPP">WhatsApp</option>
                 <option value="RED_SOCIAL">Red Social</option>
@@ -190,11 +194,11 @@ const ServicioClientePage = () => {
             <Input label="Asignado A" value={formData.asignadoA} onChange={(e) => setFormData({ ...formData, asignadoA: e.target.value })} />
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">DescripciÃ³n</label>
             <textarea className="input" rows={3} value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} required />
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Resolución</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ResoluciÃ³n</label>
             <textarea className="input" rows={2} value={formData.resolucion} onChange={(e) => setFormData({ ...formData, resolucion: e.target.value })} />
           </div>
           <div className="mt-4">
