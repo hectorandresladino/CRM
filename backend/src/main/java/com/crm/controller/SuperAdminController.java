@@ -103,4 +103,66 @@ public class SuperAdminController {
     public ResponseEntity<List<AuditLog>> getAllAuditLogs() {
         return ResponseEntity.ok(auditLogRepository.findAll());
     }
+
+    @GetMapping("/invoices")
+    public ResponseEntity<List<BillingInvoice>> getAllInvoices() {
+        return ResponseEntity.ok(billingInvoiceRepository.findAll());
+    }
+
+    @GetMapping("/payments")
+    public ResponseEntity<List<Payment>> getAllPayments() {
+        return ResponseEntity.ok(paymentRepository.findAll());
+    }
+
+    @PutMapping("/tenants/{id}/cancel")
+    public ResponseEntity<?> cancelTenant(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        Tenant tenant = tenantRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tenant no encontrado"));
+        tenant.setStatus(Tenant.TenantStatus.CANCELLED);
+        tenant.setSuspendedReason(body.get("reason"));
+        tenantRepository.save(tenant);
+        subscriptionRepository.findByTenantId(id).ifPresent(sub -> {
+            sub.setStatus(Subscription.SubscriptionStatus.CANCELLED);
+            sub.setCancelledAt(java.time.LocalDateTime.now());
+            sub.setCancelReason(body.get("reason"));
+            subscriptionRepository.save(sub);
+        });
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/plans/{id}")
+    public ResponseEntity<Plan> updatePlan(@PathVariable Long id, @RequestBody Plan plan) {
+        Plan existing = planRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Plan no encontrado"));
+        existing.setName(plan.getName());
+        existing.setDescription(plan.getDescription());
+        existing.setPriceMonthly(plan.getPriceMonthly());
+        existing.setPriceYearly(plan.getPriceYearly());
+        existing.setMaxUsers(plan.getMaxUsers());
+        existing.setMaxClients(plan.getMaxClients());
+        existing.setMaxStorageMb(plan.getMaxStorageMb());
+        existing.setMaxAutomations(plan.getMaxAutomations());
+        existing.setHasWhatsapp(plan.getHasWhatsapp());
+        existing.setHasEmailMarketing(plan.getHasEmailMarketing());
+        existing.setHasApiAccess(plan.getHasApiAccess());
+        existing.setHasWhiteLabel(plan.getHasWhiteLabel());
+        existing.setHasAiFeatures(plan.getHasAiFeatures());
+        existing.setHasAdvancedReports(plan.getHasAdvancedReports());
+        existing.setHasWebhooks(plan.getHasWebhooks());
+        existing.setActive(plan.getActive());
+        return ResponseEntity.ok(planRepository.save(existing));
+    }
+
+    @GetMapping("/tenants/{id}/details")
+    public ResponseEntity<Map<String, Object>> getTenantDetails(@PathVariable Long id) {
+        Tenant tenant = tenantRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tenant no encontrado"));
+        Map<String, Object> details = new HashMap<>();
+        details.put("tenant", tenant);
+        details.put("users", usuarioRepository.findByTenantId(id));
+        details.put("subscription", subscriptionRepository.findByTenantId(id).orElse(null));
+        details.put("invoices", billingInvoiceRepository.findByTenantIdOrderByIssueDateDesc(id));
+        details.put("payments", paymentRepository.findByTenantIdOrderByCreatedAtDesc(id));
+        return ResponseEntity.ok(details);
+    }
 }

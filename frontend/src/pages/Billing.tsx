@@ -56,11 +56,11 @@ export default function Billing() {
     setLoading(true);
     try {
       const [inv, subs] = await Promise.all([
-        apiClient.get('/api/v1/superadmin/tenants').catch(() => ({ data: [] })),
-        apiClient.get('/api/v1/superadmin/subscriptions').catch(() => ({ data: [] })),
+        apiClient.get('/api/v1/billing/invoices').catch(() => ({ data: [] })),
+        apiClient.get('/api/v1/billing/subscription').catch(() => ({ data: null })),
       ]);
       setInvoices(inv.data);
-      if (subs.data.length > 0) setSubscription(subs.data[0]);
+      if (subs.data) setSubscription(subs.data);
     } catch (e) {
       console.error('Error loading billing data:', e);
     } finally {

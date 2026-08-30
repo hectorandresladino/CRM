@@ -1,6 +1,7 @@
 package com.crm.controller;
 
 import com.crm.entity.Integration;
+import com.crm.security.TenantContext;
 import com.crm.service.IntegrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/integrations")
@@ -19,11 +21,15 @@ public class IntegrationController {
 
     @GetMapping
     public ResponseEntity<List<Integration>> getAll() {
-        return ResponseEntity.ok(integrationService.findAll(1L));
+        Long tenantId = TenantContext.getCurrentTenant();
+        if (tenantId == null) tenantId = 1L;
+        return ResponseEntity.ok(integrationService.findAll(tenantId));
     }
 
     @PostMapping
     public ResponseEntity<Integration> connect(@RequestBody Integration integration) {
+        Long tenantId = TenantContext.getCurrentTenant();
+        if (tenantId != null) integration.setTenantId(tenantId);
         return ResponseEntity.status(HttpStatus.CREATED).body(integrationService.connect(integration));
     }
 
@@ -35,6 +41,20 @@ public class IntegrationController {
     @PatchMapping("/{id}/toggle-sync")
     public ResponseEntity<Integration> toggleSync(@PathVariable Long id) {
         return ResponseEntity.ok(integrationService.toggleSync(id));
+    }
+
+    @GetMapping("/{id}/test")
+    public ResponseEntity<Map<String, Object>> testConnection(@PathVariable Long id) {
+        return ResponseEntity.ok(integrationService.testConnection(id));
+    }
+
+    @PostMapping("/{id}/sync")
+    public ResponseEntity<Map<String, Object>> syncNow(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(integrationService.syncNow(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")

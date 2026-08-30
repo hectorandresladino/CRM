@@ -90,13 +90,15 @@ public class WhatsAppAIService {
         }
 
         String intent = detectIntent(message);
+        String sentiment = analyzeSentiment(message);
         String reply = generateReply(message, intent, config);
 
         conv.setAiResponse(true);
         conv.setAiIntent(intent);
-        conv.setAiConfidence(0.85);
+        conv.setAiConfidence(intent.equals("GENERAL") ? 0.5 : 0.85);
         conv.setAiHandled(!intent.equals("HUMAN_AGENT"));
         conv.setHumanTakenOver(intent.equals("HUMAN_AGENT"));
+        conv.setSentiment(sentiment);
 
         if (intent.equals("HUMAN_AGENT")) {
             conv.setStatus(WhatsAppConversation.ConversationStatus.WAITING_AGENT);
@@ -180,28 +182,46 @@ public class WhatsAppAIService {
         if (lower.contains("agente") || lower.contains("humano") || lower.contains("operador") || lower.contains("persona")) {
             return "HUMAN_AGENT";
         }
-        if (lower.contains("precio") || lower.contains("cuesta") || lower.contains("valor") || lower.contains("cuanto")) {
+        if (lower.contains("precio") || lower.contains("cuesta") || lower.contains("valor") || lower.contains("cuanto") || lower.contains("cotizar") || lower.contains("presupuesto")) {
             return "PRICING_INQUIRY";
         }
-        if (lower.contains("hola") || lower.contains("buenos") || lower.contains("buenas") || lower.contains("saludos")) {
+        if (lower.contains("hola") || lower.contains("buenos") || lower.contains("buenas") || lower.contains("saludos") || lower.contains("hey") || lower.contains("hi ")) {
             return "GREETING";
         }
-        if (lower.contains("info") || lower.contains("información") || lower.contains("detalles") || lower.contains("quiero saber")) {
+        if (lower.contains("info") || lower.contains("información") || lower.contains("detalles") || lower.contains("quiero saber") || lower.contains("características") || lower.contains("features")) {
             return "INFO_REQUEST";
         }
-        if (lower.contains("demo") || lower.contains("prueba") || lower.contains("agendar") || lower.contains("cita") || lower.contains("reunión")) {
+        if (lower.contains("demo") || lower.contains("prueba") || lower.contains("agendar") || lower.contains("cita") || lower.contains("reunión") || lower.contains("calendario")) {
             return "DEMO_REQUEST";
         }
-        if (lower.contains("comprar") || lower.contains("adquirir") || lower.contains("contratar")) {
+        if (lower.contains("comprar") || lower.contains("adquirir") || lower.contains("contratar") || lower.contains("suscribir") || lower.contains("pagar")) {
             return "PURCHASE_INTENT";
         }
-        if (lower.contains("gracias") || lower.contains("perfecto") || lower.contains("excelente")) {
+        if (lower.contains("gracias") || lower.contains("perfecto") || lower.contains("excelente") || lower.contains("genial") || lower.contains("muy bueno")) {
             return "SATISFACTION";
         }
-        if (lower.contains("problema") || lower.contains("error") || lower.contains("no funciona") || lower.contains("ayuda")) {
+        if (lower.contains("problema") || lower.contains("error") || lower.contains("no funciona") || lower.contains("ayuda") || lower.contains("urgente") || lower.contains("falla")) {
             return "SUPPORT_REQUEST";
         }
+        if (lower.contains("cancelar") || lower.contains("devolver") || lower.contains("reembolso") || lower.contains("queja")) {
+            return "COMPLAINT";
+        }
+        if (lower.contains("whatsapp") || lower.contains("crm") || lower.contains("software") || lower.contains("sistema")) {
+            return "PRODUCT_QUESTION";
+        }
         return "GENERAL";
+    }
+
+    public String analyzeSentiment(String message) {
+        String lower = message.toLowerCase().trim();
+        int positive = 0, negative = 0;
+        String[] positiveWords = {"bueno", "excelente", "perfecto", "gracias", "genial", "feliz", "satisfecho", "increible", "amazing", "great", "love", "perfect"};
+        String[] negativeWords = {"malo", "terrible", "problema", "error", "no funciona", "frustrado", "molesto", "queja", "horrible", "bad", "awful", "hate", "broken"};
+        for (String w : positiveWords) if (lower.contains(w)) positive++;
+        for (String w : negativeWords) if (lower.contains(w)) negative++;
+        if (positive > negative) return "POSITIVE";
+        if (negative > positive) return "NEGATIVE";
+        return "NEUTRAL";
     }
 
     private String generateReply(String message, String intent, WhatsAppAIConfig config) {
@@ -218,6 +238,10 @@ public class WhatsAppAIService {
                 return "Excelente! Para proceder con la compra, necesito algunos datos: nombre de tu empresa, número de usuarios y plan de interés. ¿Comenzamos?";
             case "SUPPORT_REQUEST":
                 return "Lamento el inconveniente. ¿Podrías darme más detalles del problema? Si prefieres, puedo conectarte con un agente escribiendo 'agente'.";
+            case "COMPLAINT":
+                return "Lamento mucho la experiencia. Toma tu número de caso y te conecto con un supervisor. Escribe 'agente' para atención prioritaria.";
+            case "PRODUCT_QUESTION":
+                return "Nuestro CRM SaaS incluye pipeline de ventas, marketing, WhatsApp Business con IA, CPQ, firma electrónica y más. ¿Quieres una demo personalizada?";
             case "SATISFACTION":
                 return "Gracias a ti! Estoy aquí para lo que necesites. ¿Hay algo más en lo que pueda ayudarte?";
             case "HUMAN_AGENT":

@@ -28,4 +28,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     boolean existsByEmail(String email);
     
     boolean existsByIdentificacion(String identificacion);
+
+    long countByTenantId(Long tenantId);
 }

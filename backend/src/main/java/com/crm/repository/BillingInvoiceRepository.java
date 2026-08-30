@@ -10,4 +10,6 @@ import java.util.List;
 public interface BillingInvoiceRepository extends JpaRepository<BillingInvoice, Long> {
 
     List<BillingInvoice> findByTenantIdOrderByIssueDateDesc(Long tenantId);
+    List<BillingInvoice> findByStatus(BillingInvoice.InvoiceStatus status);
+    List<BillingInvoice> findByTenantIdAndStatus(Long tenantId, BillingInvoice.InvoiceStatus status);
 }

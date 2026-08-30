@@ -62,6 +62,9 @@ public class WhatsAppConversation {
     @Column(name = "assigned_agent")
     private String assignedAgent;
 
+    @Column(name = "sentiment")
+    private String sentiment;
+
     @Enumerated(EnumType.STRING)
     private ConversationStatus status = ConversationStatus.ACTIVE;
 
