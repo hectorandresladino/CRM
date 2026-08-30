@@ -50,6 +50,15 @@ public class Tenant {
     @Column(name = "plan_id")
     private Long planId;
 
+    @Column(name = "parent_tenant_id")
+    private Long parentTenantId;
+
+    @Column(name = "is_agency")
+    private Boolean isAgency = false;
+
+    @Column(name = "is_sub_account")
+    private Boolean isSubAccount = false;
+
     @Column(name = "trial_ends_at")
     private LocalDateTime trialEndsAt;
 

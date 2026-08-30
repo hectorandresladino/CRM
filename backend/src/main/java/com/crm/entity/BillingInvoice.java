@@ -62,6 +62,9 @@ public class BillingInvoice {
     @Column(name = "pdf_url")
     private String pdfUrl;
 
+    @Column(name = "transaction_id")
+    private String transactionId;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

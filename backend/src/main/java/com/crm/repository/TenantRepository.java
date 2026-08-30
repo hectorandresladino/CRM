@@ -19,4 +19,6 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
     boolean existsBySlug(String slug);
     boolean existsByName(String name);
     List<Tenant> findByStatus(Tenant.TenantStatus status);
+    List<Tenant> findByParentTenantId(Long parentTenantId);
+    long countByParentTenantId(Long parentTenantId);
 }

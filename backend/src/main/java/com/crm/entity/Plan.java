@@ -49,6 +49,30 @@ public class Plan {
     @Column(name = "max_automations")
     private Integer maxAutomations;
 
+    @Column(name = "max_contacts")
+    private Integer maxContacts;
+
+    @Column(name = "max_whatsapp_messages")
+    private Integer maxWhatsappMessages;
+
+    @Column(name = "max_emails")
+    private Integer maxEmails;
+
+    @Column(name = "max_sms")
+    private Integer maxSms;
+
+    @Column(name = "max_api_calls")
+    private Integer maxApiCalls;
+
+    @Column(name = "max_ai_predictions")
+    private Integer maxAiPredictions;
+
+    @Column(name = "max_sub_accounts")
+    private Integer maxSubAccounts;
+
+    @Column(name = "is_agency_plan")
+    private Boolean isAgencyPlan = false;
+
     @Column(name = "has_whatsapp")
     private Boolean hasWhatsapp = false;
 
@@ -85,6 +109,6 @@ public class Plan {
     }
 
     public enum PlanType {
-        STARTER, PROFESSIONAL, ENTERPRISE
+        STARTER, BUSINESS, ENTERPRISE, AGENCY
     }
 }

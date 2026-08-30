@@ -31,6 +31,9 @@ public class PaymentMethod {
     @Column(name = "gateway_customer_id")
     private String gatewayCustomerId;
 
+    @Column(name = "gateway_token")
+    private String token;
+
     @Column(name = "last_four")
     private String lastFour;
 
