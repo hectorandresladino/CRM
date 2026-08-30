@@ -1,4 +1,4 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
@@ -18,7 +18,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/integrations")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class IntegrationController {
 
     private final IntegrationService integrationService;
@@ -26,7 +25,7 @@ public class IntegrationController {
     @GetMapping
     public ResponseEntity<List<Integration>> getAll() {
         Long tenantId = TenantContext.getCurrentTenant();
-        if (tenantId == null) tenantId = 1L;
+        if (tenantId == null) throw new RuntimeException("No tenant context");
         return ResponseEntity.ok(integrationService.findAll(tenantId));
     }
 

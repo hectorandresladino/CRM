@@ -1,10 +1,12 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
+import com.crm.security.TenantContext;
 import com.crm.entity.Actividad;
+import com.crm.security.TenantContext;
 import com.crm.service.ActividadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,23 +18,22 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/actividades")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ActividadController {
     private final ActividadService service;
 
     @GetMapping
     public ResponseEntity<List<Actividad>> getAll() {
-        return ResponseEntity.ok(service.findAll(1L));
+        return ResponseEntity.ok(service.findAll(getCurrentTenantId()));
     }
 
     @GetMapping("/usuario/{user}")
     public ResponseEntity<List<Actividad>> getByUser(@PathVariable String user) {
-        return ResponseEntity.ok(service.findByUser(1L, user));
+        return ResponseEntity.ok(service.findByUser(getCurrentTenantId(), user));
     }
 
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<Actividad>> getByStatus(@PathVariable String estado) {
-        return ResponseEntity.ok(service.findByStatus(1L, estado));
+        return ResponseEntity.ok(service.findByStatus(getCurrentTenantId(), estado));
     }
 
     @PostMapping
@@ -56,4 +57,11 @@ public class ActividadController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+

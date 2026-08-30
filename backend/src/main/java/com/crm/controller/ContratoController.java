@@ -1,4 +1,4 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/contratos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ContratoController {
     
     private final ContratoService contratoService;

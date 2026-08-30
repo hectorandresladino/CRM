@@ -1,10 +1,12 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
+import com.crm.security.TenantContext;
 import com.crm.entity.MetaComercial;
+import com.crm.security.TenantContext;
 import com.crm.service.MetaComercialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,18 +18,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/metas")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class MetaComercialController {
     private final MetaComercialService service;
 
     @GetMapping
     public ResponseEntity<List<MetaComercial>> getAll() {
-        return ResponseEntity.ok(service.findAll(1L));
+        return ResponseEntity.ok(service.findAll(getCurrentTenantId()));
     }
 
     @GetMapping("/anio/{anio}")
     public ResponseEntity<List<MetaComercial>> getByYear(@PathVariable Integer anio) {
-        return ResponseEntity.ok(service.findByYear(1L, anio));
+        return ResponseEntity.ok(service.findByYear(getCurrentTenantId(), anio));
     }
 
     @PostMapping
@@ -46,4 +47,11 @@ public class MetaComercialController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+

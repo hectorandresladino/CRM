@@ -1,10 +1,12 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
+import com.crm.security.TenantContext;
 import com.crm.entity.SSOConfiguration;
+import com.crm.security.TenantContext;
 import com.crm.service.SSOService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,14 +18,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/sso")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class SSOController {
 
     private final SSOService ssoService;
 
     @GetMapping
     public ResponseEntity<List<SSOConfiguration>> getAll() {
-        return ResponseEntity.ok(ssoService.findAll(1L));
+        return ResponseEntity.ok(ssoService.findAll(getCurrentTenantId()));
     }
 
     @PostMapping
@@ -52,4 +53,11 @@ public class SSOController {
     public ResponseEntity<SSOConfiguration> sync(@PathVariable Long id) {
         return ResponseEntity.ok(ssoService.sync(id));
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
@@ -6,6 +6,7 @@ package com.crm.controller;
 
 import com.crm.entity.WhatsAppAIConfig;
 import com.crm.entity.WhatsAppConversation;
+import com.crm.security.TenantContext;
 import com.crm.service.WhatsAppAIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +18,18 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/whatsapp-ai")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class WhatsAppAIController {
 
     private final WhatsAppAIService whatsappAIService;
 
     @GetMapping("/config")
     public ResponseEntity<WhatsAppAIConfig> getConfig() {
-        return ResponseEntity.ok(whatsappAIService.getConfig(1L));
+        return ResponseEntity.ok(whatsappAIService.getConfig(getCurrentTenantId()));
     }
 
     @PutMapping("/config")
     public ResponseEntity<WhatsAppAIConfig> updateConfig(@RequestBody WhatsAppAIConfig config) {
-        return ResponseEntity.ok(whatsappAIService.updateConfig(1L, config));
+        return ResponseEntity.ok(whatsappAIService.updateConfig(getCurrentTenantId(), config));
     }
 
     @PostMapping("/webhook")
@@ -38,29 +38,29 @@ public class WhatsAppAIController {
         String message = body.get("message") != null ? body.get("message").toString() : "";
         String contactName = body.get("name") != null ? body.get("name").toString() : "";
         String messageType = body.get("type") != null ? body.get("type").toString() : "TEXT";
-        whatsappAIService.processInboundMessage(1L, phone, contactName, message, messageType);
+        whatsappAIService.processInboundMessage(getCurrentTenantId(), phone, contactName, message, messageType);
         return ResponseEntity.ok(Map.of("status", "processed"));
     }
 
     @PostMapping("/send")
     public ResponseEntity<WhatsAppConversation> send(@RequestBody Map<String, String> body) {
         return ResponseEntity.ok(whatsappAIService.sendOutboundMessage(
-                1L, body.get("phone"), body.get("message"), body.get("agent")));
+                getCurrentTenantId(), body.get("phone"), body.get("message"), body.get("agent")));
     }
 
     @GetMapping("/conversations")
     public ResponseEntity<List<WhatsAppConversation>> getConversations() {
-        return ResponseEntity.ok(whatsappAIService.getConversations(1L));
+        return ResponseEntity.ok(whatsappAIService.getConversations(getCurrentTenantId()));
     }
 
     @GetMapping("/conversations/{phone}")
     public ResponseEntity<List<WhatsAppConversation>> getConversationByPhone(@PathVariable String phone) {
-        return ResponseEntity.ok(whatsappAIService.getConversationsByPhone(1L, phone));
+        return ResponseEntity.ok(whatsappAIService.getConversationsByPhone(getCurrentTenantId(), phone));
     }
 
     @GetMapping("/waiting")
     public ResponseEntity<List<WhatsAppConversation>> getWaiting() {
-        return ResponseEntity.ok(whatsappAIService.getWaitingForAgent(1L));
+        return ResponseEntity.ok(whatsappAIService.getWaitingForAgent(getCurrentTenantId()));
     }
 
     @PatchMapping("/conversations/{id}/takeover")
@@ -75,6 +75,12 @@ public class WhatsAppAIController {
 
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Object>> getStats() {
-        return ResponseEntity.ok(whatsappAIService.getStats(1L));
+        return ResponseEntity.ok(whatsappAIService.getStats(getCurrentTenantId()));
+    }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
     }
 }

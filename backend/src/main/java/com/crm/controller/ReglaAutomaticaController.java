@@ -1,10 +1,12 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
+import com.crm.security.TenantContext;
 import com.crm.entity.ReglaAutomatica;
+import com.crm.security.TenantContext;
 import com.crm.service.ReglaAutomaticaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,13 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/reglas")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ReglaAutomaticaController {
     private final ReglaAutomaticaService service;
 
     @GetMapping
     public ResponseEntity<List<ReglaAutomatica>> getAll() {
-        return ResponseEntity.ok(service.findAll(1L));
+        return ResponseEntity.ok(service.findAll(getCurrentTenantId()));
     }
 
     @PostMapping
@@ -46,4 +47,11 @@ public class ReglaAutomaticaController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+

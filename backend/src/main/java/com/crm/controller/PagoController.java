@@ -1,10 +1,12 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
+import com.crm.security.TenantContext;
 import com.crm.entity.Pago;
+import com.crm.security.TenantContext;
 import com.crm.service.PagoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,18 +19,17 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/pagos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class PagoController {
     private final PagoService service;
 
     @GetMapping
     public ResponseEntity<List<Pago>> getAll() {
-        return ResponseEntity.ok(service.findAll(1L));
+        return ResponseEntity.ok(service.findAll(getCurrentTenantId()));
     }
 
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<Pago>> getByEstado(@PathVariable String estado) {
-        return ResponseEntity.ok(service.findByEstado(1L, estado));
+        return ResponseEntity.ok(service.findByEstado(getCurrentTenantId(), estado));
     }
 
     @PostMapping
@@ -46,4 +47,11 @@ public class PagoController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+

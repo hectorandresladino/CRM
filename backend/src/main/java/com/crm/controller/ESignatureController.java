@@ -1,10 +1,11 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
 import com.crm.entity.ESignatureRequest;
+import com.crm.security.TenantContext;
 import com.crm.service.ESignatureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,14 +18,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/esignature")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ESignatureController {
 
     private final ESignatureService eSignatureService;
 
     @GetMapping
     public ResponseEntity<List<ESignatureRequest>> getAll() {
-        return ResponseEntity.ok(eSignatureService.findAll(1L));
+        return ResponseEntity.ok(eSignatureService.findAll(getCurrentTenantId()));
     }
 
     @PostMapping
@@ -47,4 +47,11 @@ public class ESignatureController {
         eSignatureService.cancel(id);
         return ResponseEntity.noContent().build();
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+

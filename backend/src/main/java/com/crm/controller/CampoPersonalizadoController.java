@@ -1,10 +1,12 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
+import com.crm.security.TenantContext;
 import com.crm.entity.CampoPersonalizado;
+import com.crm.security.TenantContext;
 import com.crm.service.CampoPersonalizadoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,13 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/campos-personalizados")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class CampoPersonalizadoController {
     private final CampoPersonalizadoService service;
 
     @GetMapping("/entidad/{entidad}")
     public ResponseEntity<List<CampoPersonalizado>> getByEntidad(@PathVariable String entidad) {
-        return ResponseEntity.ok(service.findByEntidad(1L, entidad));
+        return ResponseEntity.ok(service.findByEntidad(getCurrentTenantId(), entidad));
     }
 
     @PostMapping
@@ -41,4 +42,11 @@ public class CampoPersonalizadoController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+

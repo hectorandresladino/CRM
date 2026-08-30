@@ -1,11 +1,11 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
 import com.crm.entity.*;
-import com.crm.service.AgentforceService;
+import com.crm.service.RevenueAIService;
 import com.crm.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,37 +15,36 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/agentforce")
+@RequestMapping("/api/v1/revenue-ai")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
-public class AgentforceController {
+public class RevenueAIController {
 
-    private final AgentforceService agentService;
+    private final RevenueAIService revenueAIService;
     private final AnalyticsService analyticsService;
 
     @PostMapping("/predict/opportunity/{id}")
-    public ResponseEntity<AIPrediction> predictOpportunity(@PathVariable Long id) { return ResponseEntity.ok(agentService.predictOpportunityScore(id)); }
+    public ResponseEntity<AIPrediction> predictOpportunity(@PathVariable Long id) { return ResponseEntity.ok(revenueAIService.predictOpportunityScore(id)); }
 
     @PostMapping("/predict/churn/{clientId}")
-    public ResponseEntity<AIPrediction> predictChurn(@PathVariable Long clientId) { return ResponseEntity.ok(agentService.predictChurn(clientId)); }
+    public ResponseEntity<AIPrediction> predictChurn(@PathVariable Long clientId) { return ResponseEntity.ok(revenueAIService.predictChurn(clientId)); }
 
     @PostMapping("/predict/next-best-action/{clientId}")
-    public ResponseEntity<AIPrediction> nextBestAction(@PathVariable Long clientId) { return ResponseEntity.ok(agentService.nextBestAction(clientId)); }
+    public ResponseEntity<AIPrediction> nextBestAction(@PathVariable Long clientId) { return ResponseEntity.ok(revenueAIService.nextBestAction(clientId)); }
 
     @PostMapping("/predict/forecast")
-    public ResponseEntity<AIPrediction> forecastIA(@RequestParam Integer year, @RequestParam Integer quarter) { return ResponseEntity.ok(agentService.forecastIA(year, quarter)); }
+    public ResponseEntity<AIPrediction> forecastIA(@RequestParam Integer year, @RequestParam Integer quarter) { return ResponseEntity.ok(revenueAIService.forecastIA(year, quarter)); }
 
     @PostMapping("/predict/ltv/{clientId}")
-    public ResponseEntity<AIPrediction> lifetimeValue(@PathVariable Long clientId) { return ResponseEntity.ok(agentService.lifetimeValue(clientId)); }
+    public ResponseEntity<AIPrediction> lifetimeValue(@PathVariable Long clientId) { return ResponseEntity.ok(revenueAIService.lifetimeValue(clientId)); }
 
     @GetMapping("/predictions")
-    public ResponseEntity<List<AIPrediction>> getPredictions(@RequestParam(required = false) String type) { return ResponseEntity.ok(agentService.getPredictions(type)); }
+    public ResponseEntity<List<AIPrediction>> getPredictions(@RequestParam(required = false) String type) { return ResponseEntity.ok(revenueAIService.getPredictions(type)); }
 
     @PutMapping("/predictions/{id}/action")
-    public ResponseEntity<AIPrediction> actionPrediction(@PathVariable Long id) { return ResponseEntity.ok(agentService.actionPrediction(id)); }
+    public ResponseEntity<AIPrediction> actionPrediction(@PathVariable Long id) { return ResponseEntity.ok(revenueAIService.actionPrediction(id)); }
 
     @GetMapping("/insights")
-    public ResponseEntity<Map<String, Object>> getInsights() { return ResponseEntity.ok(agentService.getAIInsights()); }
+    public ResponseEntity<Map<String, Object>> getInsights() { return ResponseEntity.ok(revenueAIService.getAIInsights()); }
 
     @GetMapping("/analytics/revenue-intelligence")
     public ResponseEntity<Map<String, Object>> getRevenueIntelligence() { return ResponseEntity.ok(analyticsService.getRevenueIntelligence()); }

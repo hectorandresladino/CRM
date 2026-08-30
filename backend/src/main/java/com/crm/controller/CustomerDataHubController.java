@@ -1,11 +1,11 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
 import com.crm.entity.*;
-import com.crm.service.Data360Service;
+import com.crm.service.CustomerDataHubService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/data360")
+@RequestMapping("/api/v1/customer-data-hub")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
-public class Data360Controller {
+public class CustomerDataHubController {
 
-    private final Data360Service service;
+    private final CustomerDataHubService service;
 
     @PostMapping("/resolve-identity")
     public ResponseEntity<UnifiedProfile> resolveIdentity(@RequestBody Map<String, String> body) {

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
@@ -16,7 +16,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/revenue-cloud")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class RevenueCloudController {
 
     private final RevenueCloudService service;

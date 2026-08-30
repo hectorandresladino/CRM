@@ -1,11 +1,14 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
+import com.crm.security.TenantContext;
 import com.crm.entity.CPQProduct;
+import com.crm.security.TenantContext;
 import com.crm.entity.CPQQuoteItem;
+import com.crm.security.TenantContext;
 import com.crm.service.CPQService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,14 +20,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/cpq")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class CPQController {
 
     private final CPQService cpqService;
 
     @GetMapping("/products")
     public ResponseEntity<List<CPQProduct>> getProducts() {
-        return ResponseEntity.ok(cpqService.findAllProducts(1L));
+        return ResponseEntity.ok(cpqService.findAllProducts(getCurrentTenantId()));
     }
 
     @PostMapping("/products")
@@ -46,7 +48,7 @@ public class CPQController {
 
     @GetMapping("/quote-items/{cotizacionId}")
     public ResponseEntity<List<CPQQuoteItem>> getQuoteItems(@PathVariable Long cotizacionId) {
-        return ResponseEntity.ok(cpqService.findQuoteItems(1L, cotizacionId));
+        return ResponseEntity.ok(cpqService.findQuoteItems(getCurrentTenantId(), cotizacionId));
     }
 
     @PostMapping("/quote-items")
@@ -61,7 +63,7 @@ public class CPQController {
 
     @GetMapping("/pending-approvals")
     public ResponseEntity<List<CPQQuoteItem>> getPendingApprovals() {
-        return ResponseEntity.ok(cpqService.getPendingApprovals(1L));
+        return ResponseEntity.ok(cpqService.getPendingApprovals(getCurrentTenantId()));
     }
 
     @DeleteMapping("/quote-items/{id}")
@@ -69,4 +71,11 @@ public class CPQController {
         cpqService.deleteQuoteItem(id);
         return ResponseEntity.noContent().build();
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+

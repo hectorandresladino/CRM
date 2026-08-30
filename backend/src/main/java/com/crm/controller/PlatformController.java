@@ -1,4 +1,4 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
@@ -17,7 +17,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/platform")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class PlatformController {
 
     private final PlatformService platformService;

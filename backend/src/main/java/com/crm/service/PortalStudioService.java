@@ -1,4 +1,4 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
@@ -18,7 +18,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ExperienceCloudService {
+public class PortalStudioService {
 
     private final PortalConfigRepository portalRepo;
 

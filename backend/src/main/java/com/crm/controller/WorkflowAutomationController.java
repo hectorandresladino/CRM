@@ -1,10 +1,12 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
+import com.crm.security.TenantContext;
 import com.crm.entity.WorkflowAutomation;
+import com.crm.security.TenantContext;
 import com.crm.service.WorkflowAutomationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,14 +18,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/workflows")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class WorkflowAutomationController {
 
     private final WorkflowAutomationService workflowAutomationService;
 
     @GetMapping
     public ResponseEntity<List<WorkflowAutomation>> getAll() {
-        return ResponseEntity.ok(workflowAutomationService.findAll(1L));
+        return ResponseEntity.ok(workflowAutomationService.findAll(getCurrentTenantId()));
     }
 
     @PostMapping
@@ -46,4 +47,11 @@ public class WorkflowAutomationController {
     public ResponseEntity<WorkflowAutomation> toggle(@PathVariable Long id) {
         return ResponseEntity.ok(workflowAutomationService.toggle(id));
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+

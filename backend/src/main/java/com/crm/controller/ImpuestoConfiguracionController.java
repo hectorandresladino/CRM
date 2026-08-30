@@ -1,10 +1,12 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
+import com.crm.security.TenantContext;
 import com.crm.entity.ImpuestoConfiguracion;
+import com.crm.security.TenantContext;
 import com.crm.service.ImpuestoConfiguracionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,18 +18,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/impuestos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ImpuestoConfiguracionController {
     private final ImpuestoConfiguracionService service;
 
     @GetMapping
     public ResponseEntity<List<ImpuestoConfiguracion>> getAll() {
-        return ResponseEntity.ok(service.findAll(1L));
+        return ResponseEntity.ok(service.findAll(getCurrentTenantId()));
     }
 
     @GetMapping("/pais/{pais}")
     public ResponseEntity<List<ImpuestoConfiguracion>> getByPais(@PathVariable String pais) {
-        return ResponseEntity.ok(service.findByPais(1L, pais));
+        return ResponseEntity.ok(service.findByPais(getCurrentTenantId(), pais));
     }
 
     @PostMapping
@@ -46,4 +47,11 @@ public class ImpuestoConfiguracionController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+

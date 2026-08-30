@@ -1,4 +1,4 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
@@ -19,7 +19,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class AgentforceService {
+public class RevenueAIService {
 
     private final AIPredictionRepository predictionRepo;
     private final ClienteRepository clienteRepo;

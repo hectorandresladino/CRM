@@ -1,4 +1,4 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
@@ -19,7 +19,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/superadmin")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @PreAuthorize("hasRole('SUPER_ADMIN')")
 public class SuperAdminController {
 

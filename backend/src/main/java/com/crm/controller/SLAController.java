@@ -1,10 +1,12 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
+import com.crm.security.TenantContext;
 import com.crm.entity.SLAConfiguracion;
+import com.crm.security.TenantContext;
 import com.crm.service.SLAService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,13 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/sla")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class SLAController {
     private final SLAService service;
 
     @GetMapping
     public ResponseEntity<List<SLAConfiguracion>> getAll() {
-        return ResponseEntity.ok(service.findAll(1L));
+        return ResponseEntity.ok(service.findAll(getCurrentTenantId()));
     }
 
     @PostMapping
@@ -41,4 +42,11 @@ public class SLAController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+

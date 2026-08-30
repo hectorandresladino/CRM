@@ -1,11 +1,11 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
 import com.crm.entity.*;
-import com.crm.service.ExperienceCloudService;
+import com.crm.service.PortalStudioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/experience-cloud")
+@RequestMapping("/api/v1/portal-studio")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
-public class ExperienceCloudController {
+public class PortalStudioController {
 
-    private final ExperienceCloudService service;
+    private final PortalStudioService service;
 
     @GetMapping
     public ResponseEntity<List<PortalConfig>> getPortals() { return ResponseEntity.ok(service.getPortals()); }

@@ -1,10 +1,12 @@
-﻿/*
+/*
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
 package com.crm.controller;
 
+import com.crm.security.TenantContext;
 import com.crm.entity.EmailTemplate;
+import com.crm.security.TenantContext;
 import com.crm.service.EmailTemplateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,14 +18,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/email-templates")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class EmailTemplateController {
 
     private final EmailTemplateService emailTemplateService;
 
     @GetMapping
     public ResponseEntity<List<EmailTemplate>> getAll() {
-        return ResponseEntity.ok(emailTemplateService.findAll(1L));
+        return ResponseEntity.ok(emailTemplateService.findAll(getCurrentTenantId()));
     }
 
     @PostMapping
@@ -41,4 +42,11 @@ public class EmailTemplateController {
         emailTemplateService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    private Long getCurrentTenantId() {
+        Long tid = TenantContext.getCurrentTenant();
+        if (tid == null) throw new RuntimeException("No tenant context");
+        return tid;
+    }
 }
+
