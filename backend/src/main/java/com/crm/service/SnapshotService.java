@@ -47,10 +47,11 @@ public class SnapshotService {
         List<Map<String, Object>> emailTemplates = new ArrayList<>();
         for (EmailTemplate et : emailTemplateRepo.findByTenantId(sourceTenantId)) {
             Map<String, Object> tpl = new LinkedHashMap<>();
-            tpl.put("nombre", et.getNombre());
-            tpl.put("asunto", et.getAsunto());
-            tpl.put("cuerpo", et.getCuerpo());
-            tpl.put("idioma", et.getIdioma());
+            tpl.put("name", et.getName());
+            tpl.put("subject", et.getSubject());
+            tpl.put("bodyHtml", et.getBodyHtml());
+            tpl.put("bodyText", et.getBodyText());
+            tpl.put("category", et.getCategory());
             emailTemplates.add(tpl);
         }
         snapshot.put("emailTemplates", emailTemplates);
@@ -61,7 +62,8 @@ public class SnapshotService {
             form.put("nombre", fw.getNombre());
             form.put("descripcion", fw.getDescripcion());
             form.put("campos", fw.getCampos());
-            form.put("entidadDestino", fw.getEntidadDestino());
+            form.put("destinoProspecto", fw.getDestinoProspecto());
+            form.put("destinoCliente", fw.getDestinoCliente());
             forms.add(form);
         }
         snapshot.put("forms", forms);
@@ -70,10 +72,11 @@ public class SnapshotService {
         for (ReglaAutomatica ra : reglaAutomaticaRepo.findByTenantId(sourceTenantId)) {
             Map<String, Object> auto = new LinkedHashMap<>();
             auto.put("nombre", ra.getNombre());
-            auto.put("trigger", ra.getTrigger());
+            auto.put("evento", ra.getEvento());
+            auto.put("entidad", ra.getEntidad());
             auto.put("condiciones", ra.getCondiciones());
             auto.put("acciones", ra.getAcciones());
-            auto.put("activa", ra.getActiva());
+            auto.put("esActiva", ra.getEsActiva());
             automations.add(auto);
         }
         snapshot.put("automations", automations);
@@ -108,10 +111,11 @@ public class SnapshotService {
             for (Map<String, Object> tpl : emailTemplates) {
                 EmailTemplate et = new EmailTemplate();
                 et.setTenantId(targetTenantId);
-                et.setNombre((String) tpl.get("nombre"));
-                et.setAsunto((String) tpl.get("asunto"));
-                et.setCuerpo((String) tpl.get("cuerpo"));
-                et.setIdioma((String) tpl.get("idioma"));
+                et.setName((String) tpl.get("name"));
+                et.setSubject((String) tpl.get("subject"));
+                et.setBodyHtml((String) tpl.get("bodyHtml"));
+                et.setBodyText((String) tpl.get("bodyText"));
+                et.setCategory((String) tpl.get("category"));
                 emailTemplateRepo.save(et);
                 applied++;
             }
@@ -125,7 +129,8 @@ public class SnapshotService {
                 fw.setNombre((String) form.get("nombre"));
                 fw.setDescripcion((String) form.get("descripcion"));
                 fw.setCampos((String) form.get("campos"));
-                fw.setEntidadDestino((String) form.get("entidadDestino"));
+                fw.setDestinoProspecto((Boolean) form.get("destinoProspecto"));
+                fw.setDestinoCliente((Boolean) form.get("destinoCliente"));
                 formularioWebRepo.save(fw);
                 applied++;
             }
@@ -137,10 +142,11 @@ public class SnapshotService {
                 ReglaAutomatica ra = new ReglaAutomatica();
                 ra.setTenantId(targetTenantId);
                 ra.setNombre((String) auto.get("nombre"));
-                ra.setTrigger((String) auto.get("trigger"));
+                ra.setEvento((String) auto.get("evento"));
+                ra.setEntidad((String) auto.get("entidad"));
                 ra.setCondiciones((String) auto.get("condiciones"));
                 ra.setAcciones((String) auto.get("acciones"));
-                ra.setActiva((Boolean) auto.get("activa"));
+                ra.setEsActiva((Boolean) auto.get("esActiva"));
                 reglaAutomaticaRepo.save(ra);
                 applied++;
             }
