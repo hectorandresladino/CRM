@@ -36,9 +36,9 @@ public class SnapshotService {
             Map<String, Object> field = new LinkedHashMap<>();
             field.put("entidad", cf.getEntidad());
             field.put("nombreCampo", cf.getNombreCampo());
-            field.put("tipoCampo", cf.getTipoCampo());
+            field.put("tipo", cf.getTipo());
             field.put("etiqueta", cf.getEtiqueta());
-            field.put("requerido", cf.getRequerido());
+            field.put("esRequerido", cf.getEsRequerido());
             field.put("opciones", cf.getOpciones());
             customFields.add(field);
         }
@@ -97,9 +97,9 @@ public class SnapshotService {
                 cf.setTenantId(targetTenantId);
                 cf.setEntidad((String) field.get("entidad"));
                 cf.setNombreCampo((String) field.get("nombreCampo"));
-                cf.setTipoCampo((String) field.get("tipoCampo"));
+                cf.setTipo((String) field.get("tipo"));
                 cf.setEtiqueta((String) field.get("etiqueta"));
-                cf.setRequerido((Boolean) field.get("requerido"));
+                cf.setEsRequerido((Boolean) field.get("esRequerido"));
                 cf.setOpciones((String) field.get("opciones"));
                 campoPersonalizadoRepo.save(cf);
                 applied++;
