@@ -35,9 +35,7 @@ public class MarketingCloudAdvancedService {
     private final ClienteRepository clienteRepo;
 
     private Long tid() {
-        Long t = TenantContext.getCurrentTenant();
-        if (t == null) throw new RuntimeException("No tenant context");
-        return t;
+        return TenantContext.requireCurrentTenant();
     }
 
     // === Campaign Management (Item 35) ===
@@ -50,11 +48,12 @@ public class MarketingCloudAdvancedService {
     }
 
     public Map<String, Object> getCampaignROI(Long campaignId) {
-        CampanaMarketing c = campaignRepo.findById(campaignId).orElseThrow();
+        Long tenantId = tid();
+        CampanaMarketing c = campaignRepo.findByTenantIdAndId(tenantId, campaignId).orElseThrow();
         BigDecimal budget = c.getPresupuesto() != null ? c.getPresupuesto() : BigDecimal.ZERO;
         BigDecimal spent = c.getPresupuestoGastado() != null ? c.getPresupuestoGastado() : BigDecimal.ZERO;
 
-        List<MarketingAttribution> attributions = attributionRepo.findByTenantIdAndCampaignId(tid(), campaignId);
+        List<MarketingAttribution> attributions = attributionRepo.findByTenantIdAndCampaignId(tenantId, campaignId);
         BigDecimal revenue = attributions.stream()
                 .map(a -> a.getRevenueAttributed() != null ? a.getRevenueAttributed() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -85,7 +84,7 @@ public class MarketingCloudAdvancedService {
     }
 
     public EmailMarketing scheduleEmail(Long id, LocalDateTime scheduledAt) {
-        EmailMarketing email = emailRepo.findById(id).orElseThrow();
+        EmailMarketing email = emailRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         email.setFechaProgramada(scheduledAt);
         email.setEstado("PROGRAMADO");
         return emailRepo.save(email);
@@ -119,8 +118,9 @@ public class MarketingCloudAdvancedService {
     }
 
     public CustomerSegment evaluateSegment(Long segmentId) {
-        CustomerSegment segment = segmentRepo.findById(segmentId).orElseThrow();
-        long count = clienteRepo.findByTenantId(tid()).size();
+        Long tenantId = tid();
+        CustomerSegment segment = segmentRepo.findByTenantIdAndId(tenantId, segmentId).orElseThrow();
+        long count = clienteRepo.findByTenantId(tenantId).size();
         segment.setMemberCount((int) count);
         segment.setLastEvaluatedAt(LocalDateTime.now());
         return segmentRepo.save(segment);
@@ -145,22 +145,23 @@ public class MarketingCloudAdvancedService {
     }
 
     public CustomerJourney activateJourney(Long journeyId) {
-        CustomerJourney journey = journeyRepo.findById(journeyId).orElseThrow();
+        CustomerJourney journey = journeyRepo.findByTenantIdAndId(tid(), journeyId).orElseThrow();
         journey.setStatus(CustomerJourney.Status.ACTIVE.name());
         journey.setIsActive(true);
         return journeyRepo.save(journey);
     }
 
     public CustomerJourney pauseJourney(Long journeyId) {
-        CustomerJourney journey = journeyRepo.findById(journeyId).orElseThrow();
+        CustomerJourney journey = journeyRepo.findByTenantIdAndId(tid(), journeyId).orElseThrow();
         journey.setStatus(CustomerJourney.Status.PAUSED.name());
         journey.setIsActive(false);
         return journeyRepo.save(journey);
     }
 
     public Map<String, Object> getJourneyMetrics(Long journeyId) {
-        CustomerJourney j = journeyRepo.findById(journeyId).orElseThrow();
-        List<JourneyStep> steps = journeyStepRepo.findByTenantIdAndJourneyId(tid(), journeyId);
+        Long tenantId = tid();
+        CustomerJourney j = journeyRepo.findByTenantIdAndId(tenantId, journeyId).orElseThrow();
+        List<JourneyStep> steps = journeyStepRepo.findByTenantIdAndJourneyId(tenantId, journeyId);
 
         Map<String, Object> metrics = new LinkedHashMap<>();
         metrics.put("journeyId", j.getId());
@@ -185,24 +186,24 @@ public class MarketingCloudAdvancedService {
     }
 
     public LandingPage publishLandingPage(Long id) {
-        LandingPage page = landingRepo.findById(id).orElseThrow();
+        LandingPage page = landingRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         page.setIsPublished(true);
         page.setPublishedAt(LocalDateTime.now());
         return landingRepo.save(page);
     }
 
     public LandingPage trackVisit(String slug) {
-        LandingPage page = landingRepo.findBySlug(slug).orElseThrow();
-        page.setTotalVisits(page.getTotalVisits() + 1);
+        LandingPage page = landingRepo.findByTenantIdAndSlug(tid(), slug).orElseThrow();
+        page.setTotalVisits(orZero(page.getTotalVisits()) + 1);
         page.setConversionRate(page.getTotalVisits() > 0
-                ? (double) page.getTotalConversions() / page.getTotalVisits() * 100 : 0.0);
+                ? (double) orZero(page.getTotalConversions()) / page.getTotalVisits() * 100 : 0.0);
         return landingRepo.save(page);
     }
 
     public LandingPage trackConversion(String slug) {
-        LandingPage page = landingRepo.findBySlug(slug).orElseThrow();
-        page.setTotalConversions(page.getTotalConversions() + 1);
-        page.setConversionRate(page.getTotalVisits() > 0
+        LandingPage page = landingRepo.findByTenantIdAndSlug(tid(), slug).orElseThrow();
+        page.setTotalConversions(orZero(page.getTotalConversions()) + 1);
+        page.setConversionRate(orZero(page.getTotalVisits()) > 0
                 ? (double) page.getTotalConversions() / page.getTotalVisits() * 100 : 0.0);
         return landingRepo.save(page);
     }
@@ -258,7 +259,7 @@ public class MarketingCloudAdvancedService {
     }
 
     public SocialMediaPost scheduleSocialPost(Long id, LocalDateTime scheduledAt) {
-        SocialMediaPost post = socialRepo.findById(id).orElseThrow();
+        SocialMediaPost post = socialRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         post.setScheduledAt(scheduledAt);
         post.setStatus(SocialMediaPost.PostStatus.SCHEDULED);
         return socialRepo.save(post);
@@ -269,7 +270,7 @@ public class MarketingCloudAdvancedService {
     }
 
     public SocialMediaPost markPublished(Long id, String externalPostId, String externalUrl) {
-        SocialMediaPost post = socialRepo.findById(id).orElseThrow();
+        SocialMediaPost post = socialRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         post.setStatus(SocialMediaPost.PostStatus.PUBLISHED);
         post.setPublishedAt(LocalDateTime.now());
         post.setExternalPostId(externalPostId);
@@ -318,32 +319,38 @@ public class MarketingCloudAdvancedService {
     }
 
     public ABTest recordVisit(Long testId, String variant) {
-        ABTest test = abTestRepo.findById(testId).orElseThrow();
+        ABTest test = abTestRepo.findByTenantIdAndId(tid(), testId).orElseThrow();
         if ("A".equalsIgnoreCase(variant)) {
-            test.setVariantAVisits(test.getVariantAVisits() + 1);
+            test.setVariantAVisits(orZero(test.getVariantAVisits()) + 1);
+        } else if ("B".equalsIgnoreCase(variant)) {
+            test.setVariantBVisits(orZero(test.getVariantBVisits()) + 1);
         } else {
-            test.setVariantBVisits(test.getVariantBVisits() + 1);
+            throw new IllegalArgumentException("La variante debe ser A o B");
         }
         updateTestRates(test);
         return abTestRepo.save(test);
     }
 
     public ABTest recordConversion(Long testId, String variant) {
-        ABTest test = abTestRepo.findById(testId).orElseThrow();
+        ABTest test = abTestRepo.findByTenantIdAndId(tid(), testId).orElseThrow();
         if ("A".equalsIgnoreCase(variant)) {
-            test.setVariantAConversions(test.getVariantAConversions() + 1);
+            test.setVariantAConversions(orZero(test.getVariantAConversions()) + 1);
+        } else if ("B".equalsIgnoreCase(variant)) {
+            test.setVariantBConversions(orZero(test.getVariantBConversions()) + 1);
         } else {
-            test.setVariantBConversions(test.getVariantBConversions() + 1);
+            throw new IllegalArgumentException("La variante debe ser A o B");
         }
         updateTestRates(test);
         return abTestRepo.save(test);
     }
 
     private void updateTestRates(ABTest test) {
-        test.setVariantARate(test.getVariantAVisits() > 0
-                ? (double) test.getVariantAConversions() / test.getVariantAVisits() * 100 : 0.0);
-        test.setVariantBRate(test.getVariantBVisits() > 0
-                ? (double) test.getVariantBConversions() / test.getVariantBVisits() * 100 : 0.0);
+        int aVisits = orZero(test.getVariantAVisits());
+        int bVisits = orZero(test.getVariantBVisits());
+        int aConversions = orZero(test.getVariantAConversions());
+        int bConversions = orZero(test.getVariantBConversions());
+        test.setVariantARate(aVisits > 0 ? (double) aConversions / aVisits * 100 : 0.0);
+        test.setVariantBRate(bVisits > 0 ? (double) bConversions / bVisits * 100 : 0.0);
         test.setConfidenceLevel(calculateConfidence(test));
         if (test.getConfidenceLevel() >= 95.0) {
             test.setStatus(ABTest.TestStatus.COMPLETED);
@@ -362,8 +369,9 @@ public class MarketingCloudAdvancedService {
         double se = Math.sqrt(pooledP * (1 - pooledP) * (1.0/n1 + 1.0/n2));
         if (se == 0) return 0.0;
         double z = Math.abs(p1 - p2) / se;
-        double confidence = 2 * (1 - normalCdf(z)) * 100;
-        return Math.min(confidence, 99.99);
+        double pValuePercent = 2 * (1 - normalCdf(z)) * 100;
+        double confidence = 100 - pValuePercent;
+        return Math.max(0.0, Math.min(confidence, 99.99));
     }
 
     private double normalCdf(double z) {
@@ -377,6 +385,10 @@ public class MarketingCloudAdvancedService {
                 t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 +
                 t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
         return x >= 0 ? ans : -ans;
+    }
+
+    private int orZero(Integer value) {
+        return value == null ? 0 : value;
     }
 
     // === Marketing Dashboard (Item 43) ===

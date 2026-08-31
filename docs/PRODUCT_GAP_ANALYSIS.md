@@ -21,6 +21,16 @@ Last reviewed: 2026-08-31
 - Regression coverage now includes cross-tenant deletion/lookups, advanced
   sales/service mutations, fail-closed operation without an authenticated
   tenant and honest failure for unavailable provider synchronization.
+- Marketing Cloud, automation and compliance mutations now resolve ownership
+  by authenticated tenant, including journeys, segments, landing pages, social
+  posts, A/B tests, flows, scheduled jobs, SSO, GDPR, audits, IP rules and
+  sessions.
+- The A/B engine now calculates statistical confidence from the complement of
+  the two-sided p-value, rejects invalid variants and safely handles legacy null
+  counters.
+- Legacy automation and compliance routes no longer store raw connector
+  credentials or claim successful SSO, retention, vulnerability scans or
+  reports when no real provider/executor has run.
 
 ## Evidence-based status
 

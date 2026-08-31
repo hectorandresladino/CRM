@@ -10,5 +10,7 @@ import java.util.Optional;
 public interface LandingPageRepository extends JpaRepository<LandingPage, Long> {
     List<LandingPage> findByTenantId(Long tenantId);
     Optional<LandingPage> findBySlug(String slug);
+    Optional<LandingPage> findByTenantIdAndSlug(Long tenantId, String slug);
+    Optional<LandingPage> findByTenantIdAndId(Long tenantId, Long id);
     List<LandingPage> findByTenantIdAndIsPublished(Long tenantId, Boolean isPublished);
 }

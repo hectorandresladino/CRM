@@ -33,9 +33,7 @@ public class AutomationIntegrationService {
     private final ValidationRuleRepository validationRepo;
 
     private Long tid() {
-        Long t = TenantContext.getCurrentTenant();
-        if (t == null) throw new RuntimeException("No tenant context");
-        return t;
+        return TenantContext.requireCurrentTenant();
     }
 
     // === Flow Builder (Item 55) ===
@@ -48,20 +46,20 @@ public class AutomationIntegrationService {
     }
 
     public FlowDefinition activateFlow(Long id) {
-        FlowDefinition flow = flowRepo.findById(id).orElseThrow();
+        FlowDefinition flow = flowRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         flow.setIsActive(true);
         return flowRepo.save(flow);
     }
 
     public FlowDefinition deactivateFlow(Long id) {
-        FlowDefinition flow = flowRepo.findById(id).orElseThrow();
+        FlowDefinition flow = flowRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         flow.setIsActive(false);
         return flowRepo.save(flow);
     }
 
     public FlowDefinition publishFlowVersion(Long id) {
-        FlowDefinition flow = flowRepo.findById(id).orElseThrow();
-        flow.setVersion(flow.getVersion() + 1);
+        FlowDefinition flow = flowRepo.findByTenantIdAndId(tid(), id).orElseThrow();
+        flow.setVersion((flow.getVersion() == null ? 0 : flow.getVersion()) + 1);
         return flowRepo.save(flow);
     }
 
@@ -103,8 +101,8 @@ public class AutomationIntegrationService {
     }
 
     public WorkflowAutomation toggleWorkflow(Long id) {
-        WorkflowAutomation wf = workflowRepo.findById(id).orElseThrow();
-        wf.setActive(!wf.getActive());
+        WorkflowAutomation wf = workflowRepo.findByTenantIdAndId(tid(), id).orElseThrow();
+        wf.setActive(!Boolean.TRUE.equals(wf.getActive()));
         return workflowRepo.save(wf);
     }
 
@@ -175,20 +173,20 @@ public class AutomationIntegrationService {
 
     public Integration createIntegration(Integration integration) {
         integration.setTenantId(tid());
+        integration.setCredentials(null);
+        integration.setConnected(false);
+        integration.setSyncEnabled(false);
         return integrationRepo.save(integration);
     }
 
     public Integration connectIntegration(Long id, String credentials) {
-        Integration integration = integrationRepo.findById(id).orElseThrow();
-        integration.setConnected(true);
-        integration.setCredentials(credentials);
-        integration.setSyncEnabled(true);
-        integration.setLastSyncAt(LocalDateTime.now());
-        return integrationRepo.save(integration);
+        integrationRepo.findByTenantIdAndId(tid(), id).orElseThrow();
+        throw new UnsupportedOperationException(
+                "La conexion requiere OAuth o API oficial; no se almacenan credenciales sin un proveedor seguro");
     }
 
     public Integration disconnectIntegration(Long id) {
-        Integration integration = integrationRepo.findById(id).orElseThrow();
+        Integration integration = integrationRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         integration.setConnected(false);
         integration.setSyncEnabled(false);
         integration.setCredentials(null);
@@ -238,8 +236,8 @@ public class AutomationIntegrationService {
     }
 
     public ScheduledJob toggleScheduledJob(Long id) {
-        ScheduledJob job = scheduledJobRepo.findById(id).orElseThrow();
-        job.setIsActive(!job.getIsActive());
+        ScheduledJob job = scheduledJobRepo.findByTenantIdAndId(tid(), id).orElseThrow();
+        job.setIsActive(!Boolean.TRUE.equals(job.getIsActive()));
         if (job.getIsActive()) {
             job.setNextRunAt(calculateNextRun(job.getCronExpression()));
         } else {
@@ -249,11 +247,11 @@ public class AutomationIntegrationService {
     }
 
     public ScheduledJob recordJobExecution(Long id, boolean success, String error) {
-        ScheduledJob job = scheduledJobRepo.findById(id).orElseThrow();
-        job.setRunCount(job.getRunCount() + 1);
+        ScheduledJob job = scheduledJobRepo.findByTenantIdAndId(tid(), id).orElseThrow();
+        job.setRunCount((job.getRunCount() == null ? 0 : job.getRunCount()) + 1);
         job.setLastRunAt(LocalDateTime.now());
         if (!success) {
-            job.setFailureCount(job.getFailureCount() + 1);
+            job.setFailureCount((job.getFailureCount() == null ? 0 : job.getFailureCount()) + 1);
             job.setLastError(error);
         }
         job.setNextRunAt(calculateNextRun(job.getCronExpression()));

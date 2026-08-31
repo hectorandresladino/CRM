@@ -33,9 +33,7 @@ public class SecurityComplianceService {
     private final AuditLogRepository auditLogRepo;
 
     private Long tid() {
-        Long t = TenantContext.getCurrentTenant();
-        if (t == null) throw new RuntimeException("No tenant context");
-        return t;
+        return TenantContext.requireCurrentTenant();
     }
 
     // === SSO Configuration (Item 75) ===
@@ -48,22 +46,21 @@ public class SecurityComplianceService {
     }
 
     public SsoConfig enableSso(Long id) {
-        SsoConfig config = ssoRepo.findById(id).orElseThrow();
+        SsoConfig config = ssoRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         config.setIsEnabled(true);
         return ssoRepo.save(config);
     }
 
     public SsoConfig disableSso(Long id) {
-        SsoConfig config = ssoRepo.findById(id).orElseThrow();
+        SsoConfig config = ssoRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         config.setIsEnabled(false);
         return ssoRepo.save(config);
     }
 
     public SsoConfig testSsoConnection(Long id) {
-        SsoConfig config = ssoRepo.findById(id).orElseThrow();
-        config.setLastTestedAt(LocalDateTime.now());
-        config.setLastTestResult("SUCCESS");
-        return ssoRepo.save(config);
+        ssoRepo.findByTenantIdAndId(tid(), id).orElseThrow();
+        throw new UnsupportedOperationException(
+                "La prueba SSO requiere un proveedor configurado y un intercambio de metadatos real");
     }
 
     // === Password Policy (Item 76) ===
@@ -138,10 +135,9 @@ public class SecurityComplianceService {
     }
 
     public DataRetentionPolicy executeRetentionPolicy(Long id) {
-        DataRetentionPolicy policy = retentionRepo.findById(id).orElseThrow();
-        policy.setLastExecutedAt(LocalDateTime.now());
-        policy.setRecordsProcessed(policy.getRecordsProcessed() + 100);
-        return retentionRepo.save(policy);
+        retentionRepo.findByTenantIdAndId(tid(), id).orElseThrow();
+        throw new UnsupportedOperationException(
+                "La retencion requiere un ejecutor auditable; no se simula eliminacion de datos");
     }
 
     // === GDPR Requests (Item 78) ===
@@ -154,7 +150,7 @@ public class SecurityComplianceService {
     }
 
     public GdprRequest updateGdprRequestStatus(Long id, GdprRequest.RequestStatus status, String responseData) {
-        GdprRequest req = gdprRequestRepo.findById(id).orElseThrow();
+        GdprRequest req = gdprRequestRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         req.setStatus(status);
         if (responseData != null) req.setResponseData(responseData);
         if (status == GdprRequest.RequestStatus.COMPLETED) req.setCompletedAt(LocalDateTime.now());
@@ -188,7 +184,7 @@ public class SecurityComplianceService {
     }
 
     public GdprConsent withdrawConsent(Long id) {
-        GdprConsent consent = gdprConsentRepo.findById(id).orElseThrow();
+        GdprConsent consent = gdprConsentRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         consent.setGranted(false);
         consent.setWithdrawnAt(LocalDateTime.now());
         return gdprConsentRepo.save(consent);
@@ -204,7 +200,7 @@ public class SecurityComplianceService {
     }
 
     public ComplianceAudit completeAudit(Long id, ComplianceAudit.AuditResult result, String findings, String recommendations, Double score) {
-        ComplianceAudit audit = complianceAuditRepo.findById(id).orElseThrow();
+        ComplianceAudit audit = complianceAuditRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         audit.setResult(result);
         audit.setFindings(findings);
         audit.setRecommendations(recommendations);
@@ -245,8 +241,8 @@ public class SecurityComplianceService {
     }
 
     public IpWhitelist toggleIpWhitelist(Long id) {
-        IpWhitelist entry = ipWhitelistRepo.findById(id).orElseThrow();
-        entry.setIsActive(!entry.getIsActive());
+        IpWhitelist entry = ipWhitelistRepo.findByTenantIdAndId(tid(), id).orElseThrow();
+        entry.setIsActive(!Boolean.TRUE.equals(entry.getIsActive()));
         return ipWhitelistRepo.save(entry);
     }
 
@@ -262,24 +258,10 @@ public class SecurityComplianceService {
 
     public SecurityScan createSecurityScan(SecurityScan scan) {
         scan.setTenantId(tid());
-        scan.setStatus(SecurityScan.ScanStatus.RUNNING);
-        scan.setStartedAt(LocalDateTime.now());
-        scan = securityScanRepo.save(scan);
-
-        try {
-            scan.setVulnerabilitiesFound(0);
-            scan.setCriticalCount(0);
-            scan.setHighCount(0);
-            scan.setMediumCount(0);
-            scan.setLowCount(0);
-            scan.setStatus(SecurityScan.ScanStatus.COMPLETED);
-            scan.setCompletedAt(LocalDateTime.now());
-            scan.setReportUrl("/security/scans/report-" + scan.getId() + ".pdf");
-        } catch (Exception e) {
-            scan.setStatus(SecurityScan.ScanStatus.FAILED);
-            scan.setCompletedAt(LocalDateTime.now());
-        }
-
+        scan.setStatus(SecurityScan.ScanStatus.PENDING);
+        scan.setStartedAt(null);
+        scan.setCompletedAt(null);
+        scan.setReportUrl(null);
         return securityScanRepo.save(scan);
     }
 
@@ -313,7 +295,7 @@ public class SecurityComplianceService {
     }
 
     public SessionRecord endSession(Long id) {
-        SessionRecord session = sessionRepo.findById(id).orElseThrow();
+        SessionRecord session = sessionRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         session.setIsActive(false);
         session.setLogoutAt(LocalDateTime.now());
         return sessionRepo.save(session);
@@ -331,7 +313,7 @@ public class SecurityComplianceService {
     }
 
     public SessionRecord updateLastActivity(Long id) {
-        SessionRecord session = sessionRepo.findById(id).orElseThrow();
+        SessionRecord session = sessionRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         session.setLastActivityAt(LocalDateTime.now());
         return sessionRepo.save(session);
     }

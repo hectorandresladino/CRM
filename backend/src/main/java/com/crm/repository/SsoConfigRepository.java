@@ -11,4 +11,5 @@ public interface SsoConfigRepository extends JpaRepository<SsoConfig, Long> {
     List<SsoConfig> findByTenantId(Long tenantId);
     Optional<SsoConfig> findByTenantIdAndProvider(Long tenantId, SsoConfig.SsoProvider provider);
     Optional<SsoConfig> findByTenantIdAndIsEnabled(Long tenantId, Boolean isEnabled);
+    Optional<SsoConfig> findByTenantIdAndId(Long tenantId, Long id);
 }
