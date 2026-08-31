@@ -31,6 +31,17 @@ Last reviewed: 2026-08-31
 - Legacy automation and compliance routes no longer store raw connector
   credentials or claim successful SSO, retention, vulnerability scans or
   reports when no real provider/executor has run.
+- Customer/account 360, account updates, territory resolution and booking are
+  tenant-owned end to end; related sales, quotes, orders, service, contracts
+  and invoices are loaded only through tenant-qualified queries.
+- Case comments, attachments, knowledge publishing/search, SLA checks, field
+  service and live-chat operations validate ownership of their parent record.
+  Draft knowledge articles can no longer leak through search predicate
+  precedence.
+- The external connector catalog now validates supported provider/category
+  pairs, correctly classifies automation and compliance providers, rejects
+  secrets in public configuration, and reports the real OAuth/webhook
+  requirements for each provider.
 
 ## Evidence-based status
 

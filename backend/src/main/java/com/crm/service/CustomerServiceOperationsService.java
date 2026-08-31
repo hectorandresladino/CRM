@@ -35,9 +35,7 @@ public class CustomerServiceOperationsService {
     private final ChatMessageRepository chatMessageRepo;
 
     private Long tid() {
-        Long t = TenantContext.getCurrentTenant();
-        if (t == null) throw new RuntimeException("No tenant context");
-        return t;
+        return TenantContext.requireCurrentTenant();
     }
 
     // === Case Management (Item 25) ===
@@ -52,7 +50,7 @@ public class CustomerServiceOperationsService {
     }
 
     public ServicioCliente updateCaseStatus(Long id, ServicioCliente.EstadoServicio newStatus) {
-        ServicioCliente caso = casoRepo.findById(id).orElseThrow(() -> new RuntimeException("Caso no encontrado"));
+        ServicioCliente caso = findCase(id);
         caso.setEstado(newStatus);
         if (newStatus == ServicioCliente.EstadoServicio.RESUELTO || newStatus == ServicioCliente.EstadoServicio.CERRADO) {
             caso.setFechaCierre(LocalDateTime.now());
@@ -61,7 +59,7 @@ public class CustomerServiceOperationsService {
     }
 
     public ServicioCliente assignCase(Long id, String assignedTo) {
-        ServicioCliente caso = casoRepo.findById(id).orElseThrow();
+        ServicioCliente caso = findCase(id);
         caso.setAsignadoA(assignedTo);
         caso.setEstado(ServicioCliente.EstadoServicio.ASIGNADO);
         caso.setFechaAsignacion(LocalDateTime.now());
@@ -71,22 +69,26 @@ public class CustomerServiceOperationsService {
     // === Case Comments (Item 25) ===
 
     public CaseComment addComment(CaseComment comment) {
+        findCase(comment.getCaseId());
         comment.setTenantId(tid());
         return commentRepo.save(comment);
     }
 
     public List<CaseComment> getComments(Long caseId) {
+        findCase(caseId);
         return commentRepo.findByTenantIdAndCaseId(tid(), caseId);
     }
 
     // === Case Attachments (Item 25) ===
 
     public CaseAttachment addAttachment(CaseAttachment attachment) {
+        findCase(attachment.getCaseId());
         attachment.setTenantId(tid());
         return attachmentRepo.save(attachment);
     }
 
     public List<CaseAttachment> getAttachments(Long caseId) {
+        findCase(caseId);
         return attachmentRepo.findByTenantIdAndCaseId(tid(), caseId);
     }
 
@@ -100,24 +102,25 @@ public class CustomerServiceOperationsService {
     }
 
     public KnowledgeArticle publishArticle(Long id) {
-        KnowledgeArticle article = knowledgeRepo.findById(id).orElseThrow();
+        KnowledgeArticle article = knowledgeRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         article.setStatus(KnowledgeArticle.Status.PUBLISHED.name());
         article.setPublishedAt(LocalDateTime.now());
         return knowledgeRepo.save(article);
     }
 
     public List<KnowledgeArticle> searchArticles(String query) {
+        String normalized = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
         return knowledgeRepo.findByTenantId(tid()).stream()
-                .filter(a -> a.getStatus().equals("PUBLISHED"))
-                .filter(a -> a.getTitle() != null && a.getTitle().toLowerCase().contains(query.toLowerCase())
-                        || a.getSummary() != null && a.getSummary().toLowerCase().contains(query.toLowerCase())
-                        || a.getCategory() != null && a.getCategory().toLowerCase().contains(query.toLowerCase()))
+                .filter(a -> "PUBLISHED".equals(a.getStatus()))
+                .filter(a -> (a.getTitle() != null && a.getTitle().toLowerCase(Locale.ROOT).contains(normalized))
+                        || (a.getSummary() != null && a.getSummary().toLowerCase(Locale.ROOT).contains(normalized))
+                        || (a.getCategory() != null && a.getCategory().toLowerCase(Locale.ROOT).contains(normalized)))
                 .toList();
     }
 
     public void incrementViewCount(Long articleId) {
-        KnowledgeArticle article = knowledgeRepo.findById(articleId).orElseThrow();
-        article.setViewCount(article.getViewCount() + 1);
+        KnowledgeArticle article = knowledgeRepo.findByTenantIdAndId(tid(), articleId).orElseThrow();
+        article.setViewCount((article.getViewCount() == null ? 0 : article.getViewCount()) + 1);
         knowledgeRepo.save(article);
     }
 
@@ -131,7 +134,7 @@ public class CustomerServiceOperationsService {
     }
 
     public Map<String, Object> checkSLACompliance(Long caseId) {
-        ServicioCliente caso = casoRepo.findById(caseId).orElseThrow();
+        ServicioCliente caso = findCase(caseId);
         List<SLAConfiguracion> slas = slaRepo.findByTenantId(tid()).stream()
                 .filter(s -> s.getCategoria() == null || s.getCategoria().equalsIgnoreCase(caso.getTipo().name()))
                 .filter(s -> s.getPrioridad() == null || s.getPrioridad().equalsIgnoreCase(caso.getPrioridad().name()))
@@ -188,7 +191,7 @@ public class CustomerServiceOperationsService {
     }
 
     public FieldServiceOrder updateFieldServiceStatus(Long id, String status) {
-        FieldServiceOrder order = fieldServiceRepo.findById(id).orElseThrow();
+        FieldServiceOrder order = fieldServiceRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         order.setStatus(status);
         if ("COMPLETED".equals(status)) {
             order.setCompletedAt(LocalDateTime.now());
@@ -242,7 +245,7 @@ public class CustomerServiceOperationsService {
     }
 
     public LiveChatSession pickUpChat(Long sessionId, Long agentId, String agentName) {
-        LiveChatSession session = chatSessionRepo.findById(sessionId).orElseThrow();
+        LiveChatSession session = findChat(sessionId);
         session.setAssignedAgentId(agentId);
         session.setAssignedAgentName(agentName);
         session.setStatus(LiveChatSession.ChatStatus.ACTIVE);
@@ -254,7 +257,7 @@ public class CustomerServiceOperationsService {
     }
 
     public LiveChatSession endChat(Long sessionId, Integer satisfactionScore) {
-        LiveChatSession session = chatSessionRepo.findById(sessionId).orElseThrow();
+        LiveChatSession session = findChat(sessionId);
         session.setStatus(LiveChatSession.ChatStatus.ENDED);
         session.setEndedAt(LocalDateTime.now());
         session.setSatisfactionScore(satisfactionScore);
@@ -272,11 +275,13 @@ public class CustomerServiceOperationsService {
     }
 
     public ChatMessage sendChatMessage(ChatMessage message) {
+        findChat(message.getSessionId());
         message.setTenantId(tid());
         return chatMessageRepo.save(message);
     }
 
     public List<ChatMessage> getChatMessages(Long sessionId) {
+        findChat(sessionId);
         return chatMessageRepo.findByTenantIdAndSessionId(tid(), sessionId);
     }
 
@@ -343,7 +348,7 @@ public class CustomerServiceOperationsService {
     }
 
     public ServicioCliente escalateCase(Long caseId, String escalatedTo) {
-        ServicioCliente caso = casoRepo.findById(caseId).orElseThrow();
+        ServicioCliente caso = findCase(caseId);
         caso.setAsignadoA(escalatedTo);
         caso.setEstado(ServicioCliente.EstadoServicio.EN_PROCESO);
         caso.setNotas((caso.getNotas() != null ? caso.getNotas() + "\n" : "") + "[ESCALATED to " + escalatedTo + " at " + LocalDateTime.now() + "]");
@@ -385,5 +390,15 @@ public class CustomerServiceOperationsService {
         stats.put("avgChatDurationSeconds", Math.round(avgChatDuration));
 
         return stats;
+    }
+
+    private ServicioCliente findCase(Long id) {
+        return casoRepo.findByIdAndTenantId(id, tid())
+                .orElseThrow(() -> new RuntimeException("Caso no encontrado"));
+    }
+
+    private LiveChatSession findChat(Long id) {
+        return chatSessionRepo.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Sesion de chat no encontrada"));
     }
 }

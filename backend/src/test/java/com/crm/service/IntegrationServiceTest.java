@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,5 +54,31 @@ class IntegrationServiceTest {
         when(repository.findByTenantIdAndId(3L, 9L)).thenReturn(Optional.of(integration));
 
         assertThrows(UnsupportedOperationException.class, () -> service.syncNow(9L));
+    }
+
+    @Test
+    void rejectsProviderCategoryMismatch() {
+        IntegrationService service = new IntegrationService(mock(IntegrationRepository.class));
+        TenantContext.setCurrentTenant(3L);
+        Integration integration = new Integration();
+        integration.setProvider("ZAPIER");
+        integration.setCategory("COMMUNICATION");
+
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> service.connect(integration));
+
+        assertTrue(error.getMessage().contains("AUTOMATION"));
+    }
+
+    @Test
+    void rejectsSecretsInsidePublicConnectorConfig() {
+        IntegrationService service = new IntegrationService(mock(IntegrationRepository.class));
+        TenantContext.setCurrentTenant(3L);
+        Integration integration = new Integration();
+        integration.setProvider("META_BUSINESS");
+        integration.setCategory("COMMUNICATION");
+        integration.setConfig("{\"access_token\":\"should-never-be-here\"}");
+
+        assertThrows(IllegalArgumentException.class, () -> service.connect(integration));
     }
 }

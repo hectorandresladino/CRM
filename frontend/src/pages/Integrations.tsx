@@ -37,6 +37,14 @@ const PROVIDER_INFO: Record<string, { icon: React.ElementType; color: string; la
   MAKE: { icon: Plug, color: 'bg-purple-600', label: 'Make', description: 'Automatización visual' },
 };
 
+const PROVIDER_CATEGORIES: Record<string, string> = {
+  STRIPE: 'PAYMENT', MERCADO_PAGO: 'PAYMENT', GOOGLE_CALENDAR: 'CALENDAR',
+  GOOGLE_WORKSPACE: 'SSO', AZURE_AD: 'SSO', OKTA: 'SSO', SLACK: 'COMMUNICATION',
+  WHATSAPP_BUSINESS: 'COMMUNICATION', META_BUSINESS: 'COMMUNICATION',
+  ZAPIER: 'AUTOMATION', MAKE: 'AUTOMATION', QUICKBOOKS: 'ACCOUNTING',
+  ALEGRA: 'ACCOUNTING', DIAN: 'COMPLIANCE', SHOPIFY: 'ECOMMERCE',
+};
+
 export default function Integrations() {
   const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [loading, setLoading] = useState(true);
@@ -183,10 +191,7 @@ export default function Integrations() {
           const info = PROVIDER_INFO[provider];
           if (!info) return null;
           const Icon = info.icon;
-          const category = provider.includes('STRIPE') || provider.includes('MERCADO') ? 'PAYMENT' :
-            provider.includes('CALENDAR') ? 'CALENDAR' : provider.includes('AZURE') || provider.includes('GOOGLE_WORKSPACE') || provider.includes('OKTA') ? 'SSO' :
-            provider.includes('ALEGRA') || provider.includes('DIAN') || provider.includes('QUICKBOOKS') ? 'ACCOUNTING' :
-            provider.includes('SHOPIFY') ? 'ECOMMERCE' : 'COMMUNICATION';
+          const category = PROVIDER_CATEGORIES[provider];
           return (
             <div key={provider} className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-all">
               <div className="flex items-center gap-3 mb-3">

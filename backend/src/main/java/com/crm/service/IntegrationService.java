@@ -16,12 +16,17 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class IntegrationService {
+
+    private static final Pattern SECRET_FIELD = Pattern.compile(
+            "(?i)(api[_-]?key|access[_-]?token|refresh[_-]?token|client[_-]?secret|password|secret)\\s*[\\\"'=:\\s]");
 
     private final IntegrationRepository integrationRepository;
 
@@ -35,11 +40,15 @@ public class IntegrationService {
 
     public Integration connect(Integration integration) {
         Long tenantId = tid();
-        Integration configured = integrationRepository.findByTenantIdAndProvider(tenantId, integration.getProvider())
+        String provider = normalizeProvider(integration.getProvider());
+        String category = normalizeCategory(integration.getCategory());
+        validateCategory(provider, category);
+        validatePublicConfig(integration.getConfig());
+        Integration configured = integrationRepository.findByTenantIdAndProvider(tenantId, provider)
                 .orElseGet(Integration::new);
         configured.setTenantId(tenantId);
-        configured.setProvider(integration.getProvider());
-        configured.setCategory(integration.getCategory());
+        configured.setProvider(provider);
+        configured.setCategory(category);
         configured.setConfig(integration.getConfig());
         configured.setCredentials(null);
         configured.setConnected(false);
@@ -73,6 +82,7 @@ public class IntegrationService {
         result.put("operational", false);
         result.put("status", "CONFIGURATION_ONLY");
         result.put("message", "El conector de " + integration.getProvider() + " aún requiere OAuth/API oficial");
+        result.put("requirements", requirementsFor(integration.getProvider()));
         return result;
     }
 
@@ -92,4 +102,59 @@ public class IntegrationService {
     }
 
     private Long tid() { return TenantContext.requireCurrentTenant(); }
+
+    private String normalizeProvider(String value) {
+        if (value == null || value.isBlank()) throw new IllegalArgumentException("El proveedor es obligatorio");
+        String normalized = value.trim().toUpperCase(Locale.ROOT);
+        try {
+            Integration.Provider.valueOf(normalized);
+            return normalized;
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Proveedor no soportado: " + value);
+        }
+    }
+
+    private String normalizeCategory(String value) {
+        if (value == null || value.isBlank()) throw new IllegalArgumentException("La categoria es obligatoria");
+        String normalized = value.trim().toUpperCase(Locale.ROOT);
+        try {
+            Integration.Category.valueOf(normalized);
+            return normalized;
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Categoria no soportada: " + value);
+        }
+    }
+
+    private void validateCategory(String provider, String category) {
+        String expected = switch (Integration.Provider.valueOf(provider)) {
+            case STRIPE, MERCADO_PAGO -> Integration.Category.PAYMENT.name();
+            case GOOGLE_CALENDAR -> Integration.Category.CALENDAR.name();
+            case GOOGLE_WORKSPACE, AZURE_AD, OKTA -> Integration.Category.SSO.name();
+            case SLACK, WHATSAPP_BUSINESS, META_BUSINESS -> Integration.Category.COMMUNICATION.name();
+            case ZAPIER, MAKE -> Integration.Category.AUTOMATION.name();
+            case QUICKBOOKS, ALEGRA -> Integration.Category.ACCOUNTING.name();
+            case SHOPIFY -> Integration.Category.ECOMMERCE.name();
+            case DIAN -> Integration.Category.COMPLIANCE.name();
+        };
+        if (!expected.equals(category)) {
+            throw new IllegalArgumentException("La categoria correcta para " + provider + " es " + expected);
+        }
+    }
+
+    private void validatePublicConfig(String config) {
+        if (config != null && SECRET_FIELD.matcher(config).find()) {
+            throw new IllegalArgumentException(
+                    "La configuracion publica no puede contener claves, tokens, contrasenas ni secretos");
+        }
+    }
+
+    private List<String> requirementsFor(String provider) {
+        return switch (Integration.Provider.valueOf(provider)) {
+            case WHATSAPP_BUSINESS, META_BUSINESS -> List.of("Meta App", "OAuth", "webhook HTTPS publico", "verificacion de firma");
+            case GOOGLE_CALENDAR, GOOGLE_WORKSPACE -> List.of("Google Cloud project", "OAuth consent screen", "redirect URI HTTPS");
+            case STRIPE, MERCADO_PAGO -> List.of("cuenta del proveedor", "OAuth o clave en secret manager", "webhook firmado");
+            case AZURE_AD, OKTA -> List.of("aplicacion SSO", "metadata OIDC/SAML", "redirect URI HTTPS");
+            default -> List.of("cuenta del proveedor", "OAuth/API oficial", "secret manager", "webhook firmado si aplica");
+        };
+    }
 }

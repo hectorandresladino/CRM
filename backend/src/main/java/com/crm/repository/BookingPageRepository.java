@@ -16,5 +16,6 @@ public interface BookingPageRepository extends JpaRepository<BookingPage, Long> 
     List<BookingPage> findByTenantId(Long tenantId);
     List<BookingPage> findByTenantIdAndOwnerId(Long tenantId, Long ownerId);
     Optional<BookingPage> findBySlug(String slug);
+    Optional<BookingPage> findByTenantIdAndSlug(Long tenantId, String slug);
     List<BookingPage> findByTenantIdAndIsActive(Long tenantId, Boolean isActive);
 }

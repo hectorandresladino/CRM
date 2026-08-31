@@ -43,9 +43,7 @@ public class SalesOperationsService {
     private final OpportunitySplitRepository splitRepo;
 
     private Long tid() {
-        Long t = TenantContext.getCurrentTenant();
-        if (t == null) throw new RuntimeException("No tenant context");
-        return t;
+        return TenantContext.requireCurrentTenant();
     }
 
     // === Account Management (Item 15) ===
@@ -62,7 +60,8 @@ public class SalesOperationsService {
     }
 
     public Account updateAccount(Long id, Account updated) {
-        Account acc = accountRepo.findById(id).orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
+        Account acc = accountRepo.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
         acc.setName(updated.getName());
         acc.setIndustry(updated.getIndustry());
         acc.setWebsite(updated.getWebsite());
@@ -91,45 +90,47 @@ public class SalesOperationsService {
     // === Customer 360 (Item 16) ===
 
     public Map<String, Object> getCustomer360(Long clienteId) {
-        Cliente cliente = clienteRepo.findById(clienteId)
+        Long tenantId = tid();
+        Cliente cliente = clienteRepo.findByIdAndTenantId(clienteId, tenantId)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
 
         Map<String, Object> view = new LinkedHashMap<>();
         view.put("cliente", cliente);
-        view.put("ventas", ventaRepo.findByClienteId(cliente.getId()));
-        view.put("cotizaciones", cotizacionRepo.findByClienteId(cliente.getId()));
-        view.put("pedidos", pedidoRepo.findByClienteId(cliente.getId()));
-        view.put("servicios", servicioRepo.findByClienteId(cliente.getId()));
-        view.put("contratos", contratoRepo.findByClienteId(cliente.getId()));
-        view.put("facturas", facturaRepo.findByClienteId(cliente.getId()));
+        view.put("ventas", ventaRepo.findByTenantIdAndClienteId(tenantId, cliente.getId()));
+        view.put("cotizaciones", cotizacionRepo.findByTenantIdAndClienteId(tenantId, cliente.getId()));
+        view.put("pedidos", pedidoRepo.findByTenantIdAndClienteId(tenantId, cliente.getId()));
+        view.put("servicios", servicioRepo.findByTenantIdAndClienteId(tenantId, cliente.getId()));
+        view.put("contratos", contratoRepo.findByTenantIdAndClienteId(tenantId, cliente.getId()));
+        view.put("facturas", facturaRepo.findByTenantIdAndClienteId(tenantId, cliente.getId()));
 
-        List<CalendarEvent> meetings = calendarRepo.findByTenantId(tid()).stream()
+        List<CalendarEvent> meetings = calendarRepo.findByTenantId(tenantId).stream()
                 .filter(e -> clienteId.equals(e.getContactId()) || clienteId.equals(e.getAccountId()))
                 .toList();
         view.put("meetings", meetings);
 
-        List<EmailSyncLog> emails = emailSyncRepo.findByTenantIdAndContactId(tid(), clienteId);
+        List<EmailSyncLog> emails = emailSyncRepo.findByTenantIdAndContactId(tenantId, clienteId);
         view.put("emails", emails);
 
         return view;
     }
 
     public Map<String, Object> getAccount360(Long accountId) {
-        Account account = accountRepo.findById(accountId)
+        Long tenantId = tid();
+        Account account = accountRepo.findByTenantIdAndId(tenantId, accountId)
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
 
         Map<String, Object> view = new LinkedHashMap<>();
         view.put("account", account);
-        view.put("contacts", contactRepo.findByTenantIdAndAccountId(tid(), accountId));
-        view.put("team", accountTeamRepo.findByTenantId(tid()).stream()
+        view.put("contacts", contactRepo.findByTenantIdAndAccountId(tenantId, accountId));
+        view.put("team", accountTeamRepo.findByTenantId(tenantId).stream()
                 .filter(t -> accountId.equals(t.getAccountId()))
                 .toList());
-        view.put("meetings", calendarRepo.findByTenantId(tid()).stream()
+        view.put("meetings", calendarRepo.findByTenantId(tenantId).stream()
                 .filter(e -> accountId.equals(e.getAccountId()))
                 .toList());
-        view.put("emails", emailSyncRepo.findByTenantIdAndAccountId(tid(), accountId));
+        view.put("emails", emailSyncRepo.findByTenantIdAndAccountId(tenantId, accountId));
         view.put("territory", account.getTerritoryId() != null ?
-                territoryRepo.findById(account.getTerritoryId()).orElse(null) : null);
+                territoryRepo.findByTenantIdAndId(tenantId, account.getTerritoryId()).orElse(null) : null);
         return view;
     }
 
@@ -161,9 +162,11 @@ public class SalesOperationsService {
 
         java.math.BigDecimal totalForecast = forecasts.stream()
                 .map(SalesForecast::getForecastAmount)
+                .filter(Objects::nonNull)
                 .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
         java.math.BigDecimal totalClosed = forecasts.stream()
                 .map(SalesForecast::getClosedAmount)
+                .filter(Objects::nonNull)
                 .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
 
         Map<String, Object> summary = new LinkedHashMap<>();
@@ -253,7 +256,8 @@ public class SalesOperationsService {
     }
 
     public BookingPage getBookingPage(String slug) {
-        return bookingRepo.findBySlug(slug).orElseThrow(() -> new RuntimeException("Pagina no encontrada"));
+        return bookingRepo.findByTenantIdAndSlug(tid(), slug)
+                .orElseThrow(() -> new RuntimeException("Pagina no encontrada"));
     }
 
     public List<BookingPage> getBookingPages() { return bookingRepo.findByTenantId(tid()); }
@@ -261,7 +265,7 @@ public class SalesOperationsService {
     public CalendarEvent bookMeeting(String slug, LocalDateTime startTime, String attendeeName, String attendeeEmail) {
         BookingPage page = getBookingPage(slug);
         CalendarEvent event = new CalendarEvent();
-        event.setTenantId(tid());
+        event.setTenantId(page.getTenantId());
         event.setOwnerId(page.getOwnerId());
         event.setTitle("Reunion con " + attendeeName);
         event.setStartTime(startTime);
