@@ -71,6 +71,25 @@ class AuthServiceTest {
         assertNull(response.tenantId);
     }
 
+    @Test
+    void platformAdminLoginWinsWhenTenantHasTheSameUsername() {
+        Usuario admin = user("superadmin", null, Usuario.Role.SUPER_ADMIN);
+        Usuario tenantUser = user("superadmin", 8L, Usuario.Role.TENANT_OWNER);
+        tenantUser.setPassword("encoded-tenant");
+        when(users.findByUsernameAndTenantIdIsNull("superadmin")).thenReturn(Optional.of(admin));
+        when(users.findAllByUsername("superadmin")).thenReturn(List.of(admin, tenantUser));
+        when(passwordEncoder.matches("SuperAdmin123!", admin.getPassword())).thenReturn(true);
+        when(tokens.generateAccessToken(admin)).thenReturn("access");
+        when(tokens.generateRefreshToken(admin)).thenReturn("refresh");
+        when(tokens.getRefreshExpirationMs()).thenReturn(60_000L);
+
+        AuthService.AuthResponse response = service.login("superadmin", "SuperAdmin123!", "", "");
+
+        assertEquals("SUPER_ADMIN", response.role);
+        assertNull(response.tenantId);
+        verify(passwordEncoder, never()).matches(anyString(), eq(tenantUser.getPassword()));
+    }
+
     private Usuario user(String username, Long tenantId, Usuario.Role role) {
         Usuario user = new Usuario();
         user.setUsername(username);

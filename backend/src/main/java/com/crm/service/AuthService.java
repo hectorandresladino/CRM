@@ -34,11 +34,7 @@ public class AuthService {
 
     @Transactional
     public AuthResponse login(String username, String password) {
-        List<Usuario> matches = usuarioRepository.findAllByUsername(username);
-        if (matches.size() != 1) {
-            throw new RuntimeException("Credenciales invÃ¡lidas; indique la empresa para iniciar sesiÃ³n");
-        }
-        return authenticate(matches.get(0), password, null);
+        return authenticate(resolveUserWithoutTenant(username), password, null);
     }
 
     @Transactional
@@ -49,17 +45,26 @@ public class AuthService {
     @Transactional
     public AuthResponse login(String username, String password, String tenantSlug, String mfaCode) {
         if (tenantSlug == null || tenantSlug.isBlank()) {
-            List<Usuario> matches = usuarioRepository.findAllByUsername(username);
-            if (matches.size() != 1) {
-                throw new RuntimeException("Credenciales inválidas; indique la empresa para iniciar sesión");
-            }
-            return authenticate(matches.get(0), password, mfaCode);
+            return authenticate(resolveUserWithoutTenant(username), password, mfaCode);
         }
         Tenant tenant = tenantRepository.findBySlug(tenantSlug)
                 .orElseThrow(() -> new RuntimeException("Credenciales invÃ¡lidas"));
         Usuario usuario = usuarioRepository.findByTenantIdAndUsername(tenant.getId(), username)
                 .orElseThrow(() -> new RuntimeException("Credenciales invÃ¡lidas"));
         return authenticate(usuario, password, mfaCode);
+    }
+
+    private Usuario resolveUserWithoutTenant(String username) {
+        Usuario platformAdmin = usuarioRepository.findByUsernameAndTenantIdIsNull(username).orElse(null);
+        if (platformAdmin != null && platformAdmin.getRol() == Usuario.Role.SUPER_ADMIN) {
+            return platformAdmin;
+        }
+
+        List<Usuario> matches = usuarioRepository.findAllByUsername(username);
+        if (matches.size() != 1) {
+            throw new RuntimeException("Credenciales inválidas; indique la empresa para iniciar sesión");
+        }
+        return matches.get(0);
     }
 
     private AuthResponse authenticate(Usuario usuario, String password, String mfaCode) {
