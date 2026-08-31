@@ -38,7 +38,7 @@ public class Prospecto {
     @Column(nullable = false)
     private String apellido;
     
-    @Email(message = "Email invÃ¡lido")
+    @Email(message = "Email inválido")
     @Column
     private String email;
     

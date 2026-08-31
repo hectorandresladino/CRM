@@ -38,7 +38,7 @@ public class ClienteService {
                 throw new RuntimeException("Ya existe un cliente con ese email");
             }
             if (cliente.getIdentificacion() != null && !cliente.getIdentificacion().isEmpty() && clienteRepository.existsByTenantIdAndIdentificacion(tenantId, cliente.getIdentificacion())) {
-                throw new RuntimeException("Ya existe un cliente con esa identificaciÃ³n");
+                throw new RuntimeException("Ya existe un cliente con esa identificación");
             }
             return clienteRepository.save(cliente);
         } catch (Exception e) {

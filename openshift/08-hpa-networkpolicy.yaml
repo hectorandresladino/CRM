@@ -68,12 +68,11 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Frontend: permite trafico externo (Route)
+    # Frontend: permite trafico desde los routers de ingreso de OpenShift.
     - from:
-        - podSelector:
+        - namespaceSelector:
             matchLabels:
-              app: crm
-              component: frontend
+              network.openshift.io/policy-group: ingress
       ports:
         - protocol: TCP
           port: 8080

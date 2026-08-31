@@ -64,7 +64,7 @@ const CampanasMarketingPage = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('Â¿EstÃ¡ seguro de eliminar esta campaÃ±a?')) {
+    if (window.confirm('¿Está seguro de eliminar esta campaña?')) {
       try {
         await apiClient.delete(`/api/campanas-marketing/${id}`);
         loadCampanas();
@@ -83,17 +83,17 @@ const CampanasMarketingPage = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">CampaÃ±as de Marketing</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Campañas de Marketing</h1>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Nueva CampaÃ±a
+          Nueva Campaña
         </Button>
       </div>
       
       <div className="card mb-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <Input placeholder="Buscar campaÃ±as..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
+          <Input placeholder="Buscar campañas..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
         </div>
       </div>
       
@@ -135,10 +135,10 @@ const CampanasMarketingPage = () => {
             ))}
           </tbody>
         </table>
-        {filteredCampanas.length === 0 && <p className="text-center text-gray-500 py-8">No hay campaÃ±as registradas</p>}
+        {filteredCampanas.length === 0 && <p className="text-center text-gray-500 py-8">No hay campañas registradas</p>}
       </div>
       
-      <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingCampana(null); }} title={editingCampana?.id ? 'Editar CampaÃ±a' : 'Nueva CampaÃ±a'}>
+      <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingCampana(null); }} title={editingCampana?.id ? 'Editar Campaña' : 'Nueva Campaña'}>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input label="Nombre" value={formData.nombre} onChange={(e) => setFormData({ ...formData, nombre: e.target.value })} required />
@@ -165,7 +165,7 @@ const CampanasMarketingPage = () => {
             <Input label="Segmento" value={formData.segmento} onChange={(e) => setFormData({ ...formData, segmento: e.target.value })} />
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">DescripciÃ³n</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
             <textarea className="input" rows={3} value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} />
           </div>
           <div className="mt-4">

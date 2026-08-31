@@ -34,10 +34,10 @@ public class WhatsAppAIService {
                     config.setEnabled(true);
                     config.setAutoReply(true);
                     config.setBusinessName("Mi Empresa");
-                    config.setWelcomeMessage("Hola! Bienvenido. Soy tu asistente virtual. Â¿En quÃ© puedo ayudarte?");
-                    config.setFallbackMessage("No estoy seguro de entender. Â¿PodrÃ­as reformular? TambiÃ©n puedes escribir 'agente' para hablar con un humano.");
-                    config.setOutOfHoursMessage("Gracias por escribir. Nuestro horario de atenciÃ³n es de 8am a 6pm. Te responderemos pronto.");
-                    config.setSystemPrompt("Eres un asistente de ventas profesional. Ayudas a cualificar leads, responder preguntas sobre productos/servicios, y agendar demos. SÃ© amable, conciso y profesional.");
+                    config.setWelcomeMessage("Hola! Bienvenido. Soy tu asistente virtual. ¿En qué puedo ayudarte?");
+                    config.setFallbackMessage("No estoy seguro de entender. ¿Podrías reformular? También puedes escribir 'agente' para hablar con un humano.");
+                    config.setOutOfHoursMessage("Gracias por escribir. Nuestro horario de atención es de 8am a 6pm. Te responderemos pronto.");
+                    config.setSystemPrompt("Eres un asistente de ventas profesional. Ayudas a cualificar leads, responder preguntas sobre productos/servicios, y agendar demos. Sé amable, conciso y profesional.");
                     return configRepository.save(config);
                 });
     }
@@ -143,7 +143,7 @@ public class WhatsAppAIService {
 
     public WhatsAppConversation takeOver(Long conversationId, String agentName) {
         WhatsAppConversation conv = conversationRepository.findById(conversationId)
-                .orElseThrow(() -> new RuntimeException("ConversaciÃ³n no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Conversación no encontrada"));
         conv.setHumanTakenOver(true);
         conv.setAiHandled(false);
         conv.setAssignedAgent(agentName);
@@ -153,7 +153,7 @@ public class WhatsAppAIService {
 
     public WhatsAppConversation resolve(Long conversationId) {
         WhatsAppConversation conv = conversationRepository.findById(conversationId)
-                .orElseThrow(() -> new RuntimeException("ConversaciÃ³n no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Conversación no encontrada"));
         conv.setStatus(WhatsAppConversation.ConversationStatus.RESOLVED);
         return conversationRepository.save(conv);
     }
@@ -192,10 +192,10 @@ public class WhatsAppAIService {
         if (lower.contains("hola") || lower.contains("buenos") || lower.contains("buenas") || lower.contains("saludos") || lower.contains("hey") || lower.contains("hi ")) {
             return "GREETING";
         }
-        if (lower.contains("info") || lower.contains("informaciÃ³n") || lower.contains("detalles") || lower.contains("quiero saber") || lower.contains("caracterÃ­sticas") || lower.contains("features")) {
+        if (lower.contains("info") || lower.contains("información") || lower.contains("detalles") || lower.contains("quiero saber") || lower.contains("características") || lower.contains("features")) {
             return "INFO_REQUEST";
         }
-        if (lower.contains("demo") || lower.contains("prueba") || lower.contains("agendar") || lower.contains("cita") || lower.contains("reuniÃ³n") || lower.contains("calendario")) {
+        if (lower.contains("demo") || lower.contains("prueba") || lower.contains("agendar") || lower.contains("cita") || lower.contains("reunión") || lower.contains("calendario")) {
             return "DEMO_REQUEST";
         }
         if (lower.contains("comprar") || lower.contains("adquirir") || lower.contains("contratar") || lower.contains("suscribir") || lower.contains("pagar")) {
@@ -235,19 +235,19 @@ public class WhatsAppAIService {
             case "PRICING_INQUIRY":
                 return "Nuestros planes empiezan desde $29/mes (Starter), $79/mes (Business), $199/mes (Enterprise) y $399/mes (Agency), todos con usuarios internos ilimitados. ¿Te gustaría recibir más detalles o agendar una demo?";
             case "INFO_REQUEST":
-                return "Con gusto te comparto mÃ¡s informaciÃ³n. Nuestro CRM incluye gestiÃ³n de clientes, ventas, marketing, WhatsApp Business, reportes y mÃ¡s. Â¿QuÃ© funcionalidad te interesa mÃ¡s?";
+                return "Con gusto te comparto más información. Nuestro CRM incluye gestión de clientes, ventas, marketing, WhatsApp Business, reportes y más. ¿Qué funcionalidad te interesa más?";
             case "DEMO_REQUEST":
-                return "Perfecto! Puedo agendarte una demo. Â¿QuÃ© dÃ­a y hora te funciona mejor? Tenemos disponibilidad de lunes a viernes de 8am a 6pm.";
+                return "Perfecto! Puedo agendarte una demo. ¿Qué día y hora te funciona mejor? Tenemos disponibilidad de lunes a viernes de 8am a 6pm.";
             case "PURCHASE_INTENT":
-                return "Excelente! Para proceder con la compra, necesito algunos datos: nombre de tu empresa, nÃºmero de usuarios y plan de interÃ©s. Â¿Comenzamos?";
+                return "Excelente! Para proceder con la compra, necesito algunos datos: nombre de tu empresa, número de usuarios y plan de interés. ¿Comenzamos?";
             case "SUPPORT_REQUEST":
-                return "Lamento el inconveniente. Â¿PodrÃ­as darme mÃ¡s detalles del problema? Si prefieres, puedo conectarte con un agente escribiendo 'agente'.";
+                return "Lamento el inconveniente. ¿Podrías darme más detalles del problema? Si prefieres, puedo conectarte con un agente escribiendo 'agente'.";
             case "COMPLAINT":
-                return "Lamento mucho la experiencia. Toma tu nÃºmero de caso y te conecto con un supervisor. Escribe 'agente' para atenciÃ³n prioritaria.";
+                return "Lamento mucho la experiencia. Toma tu número de caso y te conecto con un supervisor. Escribe 'agente' para atención prioritaria.";
             case "PRODUCT_QUESTION":
-                return "Nuestro CRM SaaS incluye pipeline de ventas, marketing, WhatsApp Business con IA, CPQ, firma electrÃ³nica y mÃ¡s. Â¿Quieres una demo personalizada?";
+                return "Nuestro CRM SaaS incluye pipeline de ventas, marketing, WhatsApp Business con IA, CPQ, firma electrónica y más. ¿Quieres una demo personalizada?";
             case "SATISFACTION":
-                return "Gracias a ti! Estoy aquÃ­ para lo que necesites. Â¿Hay algo mÃ¡s en lo que pueda ayudarte?";
+                return "Gracias a ti! Estoy aquí para lo que necesites. ¿Hay algo más en lo que pueda ayudarte?";
             case "HUMAN_AGENT":
                 return "Entiendo. Te estoy conectando con un agente humano. Un momento por favor...";
             default:

@@ -96,7 +96,7 @@ const Clientes = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este cliente?')) {
+    if (window.confirm('¿Está seguro de eliminar este cliente?')) {
       try {
         await apiClient.delete(`/api/clientes/${id}`);
         loadClientes();
@@ -142,7 +142,7 @@ const Clientes = () => {
             <tr>
               <th>Nombre</th>
               <th>Email</th>
-              <th>TelÃ©fono</th>
+              <th>Teléfono</th>
               <th>Empresa</th>
               <th>Estado</th>
               <th>Acciones</th>
@@ -232,7 +232,7 @@ const Clientes = () => {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
             <Input
-              label="TelÃ©fono"
+              label="Teléfono"
               value={formData.telefono}
               onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
             />
@@ -252,7 +252,7 @@ const Clientes = () => {
               onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
             />
             <Input
-              label="IdentificaciÃ³n"
+              label="Identificación"
               value={formData.identificacion}
               onChange={(e) => setFormData({ ...formData, identificacion: e.target.value })}
             />
@@ -262,7 +262,7 @@ const Clientes = () => {
               onChange={(e) => setFormData({ ...formData, ciudad: e.target.value })}
             />
             <Input
-              label="PaÃ­s"
+              label="País"
               value={formData.pais}
               onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
             />

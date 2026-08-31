@@ -64,8 +64,7 @@ jobs:
           cache: maven
 
       - name: OWASP Dependency Check
-        run: mvn org.owasp:dependency-check-maven:check -q || true
-        continue-on-error: true
+        run: mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=7 -q
 
       - name: CodeQL Analysis
         uses: github/codeql-action/init@v3
@@ -170,7 +169,8 @@ jobs:
           image-ref: crm-saas-backend:latest
           format: 'sarif'
           output: 'trivy-backend.sarif'
-        continue-on-error: true
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'
 
       - name: Trivy scan frontend
         uses: aquasecurity/trivy-action@master
@@ -178,4 +178,5 @@ jobs:
           image-ref: crm-saas-frontend:latest
           format: 'sarif'
           output: 'trivy-frontend.sarif'
-        continue-on-error: true
+          severity: 'HIGH,CRITICAL'
+          exit-code: '1'

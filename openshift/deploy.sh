@@ -12,9 +12,24 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+if [ ! -f "openshift/postgresql-secret.env" ] || [ ! -f "openshift/crm-secret.env" ]; then
+    echo "Error: faltan los archivos privados de secretos."
+    echo "Copia los archivos .env.example, reemplaza todos los valores y vuelve a ejecutar."
+    exit 1
+fi
+
+if grep -q "replace-with" openshift/postgresql-secret.env openshift/crm-secret.env; then
+    echo "Error: los archivos de secretos todavia contienen valores de ejemplo."
+    exit 1
+fi
+
 echo ""
 echo "[2/9] Creando proyecto CRM (si no existe)..."
 oc new-project crm --display-name="CRM SaaS" 2>/dev/null || echo "Proyecto ya existe, continuando..."
+
+echo "Creando o actualizando secretos desde archivos locales ignorados por Git..."
+oc create secret generic postgresql-secret --from-env-file=openshift/postgresql-secret.env --dry-run=client -o yaml | oc apply -f -
+oc create secret generic crm-secrets --from-env-file=openshift/crm-secret.env --dry-run=client -o yaml | oc apply -f -
 
 echo ""
 echo "[3/9] Desplegando PostgreSQL..."
@@ -35,7 +50,7 @@ echo "Esperando a que MinIO este listo..."
 oc rollout status deployment/minio --watch
 
 echo ""
-echo "[6/9] Desplegando ConfigMaps y Secrets..."
+echo "[6/9] Desplegando ConfigMaps..."
 oc apply -f openshift/05-config-secrets.yaml
 
 echo ""
@@ -62,8 +77,7 @@ echo "========================================"
 echo ""
 echo "URLs de acceso:"
 echo "  Frontend: $(oc get route crm-frontend -o jsonpath='{.spec.host}')"
-echo "  Backend:  $(oc get route crm-backend -o jsonpath='{.spec.host}')"
-echo "  Swagger:  $(oc get route crm-backend -o jsonpath='{.spec.host}')/swagger-ui.html"
+echo "  API: disponible internamente mediante el proxy /api del frontend"
 echo ""
 echo "Para ver los logs:"
 echo "  oc logs -f deployment/crm-backend"

@@ -65,7 +65,7 @@ public class CotizacionService {
     public Cotizacion update(Long id, Cotizacion cotizacion) {
         Long tenantId = tenantId();
         Cotizacion existingCotizacion = cotizacionRepository.findByIdAndTenantId(id, tenantId)
-                .orElseThrow(() -> new TenantAccessDeniedException("CotizaciÃ³n"));
+                .orElseThrow(() -> new TenantAccessDeniedException("Cotización"));
         
         Cliente cliente = clienteRepository.findByIdAndTenantId(cotizacion.getCliente().getId(), tenantId)
                 .orElseThrow(() -> new TenantAccessDeniedException("Cliente"));
@@ -97,7 +97,7 @@ public class CotizacionService {
     
     public void delete(Long id) {
         Cotizacion cotizacion = cotizacionRepository.findByIdAndTenantId(id, tenantId())
-                .orElseThrow(() -> new TenantAccessDeniedException("CotizaciÃ³n"));
+                .orElseThrow(() -> new TenantAccessDeniedException("Cotización"));
         cotizacionRepository.delete(cotizacion);
     }
     
@@ -115,7 +115,7 @@ public class CotizacionService {
     
     public Cotizacion enviarCotizacion(Long id) {
         Cotizacion cotizacion = cotizacionRepository.findByIdAndTenantId(id, tenantId())
-                .orElseThrow(() -> new TenantAccessDeniedException("CotizaciÃ³n"));
+                .orElseThrow(() -> new TenantAccessDeniedException("Cotización"));
         cotizacion.setEstado(Cotizacion.EstadoCotizacion.ENVIADA);
         cotizacion.setFechaEnvio(LocalDateTime.now());
         return cotizacionRepository.save(cotizacion);
@@ -123,7 +123,7 @@ public class CotizacionService {
     
     public Cotizacion aprobarCotizacion(Long id) {
         Cotizacion cotizacion = cotizacionRepository.findByIdAndTenantId(id, tenantId())
-                .orElseThrow(() -> new TenantAccessDeniedException("CotizaciÃ³n"));
+                .orElseThrow(() -> new TenantAccessDeniedException("Cotización"));
         cotizacion.setEstado(Cotizacion.EstadoCotizacion.APROBADA);
         cotizacion.setFechaAprobacion(LocalDateTime.now());
         return cotizacionRepository.save(cotizacion);

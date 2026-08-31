@@ -46,6 +46,7 @@ export default function AdvancedReports() {
   const [forecast, setForecast] = useState<Forecast | null>(null);
   const [funnel, setFunnel] = useState<Funnel | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -64,6 +65,7 @@ export default function AdvancedReports() {
         setFunnel(fnRes.data);
       } catch (e) {
         console.error('Error loading reports:', e);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -73,12 +75,39 @@ export default function AdvancedReports() {
 
   const fmt = (v: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(v || 0);
 
+  const exportCsv = () => {
+    if (!summary) return;
+    const rows: Array<[string, string | number]> = [
+      ['Métrica', 'Valor'],
+      ['Ventas cerradas', summary.totalClosed],
+      ['Total ventas', summary.totalVentas],
+      ['Total clientes', summary.totalClientes],
+      ['Total prospectos', summary.totalProspectos],
+      ['Total cotizaciones', summary.totalCotizaciones],
+      ['Total pedidos', summary.totalPedidos],
+    ];
+    if (forecast) {
+      rows.push(['Forecast ponderado', forecast.weightedForecast], ['Mejor caso', forecast.bestCase], ['Peor caso', forecast.worstCase]);
+    }
+    if (funnel) rows.push(['Conversión de prospectos (%)', funnel.conversionRate]);
+    Object.entries(salesByStatus).forEach(([status, count]) => rows.push([`Ventas ${status}`, count]));
+    Object.entries(prospectosByStage).forEach(([stage, count]) => rows.push([`Prospectos ${stage}`, count]));
+
+    const csv = rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const url = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `reporte-crm-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const funnelStages = [
     { key: 'nuevos', label: 'Nuevos', color: 'bg-blue-500' },
     { key: 'contactados', label: 'Contactados', color: 'bg-cyan-500' },
     { key: 'calificados', label: 'Calificados', color: 'bg-teal-500' },
     { key: 'propuesta', label: 'Propuesta', color: 'bg-purple-500' },
-    { key: 'negociacion', label: 'NegociaciÃ³n', color: 'bg-orange-500' },
+    { key: 'negociacion', label: 'Negociación', color: 'bg-orange-500' },
     { key: 'cerrados', label: 'Cerrados', color: 'bg-green-500' },
   ];
 
@@ -94,12 +123,18 @@ export default function AdvancedReports() {
             <BarChart3 className="w-7 h-7 text-blue-600" />
             Reportes & Analytics
           </h1>
-          <p className="text-sm text-slate-500 mt-1">Dashboards avanzados con forecasting y embudo de conversiÃ³n</p>
+          <p className="text-sm text-slate-500 mt-1">Dashboards avanzados con forecasting y embudo de conversión</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">
+        <button type="button" onClick={exportCsv} disabled={!summary} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">
           <Download className="w-4 h-4" /> Exportar
         </button>
       </div>
+
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          No fue posible cargar todos los reportes. No se muestran cifras de demostración.
+        </div>
+      )}
 
       {/* KPI Cards */}
       {summary && (
@@ -162,7 +197,7 @@ export default function AdvancedReports() {
       {funnel && (
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Filter className="w-5 h-5 text-orange-600" /> Embudo de ConversiÃ³n
+            <Filter className="w-5 h-5 text-orange-600" /> Embudo de Conversión
           </h2>
           <div className="space-y-3">
             {funnelStages.map((stage) => {
@@ -177,7 +212,7 @@ export default function AdvancedReports() {
                       <span className="text-xs font-semibold text-white">{value}</span>
                     </div>
                   </div>
-                  <div className="w-20 text-xs text-slate-500">{conversionPct}% conversiÃ³n</div>
+                  <div className="w-20 text-xs text-slate-500">{conversionPct}% conversión</div>
                 </div>
               );
             })}
@@ -187,7 +222,7 @@ export default function AdvancedReports() {
               <span className="font-semibold text-slate-900">{funnel.cerrados}</span> cerrados de <span className="font-semibold text-slate-900">{funnel.total}</span> prospectos
             </div>
             <div className="text-sm">
-              <span className="text-slate-500">Tasa de conversiÃ³n: </span>
+              <span className="text-slate-500">Tasa de conversión: </span>
               <span className="font-bold text-green-600">{funnel.conversionRate.toFixed(1)}%</span>
             </div>
           </div>

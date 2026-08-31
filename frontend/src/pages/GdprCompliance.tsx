@@ -60,7 +60,7 @@ export default function GdprCompliance() {
   };
 
   const handleWithdraw = async (id: number) => {
-    if (window.confirm('Â¿Retirar este consentimiento?')) {
+    if (window.confirm('¿Retirar este consentimiento?')) {
       try {
         await apiClient.patch(`/api/gdpr/${id}/withdraw`);
         loadData();
@@ -71,7 +71,7 @@ export default function GdprCompliance() {
   };
 
   const handlePurge = async (clienteId: number) => {
-    if (window.confirm('Â¿Eliminar TODOS los datos de este cliente? Esta acciÃ³n es irreversible (Derecho al Olvido GDPR).')) {
+    if (window.confirm('¿Eliminar TODOS los datos de este cliente? Esta acción es irreversible (Derecho al Olvido GDPR).')) {
       try {
         await apiClient.delete(`/api/gdpr/cliente/${clienteId}/purge`);
         loadData();
@@ -105,7 +105,7 @@ export default function GdprCompliance() {
             <Shield className="w-7 h-7 text-blue-600" />
             GDPR Compliance
           </h1>
-          <p className="text-sm text-slate-500 mt-1">GestiÃ³n de consentimientos y derechos de datos (GDPR/PIPEDA)</p>
+          <p className="text-sm text-slate-500 mt-1">Gestión de consentimientos y derechos de datos (GDPR/PIPEDA)</p>
         </div>
         <div className="flex gap-3">
           <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">
@@ -145,7 +145,7 @@ export default function GdprCompliance() {
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Tipo de dato</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">PropÃ³sito</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Propósito</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Cliente</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Estado</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Fecha</th>
@@ -157,7 +157,7 @@ export default function GdprCompliance() {
               <tr key={c.id} className="hover:bg-slate-50">
                 <td className="px-4 py-3 text-sm text-slate-700">{c.dataType}</td>
                 <td className="px-4 py-3 text-sm text-slate-700">{c.purpose}</td>
-                <td className="px-4 py-3 text-sm text-slate-500">{c.clienteId || 'â€”'}</td>
+                <td className="px-4 py-3 text-sm text-slate-500">{c.clienteId || '—'}</td>
                 <td className="px-4 py-3">
                   {c.granted ? (
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
@@ -169,7 +169,7 @@ export default function GdprCompliance() {
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-sm text-slate-500">{c.grantedAt ? new Date(c.grantedAt).toLocaleDateString('es-CO') : 'â€”'}</td>
+                <td className="px-4 py-3 text-sm text-slate-500">{c.grantedAt ? new Date(c.grantedAt).toLocaleDateString('es-CO') : '—'}</td>
                 <td className="px-4 py-3">
                   <div className="flex gap-2">
                     {c.granted && (
@@ -208,13 +208,13 @@ export default function GdprCompliance() {
                 <select className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.dataType} onChange={e => setFormData({ ...formData, dataType: e.target.value })}>
                   <option value="PERSONAL_DATA">Datos personales</option>
                   <option value="MARKETING">Marketing</option>
-                  <option value="ANALYTICS">AnalÃ­ticas</option>
+                  <option value="ANALYTICS">Analíticas</option>
                   <option value="THIRD_PARTY">Compartir con terceros</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">PropÃ³sito</label>
-                <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.purpose} onChange={e => setFormData({ ...formData, purpose: e.target.value })} placeholder="Ej: EnvÃ­o de newsletter mensual" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Propósito</label>
+                <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.purpose} onChange={e => setFormData({ ...formData, purpose: e.target.value })} placeholder="Ej: Envío de newsletter mensual" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">ID Cliente (opcional)</label>
@@ -222,7 +222,7 @@ export default function GdprCompliance() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Texto del consentimiento</label>
-                <textarea className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" rows={3} value={formData.consentText} onChange={e => setFormData({ ...formData, consentText: e.target.value })} placeholder="Texto exacto que aceptÃ³ el usuario..." />
+                <textarea className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" rows={3} value={formData.consentText} onChange={e => setFormData({ ...formData, consentText: e.target.value })} placeholder="Texto exacto que aceptó el usuario..." />
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">

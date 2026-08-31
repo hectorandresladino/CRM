@@ -86,7 +86,7 @@ export default function SSO() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('Â¿Eliminar esta configuraciÃ³n SSO?')) {
+    if (window.confirm('¿Eliminar esta configuración SSO?')) {
       try { await apiClient.delete(`/api/sso/${id}`); loadData(); } catch (e) { console.error(e); }
     }
   };
@@ -99,10 +99,10 @@ export default function SSO() {
             <Key className="w-7 h-7 text-indigo-600" />
             SSO - Single Sign-On
           </h1>
-          <p className="text-sm text-slate-500 mt-1">IntegraciÃ³n con Azure AD, Google Workspace, Okta y mÃ¡s</p>
+          <p className="text-sm text-slate-500 mt-1">Integración con Azure AD, Google Workspace, Okta y más</p>
         </div>
         <button onClick={() => { setEditing(null); setFormData({ provider: 'AZURE_AD', protocol: 'SAML', isActive: true, autoProvision: true, defaultRole: 'VENDEDOR' }); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Nueva ConfiguraciÃ³n
+          <Plus className="w-4 h-4" /> Nueva Configuración
         </button>
       </div>
 
@@ -134,7 +134,7 @@ export default function SSO() {
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Rol por defecto</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Auto-provision</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Estado</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Ãšltima sync</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Última sync</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
@@ -143,10 +143,10 @@ export default function SSO() {
               <tr key={c.id} className="hover:bg-slate-50">
                 <td className="px-4 py-3 text-sm font-medium text-slate-900">{PROVIDERS.find(p => p.value === c.provider)?.label || c.provider}</td>
                 <td className="px-4 py-3"><span className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">{c.protocol}</span></td>
-                <td className="px-4 py-3 text-sm text-slate-500 font-mono">{c.clientId ? `${c.clientId.substring(0, 12)}...` : 'â€”'}</td>
+                <td className="px-4 py-3 text-sm text-slate-500 font-mono">{c.clientId ? `${c.clientId.substring(0, 12)}...` : '—'}</td>
                 <td className="px-4 py-3 text-sm text-slate-700">{c.defaultRole}</td>
                 <td className="px-4 py-3">
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${c.autoProvision ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>{c.autoProvision ? 'SÃ­' : 'No'}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${c.autoProvision ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>{c.autoProvision ? 'Sí' : 'No'}</span>
                 </td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${c.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{c.isActive ? 'Activo' : 'Inactivo'}</span>
@@ -176,7 +176,7 @@ export default function SSO() {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold text-slate-900 mb-4">{editing?.id ? 'Editar ConfiguraciÃ³n SSO' : 'Nueva ConfiguraciÃ³n SSO'}</h2>
+            <h2 className="text-lg font-bold text-slate-900 mb-4">{editing?.id ? 'Editar Configuración SSO' : 'Nueva Configuración SSO'}</h2>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>

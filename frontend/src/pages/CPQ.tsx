@@ -74,7 +74,7 @@ export default function CPQ() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('Â¿Eliminar este producto?')) {
+    if (window.confirm('¿Eliminar este producto?')) {
       try {
         await apiClient.delete(`/api/cpq/products/${id}`);
         loadData();
@@ -108,7 +108,7 @@ export default function CPQ() {
             <Calculator className="w-7 h-7 text-purple-600" />
             CPQ - Configure, Price, Quote
           </h1>
-          <p className="text-sm text-slate-500 mt-1">CatÃ¡logo de productos con reglas de pricing, descuentos y aprobaciones</p>
+          <p className="text-sm text-slate-500 mt-1">Catálogo de productos con reglas de pricing, descuentos y aprobaciones</p>
         </div>
         <button onClick={() => { setEditing(null); setFormData({ sku: '', name: '', description: '', basePrice: 0, currency: 'USD', minDiscountPct: 0, maxDiscountPct: 10, costPrice: 0, minMarginPct: 20, isActive: true, category: '', unit: 'unit', stock: 0 }); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
           <Plus className="w-4 h-4" /> Nuevo Producto
@@ -126,7 +126,7 @@ export default function CPQ() {
               <div key={item.id} className="flex items-center justify-between bg-white rounded-lg p-3 border border-orange-100">
                 <div>
                   <p className="text-sm font-medium text-slate-900">{item.productName} ({item.sku})</p>
-                  <p className="text-xs text-slate-500">Cant: {item.quantity} Â· Precio: {fmt(item.unitPrice)} Â· Descuento: {item.discountPct}% Â· Total: {fmt(item.lineTotal)}</p>
+                  <p className="text-xs text-slate-500">Cant: {item.quantity} · Precio: {fmt(item.unitPrice)} · Descuento: {item.discountPct}% · Total: {fmt(item.lineTotal)}</p>
                 </div>
                 <button onClick={() => handleApprove(item.id)} className="px-3 py-1.5 text-xs font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 flex items-center gap-1">
                   <CheckCircle className="w-3 h-3" /> Aprobar
@@ -160,15 +160,15 @@ export default function CPQ() {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {filtered.map((p) => {
-              const margin = p.costPrice && p.basePrice ? ((p.basePrice - p.costPrice) / p.basePrice * 100).toFixed(1) : 'â€”';
+              const margin = p.costPrice && p.basePrice ? ((p.basePrice - p.costPrice) / p.basePrice * 100).toFixed(1) : '—';
               return (
                 <tr key={p.id} className="hover:bg-slate-50">
                   <td className="px-4 py-3 text-sm font-mono text-slate-700">{p.sku}</td>
                   <td className="px-4 py-3 text-sm font-medium text-slate-900">{p.name}</td>
                   <td className="px-4 py-3 text-sm text-slate-700">{fmt(p.basePrice)}</td>
-                  <td className="px-4 py-3 text-sm text-slate-500">{p.costPrice ? fmt(p.costPrice) : 'â€”'}</td>
-                  <td className="px-4 py-3 text-sm text-slate-500">{p.minMarginPct ? `${p.minMarginPct}%` : 'â€”'} <span className="text-xs text-slate-400">({margin}%)</span></td>
-                  <td className="px-4 py-3 text-sm text-slate-500">{p.maxDiscountPct ? `${p.maxDiscountPct}%` : 'â€”'}</td>
+                  <td className="px-4 py-3 text-sm text-slate-500">{p.costPrice ? fmt(p.costPrice) : '—'}</td>
+                  <td className="px-4 py-3 text-sm text-slate-500">{p.minMarginPct ? `${p.minMarginPct}%` : '—'} <span className="text-xs text-slate-400">({margin}%)</span></td>
+                  <td className="px-4 py-3 text-sm text-slate-500">{p.maxDiscountPct ? `${p.maxDiscountPct}%` : '—'}</td>
                   <td className="px-4 py-3 text-sm">
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${(p.stock || 0) > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{p.stock || 0}</span>
                   </td>
@@ -203,7 +203,7 @@ export default function CPQ() {
                   <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.sku} onChange={e => setFormData({ ...formData, sku: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">CategorÃ­a</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Categoría</label>
                   <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
                 </div>
               </div>
@@ -212,7 +212,7 @@ export default function CPQ() {
                 <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">DescripciÃ³n</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Descripción</label>
                 <textarea className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" rows={2} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
               </div>
               <div className="grid grid-cols-3 gap-4">

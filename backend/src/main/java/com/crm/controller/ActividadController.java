@@ -4,7 +4,6 @@
  */
 package com.crm.controller;
 
-import com.crm.security.TenantContext;
 import com.crm.entity.Actividad;
 import com.crm.security.TenantContext;
 import com.crm.service.ActividadService;
@@ -59,9 +58,6 @@ public class ActividadController {
     }
 
     private Long getCurrentTenantId() {
-        Long tid = TenantContext.getCurrentTenant();
-        if (tid == null) throw new RuntimeException("No tenant context");
-        return tid;
+        return TenantContext.requireCurrentTenant();
     }
 }
-

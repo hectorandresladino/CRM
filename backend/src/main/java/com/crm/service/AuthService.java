@@ -48,9 +48,9 @@ public class AuthService {
             return authenticate(resolveUserWithoutTenant(username), password, mfaCode);
         }
         Tenant tenant = tenantRepository.findBySlug(tenantSlug)
-                .orElseThrow(() -> new RuntimeException("Credenciales invÃ¡lidas"));
+                .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
         Usuario usuario = usuarioRepository.findByTenantIdAndUsername(tenant.getId(), username)
-                .orElseThrow(() -> new RuntimeException("Credenciales invÃ¡lidas"));
+                .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
         return authenticate(usuario, password, mfaCode);
     }
 
@@ -71,12 +71,12 @@ public class AuthService {
 
         if (usuario.getAccountLockedUntil() != null &&
             usuario.getAccountLockedUntil().isAfter(LocalDateTime.now())) {
-            throw new RuntimeException("Cuenta bloqueada. Intente mÃ¡s tarde.");
+            throw new RuntimeException("Cuenta bloqueada. Intente más tarde.");
         }
 
         if (!passwordEncoder.matches(password, usuario.getPassword())) {
             registerFailedAttempt(usuario);
-            throw new RuntimeException("Credenciales invÃ¡lidas");
+            throw new RuntimeException("Credenciales inválidas");
         }
 
         if (!usuario.getActivo()) {
@@ -158,7 +158,7 @@ public class AuthService {
     @Transactional
     public AuthResponse refreshToken(String refreshToken) {
         if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new RuntimeException("Refresh token invÃ¡lido");
+            throw new RuntimeException("Refresh token inválido");
         }
 
         String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
@@ -231,7 +231,7 @@ public class AuthService {
     @Transactional
     public void resetPassword(String token, String newPassword) {
         Usuario usuario = usuarioRepository.findByPasswordResetToken(token)
-                .orElseThrow(() -> new RuntimeException("Token invÃ¡lido"));
+                .orElseThrow(() -> new RuntimeException("Token inválido"));
         if (usuario.getPasswordResetExpires().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Token expirado");
         }
@@ -244,7 +244,7 @@ public class AuthService {
     @Transactional
     public void verifyEmail(String token) {
         Usuario usuario = usuarioRepository.findByEmailVerificationToken(token)
-                .orElseThrow(() -> new RuntimeException("Token invÃ¡lido"));
+                .orElseThrow(() -> new RuntimeException("Token inválido"));
         usuario.setEmailVerified(true);
         usuario.setEmailVerificationToken(null);
         usuarioRepository.save(usuario);

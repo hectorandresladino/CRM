@@ -62,7 +62,7 @@ const WhatsAppBusinessPage = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este mensaje?')) {
+    if (window.confirm('¿Está seguro de eliminar este mensaje?')) {
       try {
         await apiClient.delete(`/api/whatsapp-business/${id}`);
         loadMessages();
@@ -99,11 +99,11 @@ const WhatsAppBusinessPage = () => {
         <table className="table">
           <thead>
             <tr>
-              <th>TelÃ©fono</th>
+              <th>Teléfono</th>
               <th>Mensaje</th>
               <th>Tipo</th>
               <th>Estado</th>
-              <th>LeÃ­do</th>
+              <th>Leído</th>
               <th>Respondido</th>
               <th>Acciones</th>
             </tr>
@@ -121,8 +121,8 @@ const WhatsAppBusinessPage = () => {
                     {msg.estado}
                   </span>
                 </td>
-                <td>{msg.leido ? 'âœ“' : 'âœ—'}</td>
-                <td>{msg.respondido ? 'âœ“' : 'âœ—'}</td>
+                <td>{msg.leido ? '✓' : '✗'}</td>
+                <td>{msg.respondido ? '✓' : '✗'}</td>
                 <td>
                   <div className="flex space-x-2">
                     <Button variant="secondary" onClick={() => handleEdit(msg)}><Edit className="w-4 h-4" /></Button>
@@ -139,7 +139,7 @@ const WhatsAppBusinessPage = () => {
       <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingMessage(null); }} title={editingMessage?.id ? 'Editar Mensaje' : 'Nuevo Mensaje'}>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="TelÃ©fono" value={formData.telefono} onChange={(e) => setFormData({ ...formData, telefono: e.target.value })} required />
+            <Input label="Teléfono" value={formData.telefono} onChange={(e) => setFormData({ ...formData, telefono: e.target.value })} required />
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
               <select className="input" value={formData.tipo} onChange={(e) => setFormData({ ...formData, tipo: e.target.value as any })}>

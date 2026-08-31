@@ -65,7 +65,7 @@ public class PlanLimitService {
         long currentClients = clienteRepository.countByTenantId(tenantId);
         if (plan.getMaxClients() != null && currentClients >= plan.getMaxClients()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "LÃ­mite de clientes alcanzado (" + plan.getMaxClients() + "). Actualice su plan.");
+                    "Límite de clientes alcanzado (" + plan.getMaxClients() + "). Actualice su plan.");
         }
     }
 
@@ -73,7 +73,7 @@ public class PlanLimitService {
         Plan plan = getPlanForTenant(tenantId);
         if (plan.getMaxAutomations() != null && currentAutomations >= plan.getMaxAutomations()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "LÃ­mite de automatizaciones alcanzado (" + plan.getMaxAutomations() + ").");
+                    "Límite de automatizaciones alcanzado (" + plan.getMaxAutomations() + ").");
         }
     }
 

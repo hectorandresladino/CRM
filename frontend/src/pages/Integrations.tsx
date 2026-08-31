@@ -22,7 +22,7 @@ interface Integration {
 const PROVIDER_INFO: Record<string, { icon: React.ElementType; color: string; label: string; description: string }> = {
   STRIPE: { icon: CreditCard, color: 'bg-indigo-500', label: 'Stripe', description: 'Pagos online' },
   MERCADO_PAGO: { icon: CreditCard, color: 'bg-blue-500', label: 'Mercado Pago', description: 'Pagos LATAM' },
-  GOOGLE_CALENDAR: { icon: Calendar, color: 'bg-red-500', label: 'Google Calendar', description: 'SincronizaciÃ³n de calendario' },
+  GOOGLE_CALENDAR: { icon: Calendar, color: 'bg-red-500', label: 'Google Calendar', description: 'Sincronización de calendario' },
   GOOGLE_WORKSPACE: { icon: Key, color: 'bg-yellow-500', label: 'Google Workspace', description: 'SSO con Google' },
   AZURE_AD: { icon: Key, color: 'bg-sky-500', label: 'Azure AD', description: 'SSO con Microsoft' },
   OKTA: { icon: Key, color: 'bg-blue-600', label: 'Okta', description: 'SSO empresarial' },
@@ -30,11 +30,11 @@ const PROVIDER_INFO: Record<string, { icon: React.ElementType; color: string; la
   WHATSAPP_BUSINESS: { icon: MessageSquare, color: 'bg-green-500', label: 'WhatsApp Business', description: 'API oficial de Meta' },
   META_BUSINESS: { icon: MessageSquare, color: 'bg-blue-500', label: 'Meta Business', description: 'Facebook & Instagram' },
   SHOPIFY: { icon: ShoppingBag, color: 'bg-green-600', label: 'Shopify', description: 'E-commerce sync' },
-  ALEGRA: { icon: FileSpreadsheet, color: 'bg-orange-500', label: 'Alegra', description: 'FacturaciÃ³n electrÃ³nica Colombia' },
-  DIAN: { icon: FileSpreadsheet, color: 'bg-yellow-600', label: 'DIAN', description: 'FacturaciÃ³n electrÃ³nica Colombia' },
+  ALEGRA: { icon: FileSpreadsheet, color: 'bg-orange-500', label: 'Alegra', description: 'Facturación electrónica Colombia' },
+  DIAN: { icon: FileSpreadsheet, color: 'bg-yellow-600', label: 'DIAN', description: 'Facturación electrónica Colombia' },
   QUICKBOOKS: { icon: FileSpreadsheet, color: 'bg-green-700', label: 'QuickBooks', description: 'Contabilidad' },
-  ZAPIER: { icon: Plug, color: 'bg-orange-600', label: 'Zapier', description: 'AutomatizaciÃ³n 5000+ apps' },
-  MAKE: { icon: Plug, color: 'bg-purple-600', label: 'Make', description: 'AutomatizaciÃ³n visual' },
+  ZAPIER: { icon: Plug, color: 'bg-orange-600', label: 'Zapier', description: 'Automatización 5000+ apps' },
+  MAKE: { icon: Plug, color: 'bg-purple-600', label: 'Make', description: 'Automatización visual' },
 };
 
 export default function Integrations() {
@@ -65,7 +65,7 @@ export default function Integrations() {
   };
 
   const handleDisconnect = async (id: number) => {
-    if (window.confirm('Â¿Desconectar esta integraciÃ³n?')) {
+    if (window.confirm('¿Desconectar esta integración?')) {
       try {
         await apiClient.patch(`/api/integrations/${id}/disconnect`);
         loadData();
@@ -118,8 +118,8 @@ export default function Integrations() {
                 <CheckCircle2 className="w-5 h-5 text-green-500" />
               </div>
               <div className="flex items-center justify-between text-xs text-slate-500 mb-3">
-                <span>SincronizaciÃ³n: {int.syncEnabled ? 'Activa' : 'Pausada'}</span>
-                {int.lastSyncAt && <span>Ãšltima sync: {new Date(int.lastSyncAt).toLocaleDateString('es-CO')}</span>}
+                <span>Sincronización: {int.syncEnabled ? 'Activa' : 'Pausada'}</span>
+                {int.lastSyncAt && <span>Última sync: {new Date(int.lastSyncAt).toLocaleDateString('es-CO')}</span>}
               </div>
               <div className="flex gap-2">
                 <button onClick={() => handleToggleSync(int.id!)} className="flex-1 px-3 py-1.5 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50">

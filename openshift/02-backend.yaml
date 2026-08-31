@@ -5,6 +5,9 @@ metadata:
   labels:
     app: crm
     component: backend
+spec:
+  lookupPolicy:
+    local: true
 ---
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
@@ -16,7 +19,7 @@ metadata:
 spec:
   source:
     git:
-      uri: https://github.com/TU_USUARIO/crm.git
+      uri: https://github.com/hectorandresladino/CRM.git
       ref: main
     contextDir: backend
   strategy:
@@ -94,6 +97,11 @@ spec:
                 secretKeyRef:
                   name: crm-secrets
                   key: JWT_REFRESH_EXPIRATION_MS
+            - name: CORS_ALLOWED_ORIGINS
+              valueFrom:
+                secretKeyRef:
+                  name: crm-secrets
+                  key: CORS_ALLOWED_ORIGINS
             - name: REDIS_HOST
               valueFrom:
                 configMapRef:
@@ -129,6 +137,16 @@ spec:
                 secretKeyRef:
                   name: crm-secrets
                   key: MAIL_PASSWORD
+            - name: MAIL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: crm-secrets
+                  key: MAIL_HOST
+            - name: MAIL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: crm-secrets
+                  key: MAIL_PORT
           resources:
             requests:
               memory: "384Mi"

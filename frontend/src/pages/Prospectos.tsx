@@ -82,7 +82,7 @@ const Prospectos = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este prospecto?')) {
+    if (window.confirm('¿Está seguro de eliminar este prospecto?')) {
       try {
         await apiClient.delete(`/api/prospectos/${id}`);
         loadProspectos();
@@ -223,7 +223,7 @@ const Prospectos = () => {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
             <Input
-              label="TelÃ©fono"
+              label="Teléfono"
               value={formData.telefono}
               onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
             />
@@ -250,7 +250,7 @@ const Prospectos = () => {
                 <option value="CONTACTADO">Contactado</option>
                 <option value="CALIFICADO">Calificado</option>
                 <option value="PROPUESTA">Propuesta</option>
-                <option value="NEGOCIACION">NegociaciÃ³n</option>
+                <option value="NEGOCIACION">Negociación</option>
                 <option value="CERRADO">Cerrado</option>
                 <option value="PERDIDO">Perdido</option>
               </select>
@@ -279,7 +279,7 @@ const Prospectos = () => {
             />
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">InterÃ©s</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Interés</label>
             <textarea
               className="input"
               rows={2}

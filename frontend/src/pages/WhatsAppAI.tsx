@@ -56,9 +56,9 @@ const INTENT_LABELS: Record<string, string> = {
   PRICING_INQUIRY: 'Consulta de precios',
   INFO_REQUEST: 'Solicitud de info',
   DEMO_REQUEST: 'Solicitud de demo',
-  PURCHASE_INTENT: 'IntenciÃ³n de compra',
+  PURCHASE_INTENT: 'Intención de compra',
   SUPPORT_REQUEST: 'Soporte',
-  SATISFACTION: 'SatisfacciÃ³n',
+  SATISFACTION: 'Satisfacción',
   HUMAN_AGENT: 'Derivar a agente',
   OUT_OF_HOURS: 'Fuera de horario',
   GENERAL: 'General',
@@ -159,12 +159,12 @@ export default function WhatsAppAI() {
             <Bot className="w-7 h-7 text-green-600" />
             IA WhatsApp Business
           </h1>
-          <p className="text-sm text-slate-500 mt-1">Asistente IA 24/7 que cualifica leads y responde clientes automÃ¡ticamente</p>
+          <p className="text-sm text-slate-500 mt-1">Asistente IA 24/7 que cualifica leads y responde clientes automáticamente</p>
         </div>
         <div className="flex bg-slate-100 rounded-lg p-1">
           {(['conversations', 'config', 'stats'] as const).map(t => (
             <button key={t} onClick={() => setTab(t)} className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${tab === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>
-              {t === 'conversations' ? 'Conversaciones' : t === 'config' ? 'ConfiguraciÃ³n' : 'EstadÃ­sticas'}
+              {t === 'conversations' ? 'Conversaciones' : t === 'config' ? 'Configuración' : 'Estadísticas'}
             </button>
           ))}
         </div>
@@ -251,7 +251,7 @@ export default function WhatsAppAI() {
               <div className="flex-1 flex items-center justify-center text-slate-400">
                 <div className="text-center">
                   <MessageCircle className="w-12 h-12 mx-auto mb-3" />
-                  <p>Selecciona un contacto para ver la conversaciÃ³n</p>
+                  <p>Selecciona un contacto para ver la conversación</p>
                 </div>
               </div>
             )}
@@ -270,7 +270,7 @@ export default function WhatsAppAI() {
             <div className="space-y-3">
               <label className="flex items-center gap-3">
                 <input type="checkbox" checked={config.enabled} onChange={e => setConfig({ ...config, enabled: e.target.checked })} className="w-4 h-4 rounded" />
-                <span className="text-sm text-slate-700">IA activada (responde automÃ¡ticamente)</span>
+                <span className="text-sm text-slate-700">IA activada (responde automáticamente)</span>
               </label>
               <label className="flex items-center gap-3">
                 <input type="checkbox" checked={config.autoReply} onChange={e => setConfig({ ...config, autoReply: e.target.checked })} className="w-4 h-4 rounded" />
@@ -278,7 +278,7 @@ export default function WhatsAppAI() {
               </label>
               <label className="flex items-center gap-3">
                 <input type="checkbox" checked={config.qualifyLeads} onChange={e => setConfig({ ...config, qualifyLeads: e.target.checked })} className="w-4 h-4 rounded" />
-                <span className="text-sm text-slate-700">Cualificar leads automÃ¡ticamente</span>
+                <span className="text-sm text-slate-700">Cualificar leads automáticamente</span>
               </label>
               <label className="flex items-center gap-3">
                 <input type="checkbox" checked={config.transcribeAudio} onChange={e => setConfig({ ...config, transcribeAudio: e.target.checked })} className="w-4 h-4 rounded" />
@@ -290,7 +290,7 @@ export default function WhatsAppAI() {
           {/* Business Info */}
           <div className="bg-white rounded-xl border border-slate-200 p-6">
             <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <Settings className="w-5 h-5 text-blue-600" /> InformaciÃ³n del Negocio
+              <Settings className="w-5 h-5 text-blue-600" /> Información del Negocio
             </h2>
             <div className="space-y-4">
               <div>
@@ -323,12 +323,12 @@ export default function WhatsAppAI() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Idioma</label>
                   <select className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={config.language} onChange={e => setConfig({ ...config, language: e.target.value })}>
-                    <option value="es">EspaÃ±ol</option>
-                    <option value="en">InglÃ©s</option>
-                    <option value="pt">PortuguÃ©s</option>
-                    <option value="fr">FrancÃ©s</option>
-                    <option value="nl">NeerlandÃ©s</option>
-                    <option value="de">AlemÃ¡n</option>
+                    <option value="es">Español</option>
+                    <option value="en">Inglés</option>
+                    <option value="pt">Portugués</option>
+                    <option value="fr">Francés</option>
+                    <option value="nl">Neerlandés</option>
+                    <option value="de">Alemán</option>
                   </select>
                 </div>
                 <div>
@@ -347,7 +347,7 @@ export default function WhatsAppAI() {
               </div>
             </div>
             <button onClick={handleSaveConfig} disabled={saving} className="mt-4 flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-slate-400">
-              <Save className="w-4 h-4" /> {saving ? 'Guardando...' : 'Guardar ConfiguraciÃ³n'}
+              <Save className="w-4 h-4" /> {saving ? 'Guardando...' : 'Guardar Configuración'}
             </button>
           </div>
         </div>
@@ -389,7 +389,7 @@ export default function WhatsAppAI() {
           <div className="bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-center gap-3">
               <div className="bg-cyan-50 p-3 rounded-lg"><Users className="w-6 h-6 text-cyan-600" /></div>
-              <div><p className="text-2xl font-bold text-slate-900">{stats.uniqueContacts}</p><p className="text-xs text-slate-500">Contactos Ãºnicos</p></div>
+              <div><p className="text-2xl font-bold text-slate-900">{stats.uniqueContacts}</p><p className="text-xs text-slate-500">Contactos únicos</p></div>
             </div>
           </div>
         </div>

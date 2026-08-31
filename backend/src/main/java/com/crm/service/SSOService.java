@@ -34,14 +34,14 @@ public class SSOService {
 
     public SSOConfiguration toggleActive(Long id) {
         SSOConfiguration config = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ConfiguraciÃ³n SSO no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Configuración SSO no encontrada"));
         config.setIsActive(!config.getIsActive());
         return repository.save(config);
     }
 
     public SSOConfiguration sync(Long id) {
         SSOConfiguration config = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ConfiguraciÃ³n SSO no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Configuración SSO no encontrada"));
         config.setLastSyncAt(LocalDateTime.now());
         return repository.save(config);
     }

@@ -36,10 +36,10 @@ public class ESignatureService {
 
     public ESignatureRequest sign(String token, String signerIp) {
         ESignatureRequest request = repository.findBySignatureToken(token)
-                .orElseThrow(() -> new RuntimeException("Token de firma invÃ¡lido"));
+                .orElseThrow(() -> new RuntimeException("Token de firma inválido"));
 
         if (!"PENDING".equals(request.getStatus())) {
-            throw new RuntimeException("Este documento ya fue firmado o expirÃ³");
+            throw new RuntimeException("Este documento ya fue firmado o expiró");
         }
 
         if (request.getExpiresAt() != null && request.getExpiresAt().isBefore(LocalDateTime.now())) {

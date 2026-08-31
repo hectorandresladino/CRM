@@ -74,7 +74,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         { path: '/ventas', label: 'Ventas', icon: DollarSign },
         { path: '/cotizaciones', label: 'Cotizaciones', icon: FileText },
         { path: '/pedidos', label: 'Pedidos', icon: Package },
-        { path: '/facturas', label: 'FacturaciÃ³n', icon: Receipt },
+        { path: '/facturas', label: 'Facturación', icon: Receipt },
         { path: '/contratos', label: 'Contratos', icon: FileCheck },
         { path: '/cpq', label: 'CPQ', icon: Calculator },
         { path: '/productos', label: 'Productos', icon: Package },
@@ -102,7 +102,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       ],
     },
     {
-      title: 'GESTIÃ“N',
+      title: 'GESTIÓN',
       items: [
         { path: '/gestion-documental', label: 'Documentos', icon: File },
         { path: '/workflows', label: 'Automatizaciones', icon: Zap },
@@ -115,9 +115,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       title: 'COMPLIANCE & PORTAL',
       items: [
         { path: '/gdpr', label: 'GDPR', icon: Shield },
-        { path: '/esignature', label: 'Firma ElectrÃ³nica', icon: PenTool },
+        { path: '/esignature', label: 'Firma Electrónica', icon: PenTool },
         { path: '/client-portal', label: 'Portal Clientes', icon: UserCircle },
-        { path: '/gamification', label: 'GamificaciÃ³n', icon: Trophy },
+        { path: '/gamification', label: 'Gamificación', icon: Trophy },
         { path: '/sso', label: 'SSO', icon: Key },
         { path: '/billing', label: 'Billing', icon: CreditCard },
         { path: '/superadmin', label: 'SuperAdmin', icon: Shield },
@@ -129,7 +129,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   
   return (
     <div className="min-h-screen bg-slate-100 flex">
-      {/* Overlay mÃ³vil */}
+      {/* Overlay móvil */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)}></div>
       )}
@@ -150,7 +150,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </button>
         </div>
 
-        {/* NavegaciÃ³n */}
+        {/* Navegación */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5 [scrollbar-width:thin] [scrollbar-color:#1e3a5f_transparent]">
           {navSections.map((section) => (
             <div key={section.title}>
@@ -196,7 +196,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-300 bg-red-500/10 hover:bg-red-500/20 transition-colors"
           >
             <LogOut className="w-4 h-4" />
-            Cerrar SesiÃ³n
+            Cerrar Sesión
           </button>
         </div>
       </aside>

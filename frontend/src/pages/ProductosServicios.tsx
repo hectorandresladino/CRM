@@ -63,7 +63,7 @@ export default function ProductosServicios() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('Â¿Eliminar este producto?')) {
+    if (window.confirm('¿Eliminar este producto?')) {
       try { await apiClient.delete(`/api/productos/${id}`); loadData(); } catch (e) { console.error(e); }
     }
   };
@@ -85,7 +85,7 @@ export default function ProductosServicios() {
             <Package className="w-7 h-7 text-indigo-600" />
             Productos y Servicios
           </h1>
-          <p className="text-sm text-slate-500 mt-1">CatÃ¡logo con familias, listas de precios, impuestos y descuentos</p>
+          <p className="text-sm text-slate-500 mt-1">Catálogo con familias, listas de precios, impuestos y descuentos</p>
         </div>
         <button onClick={() => { setEditing(null); setFormData({ codigo: '', nombre: '', familia: '', tipo: 'PRODUCTO', precioBase: 0, moneda: 'USD', esActivo: true, unidadMedida: 'unidad' }); setShowModal(true); }} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
           <Plus className="w-4 h-4" /> Nuevo Producto
@@ -111,7 +111,7 @@ export default function ProductosServicios() {
         <table className="w-full">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">CÃ³digo</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Código</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Nombre</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Familia</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider">Tipo</th>
@@ -129,7 +129,7 @@ export default function ProductosServicios() {
                 <td className="px-4 py-3 text-sm text-slate-600">{p.familia}</td>
                 <td className="px-4 py-3"><span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">{p.tipo}</span></td>
                 <td className="px-4 py-3 text-sm font-medium text-slate-900">{fmt(p.precioBase)}</td>
-                <td className="px-4 py-3 text-sm text-slate-500">{p.impuestoPct ? `${p.impuestoPct}%` : 'â€”'}</td>
+                <td className="px-4 py-3 text-sm text-slate-500">{p.impuestoPct ? `${p.impuestoPct}%` : '—'}</td>
                 <td className="px-4 py-3 text-sm">
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${(p.stock || 0) > (p.stockMinimo || 0) ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{p.stock || 0}</span>
                 </td>
@@ -159,7 +159,7 @@ export default function ProductosServicios() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">CÃ³digo</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Código</label>
                   <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.codigo} onChange={e => setFormData({ ...formData, codigo: e.target.value })} />
                 </div>
                 <div>
@@ -167,7 +167,7 @@ export default function ProductosServicios() {
                   <select className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.tipo} onChange={e => setFormData({ ...formData, tipo: e.target.value })}>
                     <option value="PRODUCTO">Producto</option>
                     <option value="SERVICIO">Servicio</option>
-                    <option value="SUSCRIPCION">SuscripciÃ³n</option>
+                    <option value="SUSCRIPCION">Suscripción</option>
                     <option value="BUNDLE">Bundle</option>
                   </select>
                 </div>
@@ -222,7 +222,7 @@ export default function ProductosServicios() {
                   <input type="number" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.stock || ''} onChange={e => setFormData({ ...formData, stock: Number(e.target.value) })} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Stock mÃ­nimo</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Stock mínimo</label>
                   <input type="number" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value={formData.stockMinimo || ''} onChange={e => setFormData({ ...formData, stockMinimo: Number(e.target.value) })} />
                 </div>
               </div>

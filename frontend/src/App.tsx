@@ -2,54 +2,68 @@
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import Dashboard from './pages/Dashboard';
-import Clientes from './pages/Clientes';
-import Prospectos from './pages/Prospectos';
-import Ventas from './pages/Ventas';
-import Cotizaciones from './pages/Cotizaciones';
-import Pedidos from './pages/Pedidos';
-import ServicioClientePage from './pages/ServicioCliente';
-import CampanasMarketingPage from './pages/CampanasMarketing';
-import EmailMarketingPage from './pages/EmailMarketing';
-import WhatsAppBusinessPage from './pages/WhatsAppBusiness';
-import GestionDocumentalPage from './pages/GestionDocumental';
-import ContratosPage from './pages/Contratos';
-import FacturasPage from './pages/Facturas';
-import PQRSPage from './pages/PQRS';
-import EncuestasSatisfaccionPage from './pages/EncuestasSatisfaccion';
-import MesaAyudaPage from './pages/MesaAyuda';
-import Pipeline from './pages/Pipeline';
-import GdprCompliance from './pages/GdprCompliance';
-import MultiCurrency from './pages/MultiCurrency';
-import WorkflowBuilder from './pages/WorkflowBuilder';
-import LeadScoring from './pages/LeadScoring';
-import EmailTemplates from './pages/EmailTemplates';
-import Integrations from './pages/Integrations';
-import Gamification from './pages/Gamification';
-import ClientPortal from './pages/ClientPortal';
-import WhatsAppAI from './pages/WhatsAppAI';
-import AdvancedReports from './pages/AdvancedReports';
-import CPQ from './pages/CPQ';
-import ESignature from './pages/ESignature';
-import SSO from './pages/SSO';
-import Actividades from './pages/Actividades';
-import MetasComerciales from './pages/MetasComerciales';
-import ProductosServicios from './pages/ProductosServicios';
-import SuperAdmin from './pages/SuperAdmin';
-import Pricing from './pages/Pricing';
-import Billing from './pages/Billing';
-import Login from './pages/Login';
-import Register from './pages/Register';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Clientes = lazy(() => import('./pages/Clientes'));
+const Prospectos = lazy(() => import('./pages/Prospectos'));
+const Ventas = lazy(() => import('./pages/Ventas'));
+const Cotizaciones = lazy(() => import('./pages/Cotizaciones'));
+const Pedidos = lazy(() => import('./pages/Pedidos'));
+const ServicioClientePage = lazy(() => import('./pages/ServicioCliente'));
+const CampanasMarketingPage = lazy(() => import('./pages/CampanasMarketing'));
+const EmailMarketingPage = lazy(() => import('./pages/EmailMarketing'));
+const WhatsAppBusinessPage = lazy(() => import('./pages/WhatsAppBusiness'));
+const GestionDocumentalPage = lazy(() => import('./pages/GestionDocumental'));
+const ContratosPage = lazy(() => import('./pages/Contratos'));
+const FacturasPage = lazy(() => import('./pages/Facturas'));
+const PQRSPage = lazy(() => import('./pages/PQRS'));
+const EncuestasSatisfaccionPage = lazy(() => import('./pages/EncuestasSatisfaccion'));
+const MesaAyudaPage = lazy(() => import('./pages/MesaAyuda'));
+const Pipeline = lazy(() => import('./pages/Pipeline'));
+const GdprCompliance = lazy(() => import('./pages/GdprCompliance'));
+const MultiCurrency = lazy(() => import('./pages/MultiCurrency'));
+const WorkflowBuilder = lazy(() => import('./pages/WorkflowBuilder'));
+const LeadScoring = lazy(() => import('./pages/LeadScoring'));
+const EmailTemplates = lazy(() => import('./pages/EmailTemplates'));
+const Integrations = lazy(() => import('./pages/Integrations'));
+const Gamification = lazy(() => import('./pages/Gamification'));
+const ClientPortal = lazy(() => import('./pages/ClientPortal'));
+const WhatsAppAI = lazy(() => import('./pages/WhatsAppAI'));
+const AdvancedReports = lazy(() => import('./pages/AdvancedReports'));
+const CPQ = lazy(() => import('./pages/CPQ'));
+const ESignature = lazy(() => import('./pages/ESignature'));
+const SSO = lazy(() => import('./pages/SSO'));
+const Actividades = lazy(() => import('./pages/Actividades'));
+const MetasComerciales = lazy(() => import('./pages/MetasComerciales'));
+const ProductosServicios = lazy(() => import('./pages/ProductosServicios'));
+const SuperAdmin = lazy(() => import('./pages/SuperAdmin'));
+const Pricing = lazy(() => import('./pages/Pricing'));
+const Billing = lazy(() => import('./pages/Billing'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+
+function PageLoader() {
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center" role="status" aria-live="polite">
+      <div className="text-center">
+        <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
+        <p className="mt-3 text-sm font-medium text-slate-600">Cargando módulo…</p>
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/pricing" element={<Pricing />} />
@@ -99,7 +113,8 @@ function App() {
               </ProtectedRoute>
             }
           />
-        </Routes>
+          </Routes>
+        </Suspense>
       </Router>
     </AuthProvider>
   );

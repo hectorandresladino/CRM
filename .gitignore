@@ -42,6 +42,8 @@ logs/
 
 # Docker
 postgres_data/
+openshift/postgresql-secret.env
+openshift/crm-secret.env
 
 # Capacitor
 frontend/ios/

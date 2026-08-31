@@ -302,15 +302,29 @@ npm run build
 
 ```
 openshift/
-├── 01-postgresql.yaml    # Secret, PVC, Deployment y Service de PostgreSQL
+├── 01-postgresql.yaml    # PVC, Deployment y Service de PostgreSQL
 ├── 02-backend.yaml       # ImageStream, BuildConfig, Deployment y Service del Backend
 ├── 03-frontend.yaml      # ImageStream, BuildConfig, Deployment y Service del Frontend
-├── 04-routes.yaml        # Routes con TLS para Frontend y Backend
+├── 04-routes.yaml        # Route pública TLS del Frontend; la API queda detrás de /api
+├── *-secret.env.example  # Plantillas sin credenciales reales
 ├── deploy.bat            # Script de despliegue para Windows
 └── deploy.sh             # Script de despliegue para Linux/Mac
 ```
 
 ### Despliegue Automático
+
+Antes de ejecutar el despliegue, copie las dos plantillas y reemplace todos los
+valores. Los archivos resultantes están ignorados por Git y nunca deben
+publicarse:
+
+```bash
+cp openshift/postgresql-secret.env.example openshift/postgresql-secret.env
+cp openshift/crm-secret.env.example openshift/crm-secret.env
+```
+
+Use contraseñas aleatorias distintas y un `JWT_SECRET` de al menos 32 bytes. En
+`CORS_ALLOWED_ORIGINS` configure la URL HTTPS final del frontend. Los scripts
+fallan de forma segura si faltan estos archivos o conservan valores de ejemplo.
 
 #### Windows
 ```cmd
@@ -337,42 +351,46 @@ oc login https://api.sandbox.openshift.com:6443
 oc new-project crm --display-name="CRM System"
 ```
 
-3. **Desplegar PostgreSQL:**
+3. **Crear secretos desde archivos privados:**
+```bash
+oc create secret generic postgresql-secret --from-env-file=openshift/postgresql-secret.env --dry-run=client -o yaml | oc apply -f -
+oc create secret generic crm-secrets --from-env-file=openshift/crm-secret.env --dry-run=client -o yaml | oc apply -f -
+```
+
+4. **Desplegar PostgreSQL:**
 ```bash
 oc apply -f openshift/01-postgresql.yaml
 oc rollout status deployment/postgresql --watch
 ```
 
-4. **Desplegar Backend:**
+5. **Desplegar ConfigMap y Backend:**
 ```bash
+oc apply -f openshift/05-config-secrets.yaml
 oc apply -f openshift/02-backend.yaml
 oc rollout status deployment/crm-backend --watch
 ```
 
-5. **Desplegar Frontend:**
+6. **Desplegar Frontend:**
 ```bash
 oc apply -f openshift/03-frontend.yaml
 oc rollout status deployment/crm-frontend --watch
 ```
 
-6. **Crear Routes (URLs públicas):**
+7. **Crear Route pública:**
 ```bash
 oc apply -f openshift/04-routes.yaml
 ```
 
-7. **Obtener URLs de acceso:**
+8. **Obtener URL de acceso:**
 ```bash
 oc get route crm-frontend -o jsonpath='{.spec.host}'
-oc get route crm-backend -o jsonpath='{.spec.host}'
 ```
 
 ### Configuración Importante
 
-Antes de desplegar, actualiza la URL del repositorio Git en:
-- `openshift/02-backend.yaml` - campo `git.uri`
-- `openshift/03-frontend.yaml` - campo `git.uri`
-
-Reemplaza `TU_USUARIO` con tu usuario de GitHub.
+Los BuildConfig ya apuntan a `https://github.com/hectorandresladino/CRM.git`.
+El backend no se publica como Route independiente: Nginx reenvía `/api` al
+servicio interno, reduciendo la superficie expuesta.
 
 ### Comandos Útiles
 

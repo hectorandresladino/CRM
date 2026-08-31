@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
-            logger.error("No se pudo establecer el contexto de autenticaciÃ³n", ex);
+            logger.error("No se pudo establecer el contexto de autenticación", ex);
         } finally {
             filterChain.doFilter(request, response);
             TenantContext.clear();

@@ -6,6 +6,7 @@ package com.crm.service;
 
 import com.crm.entity.Actividad;
 import com.crm.repository.ActividadRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,17 +33,26 @@ public class ActividadService {
     }
 
     public Actividad save(Actividad actividad) {
+        Long tenantId = TenantContext.requireCurrentTenant();
+        if (actividad.getId() != null) {
+            repository.findByTenantIdAndId(tenantId, actividad.getId())
+                    .orElseThrow(() -> new RuntimeException("Actividad no encontrada"));
+        }
+        actividad.setTenantId(tenantId);
         return repository.save(actividad);
     }
 
     public Actividad complete(Long id) {
-        Actividad a = repository.findById(id).orElseThrow(() -> new RuntimeException("Actividad no encontrada"));
+        Actividad a = repository.findByTenantIdAndId(TenantContext.requireCurrentTenant(), id)
+                .orElseThrow(() -> new RuntimeException("Actividad no encontrada"));
         a.setEstado("COMPLETADA");
         a.setFechaCompletada(LocalDateTime.now());
         return repository.save(a);
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        Actividad activity = repository.findByTenantIdAndId(TenantContext.requireCurrentTenant(), id)
+                .orElseThrow(() -> new RuntimeException("Actividad no encontrada"));
+        repository.delete(activity);
     }
 }

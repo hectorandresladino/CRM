@@ -62,7 +62,7 @@ const EmailMarketingPage = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este email?')) {
+    if (window.confirm('¿Está seguro de eliminar este email?')) {
       try {
         await apiClient.delete(`/api/email-marketing/${id}`);
         loadEmails();
@@ -101,7 +101,7 @@ const EmailMarketingPage = () => {
               <th>Asunto</th>
               <th>Tipo</th>
               <th>Estado</th>
-              <th>Fecha EnvÃ­o</th>
+              <th>Fecha Envío</th>
               <th>Enviados</th>
               <th>Apertura</th>
               <th>Acciones</th>

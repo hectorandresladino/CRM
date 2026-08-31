@@ -5,6 +5,9 @@ metadata:
   labels:
     app: crm
     component: frontend
+spec:
+  lookupPolicy:
+    local: true
 ---
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
@@ -16,7 +19,7 @@ metadata:
 spec:
   source:
     git:
-      uri: https://github.com/TU_USUARIO/crm.git
+      uri: https://github.com/hectorandresladino/CRM.git
       ref: main
     contextDir: frontend
   strategy:

@@ -42,7 +42,7 @@ public class ClientPortalService {
 
     public ClientPortalAccess login(String portalToken) {
         ClientPortalAccess access = clientPortalAccessRepository.findByPortalToken(portalToken)
-                .orElseThrow(() -> new RuntimeException("Token de portal invÃ¡lido"));
+                .orElseThrow(() -> new RuntimeException("Token de portal inválido"));
         if (!access.getActive()) {
             throw new RuntimeException("Acceso de portal desactivado");
         }

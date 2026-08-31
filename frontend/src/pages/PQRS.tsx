@@ -65,7 +65,7 @@ const PQRSPage = () => {
   };
   
   const handleDelete = async (id: number) => {
-    if (window.confirm('Â¿EstÃ¡ seguro de eliminar este PQRS?')) {
+    if (window.confirm('¿Está seguro de eliminar este PQRS?')) {
       try {
         await apiClient.delete(`/api/pqrs/${id}`);
         loadPqrs();
@@ -112,7 +112,7 @@ const PQRSPage = () => {
         <table className="table">
           <thead>
             <tr>
-              <th>CÃ³digo</th>
+              <th>Código</th>
               <th>Asunto</th>
               <th>Tipo</th>
               <th>Prioridad</th>
@@ -156,7 +156,7 @@ const PQRSPage = () => {
       <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingPqrs(null); }} title={editingPqrs?.id ? 'Editar PQRS' : 'Nuevo PQRS'}>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="CÃ³digo" value={formData.codigo} onChange={(e) => setFormData({ ...formData, codigo: e.target.value })} required />
+            <Input label="Código" value={formData.codigo} onChange={(e) => setFormData({ ...formData, codigo: e.target.value })} required />
             <Input label="Asunto" value={formData.asunto} onChange={(e) => setFormData({ ...formData, asunto: e.target.value })} required />
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
@@ -190,7 +190,7 @@ const PQRSPage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Canal</label>
               <select className="input" value={formData.canal} onChange={(e) => setFormData({ ...formData, canal: e.target.value as any })}>
                 <option value="EMAIL">Email</option>
-                <option value="TELEFONO">TelÃ©fono</option>
+                <option value="TELEFONO">Teléfono</option>
                 <option value="WEB">Web</option>
                 <option value="PRESENCIAL">Presencial</option>
               </select>
@@ -198,11 +198,11 @@ const PQRSPage = () => {
             <Input label="Asignado A" value={formData.asignadoA} onChange={(e) => setFormData({ ...formData, asignadoA: e.target.value })} />
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">DescripciÃ³n</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
             <textarea className="input" rows={3} value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} required />
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">ResoluciÃ³n</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Resolución</label>
             <textarea className="input" rows={2} value={formData.resolucion} onChange={(e) => setFormData({ ...formData, resolucion: e.target.value })} />
           </div>
           <div className="mt-4">
