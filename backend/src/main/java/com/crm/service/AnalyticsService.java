@@ -23,22 +23,23 @@ public class AnalyticsService {
     private final AnalyticsDashboardRepository dashboardRepo;
 
     public List<AnalyticsDashboard> getDashboards() {
-        return dashboardRepo.findByTenantIdAndIsActive(TenantContext.getCurrentTenant(), true);
+        return dashboardRepo.findByTenantIdAndIsActive(TenantContext.requireCurrentTenant(), true);
     }
 
     public AnalyticsDashboard createDashboard(AnalyticsDashboard dashboard) {
-        dashboard.setTenantId(TenantContext.getCurrentTenant());
+        dashboard.setTenantId(TenantContext.requireCurrentTenant());
         return dashboardRepo.save(dashboard);
     }
 
     public AnalyticsDashboard refreshDashboard(Long id) {
-        AnalyticsDashboard d = dashboardRepo.findById(id).orElseThrow(() -> new RuntimeException("Dashboard no encontrado"));
+        AnalyticsDashboard d = dashboardRepo.findByTenantIdAndId(TenantContext.requireCurrentTenant(), id)
+                .orElseThrow(() -> new RuntimeException("Dashboard no encontrado"));
         d.setLastRefreshedAt(java.time.LocalDateTime.now());
         return dashboardRepo.save(d);
     }
 
     public Map<String, Object> getRevenueIntelligence() {
-        Long tid = TenantContext.getCurrentTenant();
+        TenantContext.requireCurrentTenant();
         Map<String, Object> ri = new HashMap<>();
         ri.put("mrr", 0);
         ri.put("arr", 0);

@@ -8,7 +8,9 @@ Last reviewed: 2026-08-31
   including campaigns, email, surveys, documents, help desk, PQRS, WhatsApp,
   integrations, templates, workflows, CPQ, GDPR, portal access, lead scoring,
   API keys, custom fields, forms, taxes, goals, payments, products, rules, SLA,
-  SSO and webhooks.
+  SSO and webhooks. Advanced sales forecasting, commissions, knowledge
+  articles, service milestones, field service orders and analytics dashboard
+  refreshes are now covered by the same ownership rule.
 - Client-supplied tenant identifiers are overwritten with the authenticated
   tenant on writes, and record mutations resolve by `tenant_id + id`.
 - API authorization is separated by administrative, accounting, marketing,
@@ -16,8 +18,9 @@ Last reviewed: 2026-08-31
 - Integration catalog entries no longer claim a successful provider connection
   or synchronization. Real OAuth/API handshakes remain required before a
   connector can become operational.
-- Regression coverage now includes cross-tenant deletion/lookups and honest
-  failure for unavailable provider synchronization.
+- Regression coverage now includes cross-tenant deletion/lookups, advanced
+  sales/service mutations, fail-closed operation without an authenticated
+  tenant and honest failure for unavailable provider synchronization.
 
 ## Evidence-based status
 

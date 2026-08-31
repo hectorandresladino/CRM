@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FieldServiceOrderRepository extends JpaRepository<FieldServiceOrder, Long> {
@@ -16,4 +17,5 @@ public interface FieldServiceOrderRepository extends JpaRepository<FieldServiceO
     List<FieldServiceOrder> findByTenantIdAndClientId(Long tenantId, Long clientId);
     List<FieldServiceOrder> findByTenantIdAndStatus(Long tenantId, String status);
     List<FieldServiceOrder> findByTenantIdAndAssignedTechnician(Long tenantId, String technician);
+    Optional<FieldServiceOrder> findByTenantIdAndId(Long tenantId, Long id);
 }

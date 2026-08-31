@@ -9,10 +9,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ServiceMilestoneRepository extends JpaRepository<ServiceMilestone, Long> {
     List<ServiceMilestone> findByTenantId(Long tenantId);
     List<ServiceMilestone> findByTenantIdAndEntitlementId(Long tenantId, Long entitlementId);
     List<ServiceMilestone> findByTenantIdAndIsViolated(Long tenantId, Boolean violated);
+    Optional<ServiceMilestone> findByTenantIdAndId(Long tenantId, Long id);
 }
