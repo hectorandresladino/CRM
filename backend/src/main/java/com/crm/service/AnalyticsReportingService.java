@@ -54,7 +54,7 @@ public class AnalyticsReportingService {
     }
 
     public AnalyticsDashboard updateDashboard(Long id, AnalyticsDashboard updated) {
-        AnalyticsDashboard d = dashboardRepo.findById(id).orElseThrow();
+        AnalyticsDashboard d = dashboardRepo.findByTenantIdAndId(tid(), id).orElseThrow();
         d.setName(updated.getName());
         d.setDescription(updated.getDescription());
         d.setWidgets(updated.getWidgets());
@@ -76,7 +76,7 @@ public class AnalyticsReportingService {
     }
 
     public ReportExecution executeReport(Long reportId, String parameters, String format) {
-        ReportDefinition report = reportRepo.findById(reportId).orElseThrow();
+        ReportDefinition report = reportRepo.findByTenantIdAndId(tid(), reportId).orElseThrow();
         ReportExecution exec = new ReportExecution();
         exec.setTenantId(tid());
         exec.setReportId(reportId);
@@ -208,7 +208,7 @@ public class AnalyticsReportingService {
     }
 
     public KpiSnapshot captureKpiSnapshot(Long kpiId) {
-        KpiDefinition kpi = kpiRepo.findById(kpiId).orElseThrow();
+        KpiDefinition kpi = kpiRepo.findByTenantIdAndId(tid(), kpiId).orElseThrow();
         BigDecimal actualValue = calculateKpiValue(kpi);
         BigDecimal targetValue = kpi.getTargetValue() != null ? kpi.getTargetValue() : BigDecimal.ZERO;
 

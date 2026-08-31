@@ -19,8 +19,8 @@ isolation, authorization, tests, observability and an operable user flow.
 | Marketing automation | CRUD/prototype | Executable journey runtime, consent, suppression lists, deliverability, attribution and production senders |
 | Service and customer portal | Advanced partial | External identity, secure document/payment flows, SLA timers, entitlements and knowledge publishing workflow |
 | Billing | Interface only, fail-closed | Real Stripe/Wompi/PayU/Mercado Pago SDK or HTTP clients, idempotency, signed webhooks, reconciliation, refunds and dunning |
-| Analytics | Basic real-data metrics | Metric definitions, time windows, cohorts, CAC/LTV/NRR, drill-down, scheduled reports and warehouse strategy |
-| Revenue intelligence | Explainable baseline | Feature store, training/evaluation pipeline, model registry, drift, cost controls and human approval for sensitive actions |
+| Analytics | Real-data metrics with selectable 30/90/365-day periods and prior-period comparison | Add cohorts, CAC/LTV/NRR, record drill-down, scheduled delivery and warehouse strategy |
+| Revenue intelligence | Explainable score, trend and prioritized actions | Add feature store, training/evaluation pipeline, model registry, drift, cost controls and human approval for sensitive actions |
 | Low-code platform | Structural partial | Versioned schemas, safe formula/runtime sandbox, migrations, permissions, publish lifecycle and rollback |
 | Integrations | Mostly catalog/structure | OAuth installs, token rotation, sync cursors, retries, dead-letter queue and provider contract tests |
 | Internationalization | Partial | Translate server validation, emails, PDFs and notifications; implement tax/e-invoicing country adapters |
@@ -46,6 +46,44 @@ trademark rights:
 The differentiator is the closed loop:
 
 `Signal → customer context → recommended action → human/automatic execution → measured outcome`
+
+## Competitive capability comparison
+
+Reviewed against official product material on 2026-08-30. Product names are
+used only to identify the compared services; all third-party names and marks
+belong to their respective owners.
+
+| Reference product | Capability demonstrated by the reference product | Position of this repository |
+|---|---|---|
+| HubSpot | Unified sales, marketing, service, content, commerce and data platform with enterprise governance | Broad cross-functional data model exists; real channel providers, content runtime and enterprise data operations remain incomplete |
+| Zoho CRM | Omnichannel engagement, journey orchestration, process automation, portals, BI and AI assistance | Comparable structural breadth; executable journeys, omnichannel delivery and no-code customization need production runtimes |
+| Bitrix24 | CRM, collaboration, tasks, contact center, inventory, documents, payments and automation in one workspace | Strong CRM/service/billing skeleton; collaboration, inventory depth and communication providers remain behind |
+| Leadsales | Focused official WhatsApp, Facebook and Instagram inbox, assignment, broadcasts and reporting | WhatsApp data model and AI flow exist, but an official Meta connection, delivery statuses and shared inbox are still required |
+| Kommo | Messenger-first CRM with unified inbox, bots, pipeline automation, broadcasts and conversational AI | Pipeline and WhatsApp AI foundations exist; multi-channel inbox, official templates, bot runtime and human handoff must be completed |
+| HighLevel | Agency subaccounts, white label, funnels, conversations, reputation, workflows and AI agents | Agency plan and subaccount structures exist; snapshots, rebilling, domain verification, funnels and reputation operations are incomplete |
+| Pipedrive | Focused visual pipeline, forecasting, lead inbox, forms, chatbot/live chat, projects and integrations | Core pipeline, activities, forecasting and forms are present; lead-capture handoff, projects and integration depth need completion |
+| Meta Business Suite | Native management of messages, comments, content, ads and insights with role-based task access | Social entities and permissions exist; official OAuth, webhooks, publishing, moderation and ads/insights ingestion are not connected |
+
+Official reference links:
+
+- https://www.hubspot.com/products/crm/enterprise
+- https://www.zoho.com/crm/cx-platform/features/
+- https://www.bitrix24.com/tools/crm/
+- https://leadsales.io/
+- https://www.kommo.com/product-overview/
+- https://www.gohighlevel.com/ai
+- https://www.pipedrive.com/en/crm/features
+- https://www.facebook.com/help/289207354498410/
+
+### Differentiating plus
+
+The repository's own advantage is not another generic AI chat box. Outcome
+Intelligence calculates one tenant-scoped, explainable business score from
+sales, pipeline, lead conversion, active clients and service resolution. It
+supports 30, 90 and 365-day windows, compares the immediately previous period,
+shows metric movement and prioritizes the next actions. The intended next step
+is to link each recommendation to a governed workflow and then measure the
+result, completing the closed loop above.
 
 ## Key metric contract
 

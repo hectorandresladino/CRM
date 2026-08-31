@@ -26,6 +26,7 @@ Plataforma SaaS empresarial multi-tenant para gestión de clientes, ventas, mark
 - **Auditoría**: Registro de cambios por usuario, entidad, IP, valor anterior y nuevo
 - **Internacionalización**: Español/Inglés, moneda, zona horaria, formato de fecha
 - **API v1**: Swagger/OpenAPI, API Keys, Webhooks, versionamiento
+- **Inteligencia de Resultados**: puntaje explicable, acciones prioritarias y comparación de periodos 30/90/365 días con datos reales del tenant
 
 ## Módulos Principales
 
@@ -411,7 +412,13 @@ oc rollout restart deployment/crm-backend
 | `/api/v1/auth/verify-email` | GET | Verificar correo electrónico |
 
 El login acepta `{ "tenantSlug": "mi-empresa", "username": "usuario", "password": "..." }`.
-`tenantSlug` puede omitirse únicamente cuando el nombre de usuario sea inequívoco entre empresas.
+`tenantSlug` puede omitirse para el SuperAdmin de plataforma o cuando el nombre de usuario sea inequívoco entre empresas.
+
+### Inteligencia de Resultados
+
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/api/v1/outcomes/scorecard?days=90` | GET | Puntaje, métricas, tendencia contra el periodo anterior y acciones recomendadas. `days` admite `0`, `30`, `90` o `365` |
 
 ### SuperAdmin
 

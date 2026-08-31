@@ -30,7 +30,7 @@ export default function Login() {
       const response = await apiClient.post('/api/auth/login', creds);
       const { accessToken, refreshToken, role, tenantId } = response.data;
       login(accessToken, refreshToken, role, tenantId, creds.username);
-      navigate('/');
+      navigate(role === 'SUPER_ADMIN' ? '/superadmin' : '/');
     } catch (error: any) {
       console.error('Error en login:', error);
       const msg = typeof error.response?.data === 'string'
@@ -51,7 +51,7 @@ export default function Login() {
       const response = await apiClient.post('/api/auth/login', formData);
       const { accessToken, refreshToken, role, tenantId } = response.data;
       login(accessToken, refreshToken, role, tenantId, formData.username);
-      navigate('/');
+      navigate(role === 'SUPER_ADMIN' ? '/superadmin' : '/');
     } catch (error: any) {
       console.error('Error en login:', error);
       const msg = typeof error.response?.data === 'string' 

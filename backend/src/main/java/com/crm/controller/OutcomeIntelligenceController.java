@@ -21,7 +21,8 @@ public class OutcomeIntelligenceController {
     private final OutcomeIntelligenceService service;
 
     @GetMapping("/scorecard")
-    public ResponseEntity<Map<String, Object>> scorecard() {
-        return ResponseEntity.ok(service.scorecard());
+    public ResponseEntity<Map<String, Object>> scorecard(
+            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "90") Integer days) {
+        return ResponseEntity.ok(service.scorecard(days));
     }
 }

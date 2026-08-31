@@ -2,7 +2,7 @@
  * CRM SaaS - Copyright (c) 2024-2026 Hector Andres Ladino
  * Licensed under MIT License. See LICENSE file for details.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Users, TrendingUp, DollarSign, HeadphonesIcon, ArrowUpRight, ArrowDownRight, Calendar, Phone, Mail as MailIcon, FileText, CheckCircle2, Clock, Gauge, Sparkles, AlertTriangle, RefreshCw } from 'lucide-react';
 import apiClient from '../services/api';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, AreaChart, Area } from 'recharts';
@@ -36,6 +36,16 @@ interface OutcomeScorecard {
   currency: string;
   metrics: OutcomeMetrics;
   recommendedActions: RecommendedAction[];
+  comparison?: {
+    direction: 'IMPROVING' | 'DECLINING' | 'STABLE';
+    scoreChange: number;
+    revenueChangePct: number | null;
+    pipelineChangePct: number | null;
+    winRateChange: number;
+    leadConversionChange: number;
+    serviceResolutionChange: number;
+    previousOutcomeScore: number;
+  };
   generatedAt: string;
 }
 
@@ -51,11 +61,7 @@ const Dashboard = () => {
   const [outcomes, setOutcomes] = useState<OutcomeScorecard | null>(null);
   const [outcomesLoading, setOutcomesLoading] = useState(true);
   const [outcomesError, setOutcomesError] = useState(false);
-
-  useEffect(() => {
-    loadStats();
-    loadOutcomes();
-  }, []);
+  const [outcomePeriodDays, setOutcomePeriodDays] = useState(90);
 
   const loadStats = async () => {
     try {
@@ -66,11 +72,11 @@ const Dashboard = () => {
     }
   };
 
-  const loadOutcomes = async () => {
+  const loadOutcomes = useCallback(async (days: number) => {
     setOutcomesLoading(true);
     setOutcomesError(false);
     try {
-      const response = await apiClient.get<OutcomeScorecard>('/api/v1/outcomes/scorecard');
+      const response = await apiClient.get<OutcomeScorecard>(`/api/v1/outcomes/scorecard?days=${days}`);
       setOutcomes(response.data);
     } catch (error) {
       console.error('Error loading outcome scorecard:', error);
@@ -78,7 +84,15 @@ const Dashboard = () => {
     } finally {
       setOutcomesLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  useEffect(() => {
+    loadOutcomes(outcomePeriodDays);
+  }, [loadOutcomes, outcomePeriodDays]);
 
   const formatCurrency = (value: number, currency: string) => {
     try {
@@ -230,15 +244,35 @@ const Dashboard = () => {
               <p className="mt-0.5 text-xs text-blue-100/75">Una lectura explicable de ventas, conversión, clientes y servicio.</p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={loadOutcomes}
-            disabled={outcomesLoading}
-            className="inline-flex items-center justify-center gap-2 self-start rounded-lg bg-white/10 px-3 py-2 text-xs font-semibold ring-1 ring-white/20 transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60 sm:self-auto"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${outcomesLoading ? 'animate-spin' : ''}`} />
-            Actualizar análisis
-          </button>
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            <div className="flex rounded-lg bg-black/15 p-1 ring-1 ring-white/15" aria-label="Periodo de análisis">
+              {[
+                { days: 30, label: '30d' },
+                { days: 90, label: '90d' },
+                { days: 365, label: '1a' },
+                { days: 0, label: 'Todo' },
+              ].map((period) => (
+                <button
+                  key={period.days}
+                  type="button"
+                  onClick={() => setOutcomePeriodDays(period.days)}
+                  className={`rounded-md px-2.5 py-1.5 text-[11px] font-bold transition ${outcomePeriodDays === period.days ? 'bg-white text-blue-900 shadow-sm' : 'text-blue-100 hover:bg-white/10'}`}
+                  aria-pressed={outcomePeriodDays === period.days}
+                >
+                  {period.label}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => loadOutcomes(outcomePeriodDays)}
+              disabled={outcomesLoading}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-xs font-semibold ring-1 ring-white/20 transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${outcomesLoading ? 'animate-spin' : ''}`} />
+              Actualizar
+            </button>
+          </div>
         </div>
 
         {outcomesLoading && !outcomes ? (
@@ -272,6 +306,11 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <p className={`mt-2 text-sm font-bold ${tone.text}`}>{tone.label}</p>
+                    {outcomes.comparison && (
+                      <span className={`mt-2 rounded-full px-2.5 py-1 text-[10px] font-bold ${outcomes.comparison.direction === 'IMPROVING' ? 'bg-emerald-100 text-emerald-700' : outcomes.comparison.direction === 'DECLINING' ? 'bg-red-100 text-red-700' : 'bg-slate-200 text-slate-600'}`}>
+                        {outcomes.comparison.scoreChange > 0 ? '+' : ''}{outcomes.comparison.scoreChange.toFixed(1)} pts vs periodo anterior
+                      </span>
+                    )}
                     <p className="mt-1 flex items-center gap-1 text-[11px] text-slate-400"><Gauge className="h-3 w-3" /> Fórmula explicable {outcomes.formulaVersion}</p>
                   </>
                 );
@@ -282,16 +321,23 @@ const Dashboard = () => {
               <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">Métricas determinantes</h3>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: 'Ingresos cerrados', value: formatCurrency(outcomes.metrics.revenue, outcomes.currency) },
-                  { label: 'Pipeline abierto', value: formatCurrency(outcomes.metrics.openPipeline, outcomes.currency) },
+                  { label: 'Ingresos cerrados', value: formatCurrency(outcomes.metrics.revenue, outcomes.currency), change: outcomes.comparison?.revenueChangePct },
+                  { label: 'Pipeline abierto', value: formatCurrency(outcomes.metrics.openPipeline, outcomes.currency), change: outcomes.comparison?.pipelineChangePct },
                   { label: 'Cobertura pipeline', value: `${outcomes.metrics.pipelineCoverage.toFixed(2)}x` },
-                  { label: 'Tasa de cierre', value: `${outcomes.metrics.winRate.toFixed(1)}%` },
-                  { label: 'Conversión de leads', value: `${outcomes.metrics.leadConversionRate.toFixed(1)}%` },
-                  { label: 'Resolución de soporte', value: `${outcomes.metrics.serviceResolutionRate.toFixed(1)}%` },
+                  { label: 'Tasa de cierre', value: `${outcomes.metrics.winRate.toFixed(1)}%`, change: outcomes.comparison?.winRateChange },
+                  { label: 'Conversión de leads', value: `${outcomes.metrics.leadConversionRate.toFixed(1)}%`, change: outcomes.comparison?.leadConversionChange },
+                  { label: 'Resolución de soporte', value: `${outcomes.metrics.serviceResolutionRate.toFixed(1)}%`, change: outcomes.comparison?.serviceResolutionChange },
                 ].map((metric) => (
                   <div key={metric.label} className="rounded-xl border border-slate-200 p-3">
                     <p className="truncate text-[11px] text-slate-500" title={metric.label}>{metric.label}</p>
-                    <p className="mt-1 truncate text-sm font-bold text-slate-900" title={metric.value}>{metric.value}</p>
+                    <div className="mt-1 flex items-end justify-between gap-1">
+                      <p className="truncate text-sm font-bold text-slate-900" title={metric.value}>{metric.value}</p>
+                      {metric.change != null && (
+                        <span className={`shrink-0 text-[10px] font-bold ${metric.change > 0 ? 'text-emerald-600' : metric.change < 0 ? 'text-red-600' : 'text-slate-400'}`}>
+                          {metric.change > 0 ? '+' : ''}{metric.change.toFixed(1)}{metric.label.includes('Ingresos') || metric.label.includes('Pipeline abierto') ? '%' : ' pts'}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
