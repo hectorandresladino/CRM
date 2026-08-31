@@ -6,6 +6,7 @@ package com.crm.service;
 
 import com.crm.entity.ApiKey;
 import com.crm.repository.ApiKeyRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +22,11 @@ public class ApiKeyService {
     private final ApiKeyRepository repository;
 
     public List<ApiKey> findAll(Long tenantId) {
-        return repository.findByTenantId(tenantId);
+        return repository.findByTenantId(tid());
     }
 
     public ApiKey create(ApiKey apiKey) {
+        apiKey.setTenantId(tid());
         apiKey.setKey("crm_" + UUID.randomUUID().toString().replace("-", ""));
         return repository.save(apiKey);
     }
@@ -39,6 +41,9 @@ public class ApiKeyService {
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        repository.delete(repository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("API key no encontrada")));
     }
+
+    private Long tid() { return TenantContext.requireCurrentTenant(); }
 }

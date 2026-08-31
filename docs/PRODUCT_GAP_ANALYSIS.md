@@ -1,6 +1,23 @@
 # Product Readiness and Competitive Gap Analysis
 
-Last reviewed: 2026-08-30
+Last reviewed: 2026-08-31
+
+## Security hardening completed on 2026-08-31
+
+- Tenant ownership is now enforced fail-closed for the primary CRM CRUD modules,
+  including campaigns, email, surveys, documents, help desk, PQRS, WhatsApp,
+  integrations, templates, workflows, CPQ, GDPR, portal access, lead scoring,
+  API keys, custom fields, forms, taxes, goals, payments, products, rules, SLA,
+  SSO and webhooks.
+- Client-supplied tenant identifiers are overwritten with the authenticated
+  tenant on writes, and record mutations resolve by `tenant_id + id`.
+- API authorization is separated by administrative, accounting, marketing,
+  service and sales route families.
+- Integration catalog entries no longer claim a successful provider connection
+  or synchronization. Real OAuth/API handshakes remain required before a
+  connector can become operational.
+- Regression coverage now includes cross-tenant deletion/lookups and honest
+  failure for unavailable provider synchronization.
 
 ## Evidence-based status
 
@@ -12,7 +29,7 @@ isolation, authorization, tests, observability and an operable user flow.
 
 | Product area | Current status | What is required for production completion |
 |---|---|---|
-| Core CRM and sales | Advanced partial | Finish tenant review on every repository, opportunity products/team/competitors, forecasting accuracy tests and bulk operations |
+| Core CRM and sales | Advanced partial | Finish tenant review on the remaining advanced service families, opportunity products/team/competitors, forecasting accuracy tests and bulk operations |
 | Unlimited-user plans | Implemented commercially | Enforce contact, storage, channel, AI, automation and API metering consistently |
 | Agency and white label | Structural partial | Real subaccount switching, snapshots, rebilling, domain verification and tenant-specific email delivery |
 | Omnichannel inbox | Prototype | Official WhatsApp Cloud API, Instagram/Messenger webhooks, email sync, SMS and telephony with delivery/status handling |
@@ -22,7 +39,7 @@ isolation, authorization, tests, observability and an operable user flow.
 | Analytics | Real-data metrics with selectable 30/90/365-day periods and prior-period comparison | Add cohorts, CAC/LTV/NRR, record drill-down, scheduled delivery and warehouse strategy |
 | Revenue intelligence | Explainable score, trend and prioritized actions | Add feature store, training/evaluation pipeline, model registry, drift, cost controls and human approval for sensitive actions |
 | Low-code platform | Structural partial | Versioned schemas, safe formula/runtime sandbox, migrations, permissions, publish lifecycle and rollback |
-| Integrations | Mostly catalog/structure | OAuth installs, token rotation, sync cursors, retries, dead-letter queue and provider contract tests |
+| Integrations | Honest catalog/structure (not reported as connected) | OAuth installs, encrypted token storage/rotation, sync cursors, retries, dead-letter queue and provider contract tests |
 | Internationalization | Partial | Translate server validation, emails, PDFs and notifications; implement tax/e-invoicing country adapters |
 | Production operations | Partial | PostgreSQL migration test, Redis resilience, backups restore drill, OpenTelemetry, SLOs, alerting, SBOM and load tests |
 | Legal and IP | Documents present | Decide future license, perform trademark clearance, register software/brand and maintain dependency notices automatically |

@@ -6,9 +6,9 @@ package com.crm.service;
 
 import com.crm.entity.Integration;
 import com.crm.repository.IntegrationRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,84 +26,70 @@ public class IntegrationService {
     private final IntegrationRepository integrationRepository;
 
     public List<Integration> findAll(Long tenantId) {
-        return integrationRepository.findByTenantId(tenantId);
+        Long currentTenant = tid();
+        if (!currentTenant.equals(tenantId)) {
+            throw new SecurityException("Acceso a otra empresa denegado");
+        }
+        return integrationRepository.findByTenantId(currentTenant);
     }
 
     public Integration connect(Integration integration) {
-        integration.setConnected(true);
-        if (integration.getSyncEnabled() == null) {
-            integration.setSyncEnabled(false);
-        }
-        if (integration.getSyncFrequency() == null) {
-            integration.setSyncFrequency("MANUAL");
-        }
-        return integrationRepository.save(integration);
+        Long tenantId = tid();
+        Integration configured = integrationRepository.findByTenantIdAndProvider(tenantId, integration.getProvider())
+                .orElseGet(Integration::new);
+        configured.setTenantId(tenantId);
+        configured.setProvider(integration.getProvider());
+        configured.setCategory(integration.getCategory());
+        configured.setConfig(integration.getConfig());
+        configured.setCredentials(null);
+        configured.setConnected(false);
+        configured.setSyncEnabled(false);
+        configured.setSyncFrequency("MANUAL");
+        return integrationRepository.save(configured);
     }
 
     public Integration disconnect(Long id) {
-        Integration integration = integrationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Integracion no encontrada"));
+        Integration integration = findOwned(id);
         integration.setConnected(false);
         integration.setSyncEnabled(false);
         return integrationRepository.save(integration);
     }
 
     public Integration toggleSync(Long id) {
-        Integration integration = integrationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Integracion no encontrada"));
+        Integration integration = findOwned(id);
+        if (!Boolean.TRUE.equals(integration.getConnected())) {
+            throw new IllegalStateException("La integración no tiene una conexión real configurada");
+        }
         integration.setSyncEnabled(!integration.getSyncEnabled());
         return integrationRepository.save(integration);
     }
 
     public Map<String, Object> testConnection(Long id) {
-        Integration integration = integrationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Integracion no encontrada"));
+        Integration integration = findOwned(id);
         Map<String, Object> result = new HashMap<>();
         result.put("provider", integration.getProvider());
         result.put("connected", integration.getConnected());
         result.put("timestamp", LocalDateTime.now().toString());
-        result.put("status", integration.getConnected() ? "OK" : "NOT_CONNECTED");
-        result.put("message", integration.getConnected()
-                ? "Conexion activa con " + integration.getProvider()
-                : "Integracion no conectada");
+        result.put("operational", false);
+        result.put("status", "CONFIGURATION_ONLY");
+        result.put("message", "El conector de " + integration.getProvider() + " aún requiere OAuth/API oficial");
         return result;
     }
 
     public Map<String, Object> syncNow(Long id) {
-        Integration integration = integrationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Integracion no encontrada"));
-        if (!integration.getConnected()) {
-            throw new RuntimeException("La integracion no esta conectada");
-        }
-        Map<String, Object> result = new HashMap<>();
-        result.put("provider", integration.getProvider());
-        result.put("syncedAt", LocalDateTime.now().toString());
-        result.put("status", "SUCCESS");
-        result.put("recordsProcessed", 0);
-
-        integration.setLastSyncAt(LocalDateTime.now());
-        integrationRepository.save(integration);
-
-        log.info("Sync manual ejecutado para integracion {} ({})", id, integration.getProvider());
-        return result;
-    }
-
-    @Scheduled(cron = "0 0 */6 * * *")
-    @Transactional
-    public void autoSyncEnabledIntegrations() {
-        List<Integration> enabled = integrationRepository.findBySyncEnabledTrue();
-        for (Integration integration : enabled) {
-            try {
-                integration.setLastSyncAt(LocalDateTime.now());
-                integrationRepository.save(integration);
-                log.debug("Auto-sync ejecutado para {} tenant {}", integration.getProvider(), integration.getTenantId());
-            } catch (Exception e) {
-                log.error("Error en auto-sync de integracion {}: {}", integration.getId(), e.getMessage());
-            }
-        }
+        Integration integration = findOwned(id);
+        throw new UnsupportedOperationException(
+                "La sincronización real con " + integration.getProvider() + " aún no está implementada");
     }
 
     public void delete(Long id) {
-        integrationRepository.deleteById(id);
+        integrationRepository.delete(findOwned(id));
     }
+
+    private Integration findOwned(Long id) {
+        return integrationRepository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Integración no encontrada"));
+    }
+
+    private Long tid() { return TenantContext.requireCurrentTenant(); }
 }

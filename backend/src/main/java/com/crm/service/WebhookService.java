@@ -6,6 +6,7 @@ package com.crm.service;
 
 import com.crm.entity.Webhook;
 import com.crm.repository.WebhookRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -23,15 +24,17 @@ public class WebhookService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public List<Webhook> findAll(Long tenantId) {
-        return repository.findByTenantIdAndEsActivo(tenantId, true);
+        return repository.findByTenantIdAndEsActivo(tid(), true);
     }
 
     public Webhook save(Webhook webhook) {
+        webhook.setTenantId(tid());
         return repository.save(webhook);
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        repository.delete(repository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Webhook no encontrado")));
     }
 
     public void triggerEvent(Long tenantId, String event, Object payload) {
@@ -61,4 +64,6 @@ public class WebhookService {
             }
         }
     }
+
+    private Long tid() { return TenantContext.requireCurrentTenant(); }
 }

@@ -4,7 +4,7 @@
  */
 import { useState, useEffect } from 'react';
 import { 
-  Plug, CheckCircle2,
+  Plug, CheckCircle2, AlertTriangle,
   CreditCard, Calendar, Key, MessageSquare, ShoppingBag, FileSpreadsheet
 } from 'lucide-react';
 import apiClient from '../services/api';
@@ -40,6 +40,7 @@ const PROVIDER_INFO: Record<string, { icon: React.ElementType; color: string; la
 export default function Integrations() {
   const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState<string | null>(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -57,8 +58,9 @@ export default function Integrations() {
 
   const handleConnect = async (provider: string, category: string) => {
     try {
-      await apiClient.post('/api/integrations', { provider, category, connected: true, syncEnabled: true });
-      loadData();
+      await apiClient.post('/api/integrations', { provider, category });
+      setMessage(`${PROVIDER_INFO[provider]?.label || provider} quedó preparado. Requiere OAuth/API oficial antes de operar.`);
+      await loadData();
     } catch (e) {
       console.error('Error connecting:', e);
     }
@@ -84,8 +86,9 @@ export default function Integrations() {
     }
   };
 
-  const connectedProviders = new Set(integrations.filter(i => i.connected).map(i => i.provider));
-  const availableProviders = Object.keys(PROVIDER_INFO).filter(p => !connectedProviders.has(p));
+  const configuredProviders = new Set(integrations.map(i => i.provider));
+  const pendingIntegrations = integrations.filter(i => !i.connected);
+  const availableProviders = Object.keys(PROVIDER_INFO).filter(p => !configuredProviders.has(p));
 
   return (
     <div className="p-6">
@@ -96,6 +99,18 @@ export default function Integrations() {
         </h1>
         <p className="text-sm text-slate-500 mt-1">Conecta tu CRM con las herramientas que ya usas</p>
       </div>
+
+      <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 flex items-start gap-3">
+        <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+        <div>
+          <p className="font-semibold">Estado verificable de conectores</p>
+          <p className="mt-1 text-amber-800">Un conector sólo aparece como conectado después de completar OAuth o la validación de su API oficial. Prepararlo no simula una sincronización.</p>
+        </div>
+      </div>
+
+      {message && (
+        <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">{message}</div>
+      )}
 
       {/* Connected integrations */}
       <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-3">Conectadas ({integrations.filter(i => i.connected).length})</h2>
@@ -139,6 +154,28 @@ export default function Integrations() {
         )}
       </div>
 
+      <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-3">Pendientes de configuración ({pendingIntegrations.length})</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {pendingIntegrations.map((integration) => {
+          const info = PROVIDER_INFO[integration.provider] || { icon: Plug, color: 'bg-slate-500', label: integration.provider, description: '' };
+          const Icon = info.icon;
+          return (
+            <div key={integration.id} className="bg-white rounded-xl border border-amber-200 p-5">
+              <div className="flex items-center gap-3">
+                <div className={`p-2.5 rounded-lg ${info.color} opacity-80`}><Icon className="w-5 h-5 text-white" /></div>
+                <div>
+                  <h3 className="font-semibold text-sm text-slate-900">{info.label}</h3>
+                  <p className="text-xs text-amber-700">OAuth/API oficial pendiente</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        {pendingIntegrations.length === 0 && !loading && (
+          <p className="col-span-full text-sm text-slate-400 py-4">No hay conectores pendientes.</p>
+        )}
+      </div>
+
       {/* Available integrations */}
       <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-3">Disponibles ({availableProviders.length})</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -162,7 +199,7 @@ export default function Integrations() {
                 </div>
               </div>
               <button onClick={() => handleConnect(provider, category)} className="w-full px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-                Conectar
+                Preparar conector
               </button>
             </div>
           );

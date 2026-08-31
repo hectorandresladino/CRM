@@ -9,9 +9,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReglaAutomaticaRepository extends JpaRepository<ReglaAutomatica, Long> {
     List<ReglaAutomatica> findByTenantId(Long tenantId);
     List<ReglaAutomatica> findByTenantIdAndEntidadAndEventoAndEsActiva(Long tenantId, String entidad, String evento, Boolean esActiva);
+    Optional<ReglaAutomatica> findByTenantIdAndId(Long tenantId, Long id);
 }

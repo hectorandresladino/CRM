@@ -16,4 +16,5 @@ public interface SSOConfigurationRepository extends JpaRepository<SSOConfigurati
     List<SSOConfiguration> findByTenantId(Long tenantId);
     Optional<SSOConfiguration> findByTenantIdAndProvider(Long tenantId, String provider);
     Optional<SSOConfiguration> findByTenantIdAndIsActive(Long tenantId, Boolean isActive);
+    Optional<SSOConfiguration> findByTenantIdAndId(Long tenantId, Long id);
 }

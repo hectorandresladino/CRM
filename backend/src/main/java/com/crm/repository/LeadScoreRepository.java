@@ -16,4 +16,5 @@ public interface LeadScoreRepository extends JpaRepository<LeadScore, Long> {
     List<LeadScore> findByTenantId(Long tenantId);
     Optional<LeadScore> findByTenantIdAndProspectoId(Long tenantId, Long prospectoId);
     List<LeadScore> findByTenantIdOrderByScoreDesc(Long tenantId);
+    Optional<LeadScore> findByTenantIdAndId(Long tenantId, Long id);
 }

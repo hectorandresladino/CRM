@@ -15,4 +15,5 @@ import java.util.Optional;
 public interface ApiKeyRepository extends JpaRepository<ApiKey, Long> {
     List<ApiKey> findByTenantId(Long tenantId);
     Optional<ApiKey> findByKeyAndEsActivo(String key, Boolean esActivo);
+    Optional<ApiKey> findByTenantIdAndId(Long tenantId, Long id);
 }

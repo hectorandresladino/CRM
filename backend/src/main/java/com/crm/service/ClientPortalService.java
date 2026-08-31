@@ -6,6 +6,7 @@ package com.crm.service;
 
 import com.crm.entity.ClientPortalAccess;
 import com.crm.repository.ClientPortalAccessRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +23,11 @@ public class ClientPortalService {
     private final ClientPortalAccessRepository clientPortalAccessRepository;
 
     public List<ClientPortalAccess> findAll(Long tenantId) {
-        return clientPortalAccessRepository.findByTenantId(tenantId);
+        return clientPortalAccessRepository.findByTenantId(tid());
     }
 
     public ClientPortalAccess createAccess(Long tenantId, Long clienteId, String email) {
+        tenantId = tid();
         ClientPortalAccess existing = clientPortalAccessRepository
                 .findByTenantIdAndClienteId(tenantId, clienteId).orElse(null);
         if (existing != null) {
@@ -52,9 +54,11 @@ public class ClientPortalService {
     }
 
     public void revoke(Long id) {
-        ClientPortalAccess access = clientPortalAccessRepository.findById(id)
+        ClientPortalAccess access = clientPortalAccessRepository.findByTenantIdAndId(tid(), id)
                 .orElseThrow(() -> new RuntimeException("Acceso no encontrado"));
         access.setActive(false);
         clientPortalAccessRepository.save(access);
     }
+
+    private Long tid() { return TenantContext.requireCurrentTenant(); }
 }

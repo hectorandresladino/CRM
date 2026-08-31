@@ -78,6 +78,32 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").hasRole("SUPER_ADMIN")
                 .requestMatchers("/error").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/api/v1/superadmin/**", "/api/v1/devops/**")
+                    .hasRole("SUPER_ADMIN")
+                .requestMatchers(
+                    "/api/api-keys/**", "/api/integrations/**", "/api/sso/**",
+                    "/api/tenant-config/**", "/api/webhooks/**", "/api/campos-personalizados/**",
+                    "/api/v1/rbac/**", "/api/v1/security/**", "/api/v1/security-compliance/**",
+                    "/api/v1/platform/**", "/api/v1/automation/**")
+                    .hasAnyRole("TENANT_OWNER", "ADMIN")
+                .requestMatchers(
+                    "/api/v1/billing/**", "/api/facturas/**", "/api/pagos/**",
+                    "/api/impuestos/**", "/api/v1/commerce/**")
+                    .hasAnyRole("TENANT_OWNER", "ADMIN", "ACCOUNTING")
+                .requestMatchers(
+                    "/api/campanas-marketing/**", "/api/email-marketing/**", "/api/email-templates/**",
+                    "/api/formularios-web/**", "/api/lead-scores/**", "/api/v1/marketing-advanced/**")
+                    .hasAnyRole("TENANT_OWNER", "ADMIN", "MANAGER", "MARKETING")
+                .requestMatchers(
+                    "/api/servicio-cliente/**", "/api/mesa-ayuda/**", "/api/pqrs/**",
+                    "/api/encuestas-satisfaccion/**", "/api/sla/**", "/api/v1/service-cloud/**",
+                    "/api/v1/service-advanced/**")
+                    .hasAnyRole("TENANT_OWNER", "ADMIN", "MANAGER", "SUPPORT")
+                .requestMatchers(
+                    "/api/ventas/**", "/api/cotizaciones/**", "/api/pedidos/**", "/api/cpq/**",
+                    "/api/productos/**", "/api/metas/**", "/api/v1/sales-cloud/**",
+                    "/api/v1/sales-advanced/**", "/api/v1/revenue-ai/**")
+                    .hasAnyRole("TENANT_OWNER", "ADMIN", "MANAGER", "SALES", "ACCOUNTING")
                 .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex

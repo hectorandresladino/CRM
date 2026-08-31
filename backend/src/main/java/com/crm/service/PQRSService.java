@@ -6,6 +6,7 @@ package com.crm.service;
 
 import com.crm.entity.PQRS;
 import com.crm.repository.PQRSRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,28 +23,33 @@ public class PQRSService {
     private final PQRSRepository pqrsRepository;
     
     public List<PQRS> findAll() {
-        return pqrsRepository.findAll();
+        return pqrsRepository.findByTenantId(tid());
     }
     
     public Optional<PQRS> findById(Long id) {
-        return pqrsRepository.findById(id);
+        return pqrsRepository.findByTenantIdAndId(tid(), id);
     }
     
     public PQRS save(PQRS pqrs) {
+        pqrs.setTenantId(tid());
         return pqrsRepository.save(pqrs);
     }
     
     public PQRS update(Long id, PQRS pqrs) {
+        pqrsRepository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("PQRS no encontrada"));
         pqrs.setId(id);
+        pqrs.setTenantId(tid());
         return pqrsRepository.save(pqrs);
     }
     
     public void delete(Long id) {
-        pqrsRepository.deleteById(id);
+        pqrsRepository.delete(pqrsRepository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("PQRS no encontrada")));
     }
     
     public PQRS resolver(Long id, String resolucion) {
-        Optional<PQRS> pqrsOpt = pqrsRepository.findById(id);
+        Optional<PQRS> pqrsOpt = pqrsRepository.findByTenantIdAndId(tid(), id);
         if (pqrsOpt.isPresent()) {
             PQRS pqrs = pqrsOpt.get();
             pqrs.setResolucion(resolucion);
@@ -55,14 +61,16 @@ public class PQRSService {
     }
     
     public List<PQRS> findByClienteId(Long clienteId) {
-        return pqrsRepository.findByClienteId(clienteId);
+        return pqrsRepository.findByTenantIdAndClienteId(tid(), clienteId);
     }
     
     public List<PQRS> findByEstado(String estado) {
-        return pqrsRepository.findByEstado(estado);
+        return pqrsRepository.findByTenantIdAndEstado(tid(), estado);
     }
     
     public List<PQRS> findByPrioridad(String prioridad) {
-        return pqrsRepository.findByPrioridad(prioridad);
+        return pqrsRepository.findByTenantIdAndPrioridad(tid(), prioridad);
     }
+
+    private Long tid() { return TenantContext.requireCurrentTenant(); }
 }

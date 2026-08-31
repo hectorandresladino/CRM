@@ -16,4 +16,5 @@ public interface CPQProductRepository extends JpaRepository<CPQProduct, Long> {
     List<CPQProduct> findByTenantId(Long tenantId);
     List<CPQProduct> findByTenantIdAndIsActive(Long tenantId, Boolean isActive);
     Optional<CPQProduct> findByTenantIdAndSku(Long tenantId, String sku);
+    Optional<CPQProduct> findByTenantIdAndId(Long tenantId, Long id);
 }

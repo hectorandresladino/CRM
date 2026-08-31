@@ -9,10 +9,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SLAConfiguracionRepository extends JpaRepository<SLAConfiguracion, Long> {
     List<SLAConfiguracion> findByTenantId(Long tenantId);
     List<SLAConfiguracion> findByTenantIdAndActivo(Long tenantId, Boolean activo);
     List<SLAConfiguracion> findByTenantIdAndPrioridad(Long tenantId, String prioridad);
+    Optional<SLAConfiguracion> findByTenantIdAndId(Long tenantId, Long id);
 }

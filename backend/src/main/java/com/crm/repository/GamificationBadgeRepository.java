@@ -9,9 +9,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface GamificationBadgeRepository extends JpaRepository<GamificationBadge, Long> {
     List<GamificationBadge> findByTenantId(Long tenantId);
     List<GamificationBadge> findByTenantIdAndIsActive(Long tenantId, Boolean isActive);
+    Optional<GamificationBadge> findByTenantIdAndId(Long tenantId, Long id);
 }

@@ -17,4 +17,5 @@ public interface IntegrationRepository extends JpaRepository<Integration, Long> 
     Optional<Integration> findByTenantIdAndProvider(Long tenantId, String provider);
     List<Integration> findByTenantIdAndConnected(Long tenantId, Boolean connected);
     List<Integration> findBySyncEnabledTrue();
+    Optional<Integration> findByTenantIdAndId(Long tenantId, Long id);
 }

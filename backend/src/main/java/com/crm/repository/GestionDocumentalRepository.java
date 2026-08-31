@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface GestionDocumentalRepository extends JpaRepository<GestionDocumental, Long> {
@@ -20,4 +21,9 @@ public interface GestionDocumentalRepository extends JpaRepository<GestionDocume
     List<GestionDocumental> findByClienteId(Long clienteId);
     List<GestionDocumental> findByEtiquetasContaining(String etiqueta);
     List<GestionDocumental> findByFechaVencimientoBefore(LocalDateTime fecha);
+    List<GestionDocumental> findByTenantId(Long tenantId);
+    Optional<GestionDocumental> findByTenantIdAndId(Long tenantId, Long id);
+    List<GestionDocumental> findByTenantIdAndClienteId(Long tenantId, Long clienteId);
+    List<GestionDocumental> findByTenantIdAndCategoria(Long tenantId, String categoria);
+    List<GestionDocumental> findByTenantIdAndFechaVencimientoBefore(Long tenantId, LocalDateTime fecha);
 }

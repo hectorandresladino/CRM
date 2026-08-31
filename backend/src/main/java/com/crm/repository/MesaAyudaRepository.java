@@ -24,4 +24,10 @@ public interface MesaAyudaRepository extends JpaRepository<MesaAyuda, Long> {
     Optional<MesaAyuda> findByTicket(String ticket);
     List<MesaAyuda> findByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
     List<MesaAyuda> findByEstadoNot(String estado);
+    List<MesaAyuda> findByTenantId(Long tenantId);
+    Optional<MesaAyuda> findByTenantIdAndId(Long tenantId, Long id);
+    List<MesaAyuda> findByTenantIdAndClienteId(Long tenantId, Long clienteId);
+    List<MesaAyuda> findByTenantIdAndEstado(Long tenantId, String estado);
+    List<MesaAyuda> findByTenantIdAndAsignadoA(Long tenantId, String asignadoA);
+    List<MesaAyuda> findByTenantIdAndEstadoNot(Long tenantId, String estado);
 }

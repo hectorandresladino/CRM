@@ -16,4 +16,5 @@ public interface ProductoServicioRepository extends JpaRepository<ProductoServic
     List<ProductoServicio> findByTenantIdAndEsActivo(Long tenantId, Boolean esActivo);
     Optional<ProductoServicio> findByTenantIdAndCodigo(Long tenantId, String codigo);
     List<ProductoServicio> findByTenantIdAndFamilia(Long tenantId, String familia);
+    Optional<ProductoServicio> findByTenantIdAndId(Long tenantId, Long id);
 }

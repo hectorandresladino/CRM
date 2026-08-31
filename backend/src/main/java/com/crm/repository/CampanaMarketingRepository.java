@@ -21,4 +21,7 @@ public interface CampanaMarketingRepository extends JpaRepository<CampanaMarketi
     Optional<CampanaMarketing> findByNombre(String nombre);
     List<CampanaMarketing> findBySegmento(String segmento);
     List<CampanaMarketing> findByTenantId(Long tenantId);
+    Optional<CampanaMarketing> findByTenantIdAndId(Long tenantId, Long id);
+    List<CampanaMarketing> findByTenantIdAndEstado(Long tenantId, String estado);
+    List<CampanaMarketing> findByTenantIdAndTipo(Long tenantId, String tipo);
 }

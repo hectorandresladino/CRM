@@ -8,6 +8,7 @@ import com.crm.entity.LeadScore;
 import com.crm.entity.Prospecto;
 import com.crm.repository.LeadScoreRepository;
 import com.crm.repository.ProspectoRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +24,12 @@ public class LeadScoreService {
     private final ProspectoRepository prospectoRepository;
 
     public List<LeadScore> findAll(Long tenantId) {
-        return leadScoreRepository.findByTenantIdOrderByScoreDesc(tenantId);
+        return leadScoreRepository.findByTenantIdOrderByScoreDesc(tid());
     }
 
     public LeadScore scoreProspecto(Long tenantId, Long prospectoId) {
-        Prospecto prospecto = prospectoRepository.findById(prospectoId)
+        tenantId = tid();
+        Prospecto prospecto = prospectoRepository.findByTenantIdAndId(tenantId, prospectoId)
                 .orElseThrow(() -> new RuntimeException("Prospecto no encontrado"));
 
         int score = 0;
@@ -90,6 +92,9 @@ public class LeadScoreService {
     }
 
     public void delete(Long id) {
-        leadScoreRepository.deleteById(id);
+        leadScoreRepository.delete(leadScoreRepository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Puntaje no encontrado")));
     }
+
+    private Long tid() { return TenantContext.requireCurrentTenant(); }
 }

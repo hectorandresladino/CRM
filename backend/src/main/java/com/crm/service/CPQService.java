@@ -8,6 +8,7 @@ import com.crm.entity.CPQProduct;
 import com.crm.entity.CPQQuoteItem;
 import com.crm.repository.CPQProductRepository;
 import com.crm.repository.CPQQuoteItemRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,24 +27,28 @@ public class CPQService {
     private final CPQQuoteItemRepository quoteItemRepository;
 
     public List<CPQProduct> findAllProducts(Long tenantId) {
-        return productRepository.findByTenantIdAndIsActive(tenantId, true);
+        return productRepository.findByTenantIdAndIsActive(tid(), true);
     }
 
     public CPQProduct saveProduct(CPQProduct product) {
+        product.setTenantId(tid());
         return productRepository.save(product);
     }
 
     public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
+        productRepository.delete(productRepository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado")));
     }
 
     public List<CPQQuoteItem> findQuoteItems(Long tenantId, Long cotizacionId) {
-        return quoteItemRepository.findByTenantIdAndCotizacionId(tenantId, cotizacionId);
+        return quoteItemRepository.findByTenantIdAndCotizacionId(tid(), cotizacionId);
     }
 
     public CPQQuoteItem addQuoteItem(CPQQuoteItem item) {
-        CPQProduct product = productRepository.findById(item.getProductId())
+        Long tenantId = tid();
+        CPQProduct product = productRepository.findByTenantIdAndId(tenantId, item.getProductId())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        item.setTenantId(tenantId);
 
         if (item.getUnitPrice() == null) {
             item.setUnitPrice(product.getBasePrice());
@@ -78,7 +83,7 @@ public class CPQService {
     }
 
     public CPQQuoteItem approveItem(Long id, String approvedBy) {
-        CPQQuoteItem item = quoteItemRepository.findById(id)
+        CPQQuoteItem item = quoteItemRepository.findByTenantIdAndId(tid(), id)
                 .orElseThrow(() -> new RuntimeException("Item no encontrado"));
         item.setApprovedBy(approvedBy);
         item.setApprovedAt(LocalDateTime.now());
@@ -86,13 +91,16 @@ public class CPQService {
     }
 
     public List<CPQQuoteItem> getPendingApprovals(Long tenantId) {
-        return quoteItemRepository.findByTenantIdAndApprovalRequired(tenantId, true)
+        return quoteItemRepository.findByTenantIdAndApprovalRequired(tid(), true)
                 .stream()
                 .filter(i -> i.getApprovedBy() == null)
                 .toList();
     }
 
     public void deleteQuoteItem(Long id) {
-        quoteItemRepository.deleteById(id);
+        quoteItemRepository.delete(quoteItemRepository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Item no encontrado")));
     }
+
+    private Long tid() { return TenantContext.requireCurrentTenant(); }
 }

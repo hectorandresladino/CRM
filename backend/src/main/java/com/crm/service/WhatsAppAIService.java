@@ -8,6 +8,7 @@ import com.crm.entity.WhatsAppAIConfig;
 import com.crm.entity.WhatsAppConversation;
 import com.crm.repository.WhatsAppAIConfigRepository;
 import com.crm.repository.WhatsAppConversationRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -142,7 +143,7 @@ public class WhatsAppAIService {
     }
 
     public WhatsAppConversation takeOver(Long conversationId, String agentName) {
-        WhatsAppConversation conv = conversationRepository.findById(conversationId)
+        WhatsAppConversation conv = conversationRepository.findByTenantIdAndId(TenantContext.requireCurrentTenant(), conversationId)
                 .orElseThrow(() -> new RuntimeException("Conversación no encontrada"));
         conv.setHumanTakenOver(true);
         conv.setAiHandled(false);
@@ -152,7 +153,7 @@ public class WhatsAppAIService {
     }
 
     public WhatsAppConversation resolve(Long conversationId) {
-        WhatsAppConversation conv = conversationRepository.findById(conversationId)
+        WhatsAppConversation conv = conversationRepository.findByTenantIdAndId(TenantContext.requireCurrentTenant(), conversationId)
                 .orElseThrow(() -> new RuntimeException("Conversación no encontrada"));
         conv.setStatus(WhatsAppConversation.ConversationStatus.RESOLVED);
         return conversationRepository.save(conv);

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EmailMarketingRepository extends JpaRepository<EmailMarketing, Long> {
@@ -19,4 +20,7 @@ public interface EmailMarketingRepository extends JpaRepository<EmailMarketing, 
     List<EmailMarketing> findByFechaEnvioBetween(LocalDateTime inicio, LocalDateTime fin);
     List<EmailMarketing> findByRemitente(String remitente);
     List<EmailMarketing> findByTenantId(Long tenantId);
+    Optional<EmailMarketing> findByTenantIdAndId(Long tenantId, Long id);
+    List<EmailMarketing> findByTenantIdAndEstado(Long tenantId, String estado);
+    List<EmailMarketing> findByTenantIdAndTipo(Long tenantId, String tipo);
 }

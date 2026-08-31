@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @Repository
 public interface ProspectoRepository extends JpaRepository<Prospecto, Long> {
+    Optional<Prospecto> findByTenantIdAndId(Long tenantId, Long id);
     
     Optional<Prospecto> findByTenantIdAndEmail(Long tenantId, String email);
     

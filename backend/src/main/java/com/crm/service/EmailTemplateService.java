@@ -6,6 +6,7 @@ package com.crm.service;
 
 import com.crm.entity.EmailTemplate;
 import com.crm.repository.EmailTemplateRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,15 +21,16 @@ public class EmailTemplateService {
     private final EmailTemplateRepository emailTemplateRepository;
 
     public List<EmailTemplate> findAll(Long tenantId) {
-        return emailTemplateRepository.findByTenantId(tenantId);
+        return emailTemplateRepository.findByTenantId(tid());
     }
 
     public EmailTemplate save(EmailTemplate template) {
+        template.setTenantId(tid());
         return emailTemplateRepository.save(template);
     }
 
     public EmailTemplate update(Long id, EmailTemplate template) {
-        EmailTemplate existing = emailTemplateRepository.findById(id)
+        EmailTemplate existing = emailTemplateRepository.findByTenantIdAndId(tid(), id)
                 .orElseThrow(() -> new RuntimeException("Plantilla no encontrada"));
         existing.setName(template.getName());
         existing.setSubject(template.getSubject());
@@ -40,6 +42,9 @@ public class EmailTemplateService {
     }
 
     public void delete(Long id) {
-        emailTemplateRepository.deleteById(id);
+        emailTemplateRepository.delete(emailTemplateRepository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Plantilla no encontrada")));
     }
+
+    private Long tid() { return TenantContext.requireCurrentTenant(); }
 }

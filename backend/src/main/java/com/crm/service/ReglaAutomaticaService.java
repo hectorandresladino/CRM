@@ -6,6 +6,7 @@ package com.crm.service;
 
 import com.crm.entity.ReglaAutomatica;
 import com.crm.repository.ReglaAutomaticaRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,28 +21,32 @@ public class ReglaAutomaticaService {
     private final ReglaAutomaticaRepository repository;
 
     public List<ReglaAutomatica> findAll(Long tenantId) {
-        return repository.findByTenantId(tenantId);
+        return repository.findByTenantId(tid());
     }
 
     public ReglaAutomatica save(ReglaAutomatica regla) {
+        regla.setTenantId(tid());
         return repository.save(regla);
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        repository.delete(repository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Regla no encontrada")));
     }
 
     public ReglaAutomatica toggle(Long id) {
-        ReglaAutomatica regla = repository.findById(id).orElseThrow(() -> new RuntimeException("Regla no encontrada"));
+        ReglaAutomatica regla = repository.findByTenantIdAndId(tid(), id).orElseThrow(() -> new RuntimeException("Regla no encontrada"));
         regla.setEsActiva(!regla.getEsActiva());
         return repository.save(regla);
     }
 
     public void recordExecution(Long id) {
-        repository.findById(id).ifPresent(r -> {
+        repository.findByTenantIdAndId(tid(), id).ifPresent(r -> {
             r.setTotalEjecuciones(r.getTotalEjecuciones() + 1);
             r.setUltimaEjecucion(LocalDateTime.now());
             repository.save(r);
         });
     }
+
+    private Long tid() { return TenantContext.requireCurrentTenant(); }
 }

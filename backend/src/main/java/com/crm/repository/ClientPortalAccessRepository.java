@@ -16,4 +16,5 @@ public interface ClientPortalAccessRepository extends JpaRepository<ClientPortal
     List<ClientPortalAccess> findByTenantId(Long tenantId);
     Optional<ClientPortalAccess> findByTenantIdAndClienteId(Long tenantId, Long clienteId);
     Optional<ClientPortalAccess> findByPortalToken(String portalToken);
+    Optional<ClientPortalAccess> findByTenantIdAndId(Long tenantId, Long id);
 }

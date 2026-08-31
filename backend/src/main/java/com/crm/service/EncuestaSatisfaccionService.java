@@ -6,6 +6,7 @@ package com.crm.service;
 
 import com.crm.entity.EncuestaSatisfaccion;
 import com.crm.repository.EncuestaSatisfaccionRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,28 +23,33 @@ public class EncuestaSatisfaccionService {
     private final EncuestaSatisfaccionRepository encuestaRepository;
     
     public List<EncuestaSatisfaccion> findAll() {
-        return encuestaRepository.findAll();
+        return encuestaRepository.findByTenantId(tid());
     }
     
     public Optional<EncuestaSatisfaccion> findById(Long id) {
-        return encuestaRepository.findById(id);
+        return encuestaRepository.findByTenantIdAndId(tid(), id);
     }
     
     public EncuestaSatisfaccion save(EncuestaSatisfaccion encuesta) {
+        encuesta.setTenantId(tid());
         return encuestaRepository.save(encuesta);
     }
     
     public EncuestaSatisfaccion update(Long id, EncuestaSatisfaccion encuesta) {
+        encuestaRepository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Encuesta no encontrada"));
         encuesta.setId(id);
+        encuesta.setTenantId(tid());
         return encuestaRepository.save(encuesta);
     }
     
     public void delete(Long id) {
-        encuestaRepository.deleteById(id);
+        encuestaRepository.delete(encuestaRepository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Encuesta no encontrada")));
     }
     
     public EncuestaSatisfaccion registrarRespuesta(Long id, EncuestaSatisfaccion respuesta) {
-        Optional<EncuestaSatisfaccion> encuestaOpt = encuestaRepository.findById(id);
+        Optional<EncuestaSatisfaccion> encuestaOpt = encuestaRepository.findByTenantIdAndId(tid(), id);
         if (encuestaOpt.isPresent()) {
             EncuestaSatisfaccion encuesta = encuestaOpt.get();
             encuesta.setFechaRespuesta(LocalDateTime.now());
@@ -62,10 +68,12 @@ public class EncuestaSatisfaccionService {
     }
     
     public List<EncuestaSatisfaccion> findByClienteId(Long clienteId) {
-        return encuestaRepository.findByClienteId(clienteId);
+        return encuestaRepository.findByTenantIdAndClienteId(tid(), clienteId);
     }
     
     public List<EncuestaSatisfaccion> findByEstado(String estado) {
-        return encuestaRepository.findByEstado(estado);
+        return encuestaRepository.findByTenantIdAndEstado(tid(), estado);
     }
+
+    private Long tid() { return TenantContext.requireCurrentTenant(); }
 }

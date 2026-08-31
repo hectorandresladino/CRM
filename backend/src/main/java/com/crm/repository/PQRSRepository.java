@@ -23,4 +23,9 @@ public interface PQRSRepository extends JpaRepository<PQRS, Long> {
     List<PQRS> findByAsignadoA(String asignadoA);
     Optional<PQRS> findByCodigo(String codigo);
     List<PQRS> findByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
+    List<PQRS> findByTenantId(Long tenantId);
+    Optional<PQRS> findByTenantIdAndId(Long tenantId, Long id);
+    List<PQRS> findByTenantIdAndClienteId(Long tenantId, Long clienteId);
+    List<PQRS> findByTenantIdAndEstado(Long tenantId, String estado);
+    List<PQRS> findByTenantIdAndPrioridad(Long tenantId, String prioridad);
 }

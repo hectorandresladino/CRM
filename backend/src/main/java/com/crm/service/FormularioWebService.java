@@ -6,6 +6,7 @@ package com.crm.service;
 
 import com.crm.entity.FormularioWeb;
 import com.crm.repository.FormularioWebRepository;
+import com.crm.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +21,11 @@ public class FormularioWebService {
     private final FormularioWebRepository repository;
 
     public List<FormularioWeb> findAll(Long tenantId) {
-        return repository.findByTenantId(tenantId);
+        return repository.findByTenantId(tid());
     }
 
     public FormularioWeb save(FormularioWeb form) {
+        form.setTenantId(tid());
         if (form.getEmbedToken() == null || form.getEmbedToken().isEmpty()) {
             form.setEmbedToken(UUID.randomUUID().toString().replace("-", ""));
         }
@@ -38,6 +40,9 @@ public class FormularioWebService {
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        repository.delete(repository.findByTenantIdAndId(tid(), id)
+                .orElseThrow(() -> new RuntimeException("Formulario no encontrado")));
     }
+
+    private Long tid() { return TenantContext.requireCurrentTenant(); }
 }

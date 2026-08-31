@@ -9,9 +9,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CampoPersonalizadoRepository extends JpaRepository<CampoPersonalizado, Long> {
     List<CampoPersonalizado> findByTenantId(Long tenantId);
     List<CampoPersonalizado> findByTenantIdAndEntidadOrderByOrden(Long tenantId, String entidad);
+    Optional<CampoPersonalizado> findByTenantIdAndId(Long tenantId, Long id);
 }

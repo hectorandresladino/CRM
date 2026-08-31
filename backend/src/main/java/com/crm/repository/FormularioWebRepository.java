@@ -15,4 +15,5 @@ import java.util.Optional;
 public interface FormularioWebRepository extends JpaRepository<FormularioWeb, Long> {
     List<FormularioWeb> findByTenantId(Long tenantId);
     Optional<FormularioWeb> findByEmbedToken(String embedToken);
+    Optional<FormularioWeb> findByTenantIdAndId(Long tenantId, Long id);
 }
