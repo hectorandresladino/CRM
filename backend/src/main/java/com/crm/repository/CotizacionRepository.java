@@ -34,12 +34,9 @@ public interface CotizacionRepository extends JpaRepository<Cotizacion, Long> {
     List<Cotizacion> findByClienteIdAndEstado(@Param("clienteId") Long clienteId, 
                                               @Param("estado") Cotizacion.EstadoCotizacion estado);
     
-    @Query("SELECT c FROM Cotizacion c WHERE c.validez < :fecha AND c.estado = 'ENVIADA'")
-    List<Cotizacion> findExpiredCotizaciones(@Param("fecha") LocalDate fecha);
-
     @Query("SELECT c FROM Cotizacion c WHERE c.tenantId = :tenantId AND c.validez < :fecha AND c.estado = 'ENVIADA'")
     List<Cotizacion> findExpiredCotizacionesByTenantId(@Param("tenantId") Long tenantId, @Param("fecha") LocalDate fecha);
     
-    @Query("SELECT COUNT(c) FROM Cotizacion c WHERE c.estado = :estado")
-    Long countByEstado(@Param("estado") Cotizacion.EstadoCotizacion estado);
+    @Query("SELECT COUNT(c) FROM Cotizacion c WHERE c.tenantId = :tenantId AND c.estado = :estado")
+    Long countByEstado(@Param("tenantId") Long tenantId, @Param("estado") Cotizacion.EstadoCotizacion estado);
 }

@@ -20,14 +20,14 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     
     List<Cliente> findByEstado(Cliente.EstadoCliente estado);
     
-    @Query("SELECT c FROM Cliente c WHERE c.nombre LIKE %:nombre% OR c.apellido LIKE %:apellido%")
-    List<Cliente> buscarPorNombre(@Param("nombre") String nombre, @Param("apellido") String apellido);
+    @Query("SELECT c FROM Cliente c WHERE c.tenantId = :tenantId AND (c.nombre LIKE %:nombre% OR c.apellido LIKE %:apellido%)")
+    List<Cliente> buscarPorNombre(@Param("tenantId") Long tenantId, @Param("nombre") String nombre, @Param("apellido") String apellido);
     
-    @Query("SELECT c FROM Cliente c WHERE c.empresa LIKE %:empresa%")
-    List<Cliente> buscarPorEmpresa(@Param("empresa") String empresa);
+    @Query("SELECT c FROM Cliente c WHERE c.tenantId = :tenantId AND c.empresa LIKE %:empresa%")
+    List<Cliente> buscarPorEmpresa(@Param("tenantId") Long tenantId, @Param("empresa") String empresa);
     
-    @Query("SELECT c FROM Cliente c WHERE c.identificacion = :identificacion")
-    Optional<Cliente> findByIdentificacion(@Param("identificacion") String identificacion);
+    @Query("SELECT c FROM Cliente c WHERE c.tenantId = :tenantId AND c.identificacion = :identificacion")
+    Optional<Cliente> findByIdentificacion(@Param("tenantId") Long tenantId, @Param("identificacion") String identificacion);
     
     boolean existsByTenantIdAndEmail(Long tenantId, String email);
     

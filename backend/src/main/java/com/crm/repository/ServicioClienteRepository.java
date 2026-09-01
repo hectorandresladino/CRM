@@ -38,17 +38,14 @@ public interface ServicioClienteRepository extends JpaRepository<ServicioCliente
     List<ServicioCliente> findByClienteIdAndEstado(@Param("clienteId") Long clienteId, 
                                                    @Param("estado") ServicioCliente.EstadoServicio estado);
     
-    @Query("SELECT s FROM ServicioCliente s WHERE s.prioridad = :prioridad AND s.estado NOT IN ('RESUELTO', 'CERRADO')")
-    List<ServicioCliente> findUrgentesAbiertos(@Param("prioridad") ServicioCliente.PrioridadPQRS prioridad);
-
     @Query("SELECT s FROM ServicioCliente s WHERE s.tenantId = :tenantId AND s.prioridad = :prioridad AND s.estado NOT IN ('RESUELTO', 'CERRADO')")
     List<ServicioCliente> findUrgentesAbiertosByTenantId(@Param("tenantId") Long tenantId,
             @Param("prioridad") ServicioCliente.PrioridadPQRS prioridad);
     
-    @Query("SELECT COUNT(s) FROM ServicioCliente s WHERE s.estado = :estado")
-    Long countByEstado(@Param("estado") ServicioCliente.EstadoServicio estado);
+    @Query("SELECT COUNT(s) FROM ServicioCliente s WHERE s.tenantId = :tenantId AND s.estado = :estado")
+    Long countByEstado(@Param("tenantId") Long tenantId, @Param("estado") ServicioCliente.EstadoServicio estado);
     
-    @Query("SELECT s FROM ServicioCliente s WHERE s.fechaCreacion BETWEEN :fechaInicio AND :fechaFin")
-    List<ServicioCliente> findByFechaCreacionBetween(@Param("fechaInicio") LocalDateTime fechaInicio, 
+    @Query("SELECT s FROM ServicioCliente s WHERE s.tenantId = :tenantId AND s.fechaCreacion BETWEEN :fechaInicio AND :fechaFin")
+    List<ServicioCliente> findByFechaCreacionBetween(@Param("tenantId") Long tenantId, @Param("fechaInicio") LocalDateTime fechaInicio, 
                                                       @Param("fechaFin") LocalDateTime fechaFin);
 }
